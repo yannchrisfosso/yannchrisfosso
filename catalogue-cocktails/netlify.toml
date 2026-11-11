@@ -1,0 +1,30 @@
+"$schema" = "https://open-api.netlify.com/netlify.schema.json"
+
+# Site statique (aucune commande de build) + fonctions pour « Disponibles ce soir ».
+[build]
+  publish = "site"
+  command = ""
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# Page propriétaire : /bar (non référencée, jamais indexée)
+[[redirects]]
+  from = "/bar"
+  to = "/bar.html"
+  status = 200
+
+[[headers]]
+  for = "/bar"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Cache-Control = "no-cache"
+    Referrer-Policy = "no-referrer"
+
+[[headers]]
+  for = "/bar.html"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Cache-Control = "no-cache"
+    Referrer-Policy = "no-referrer"

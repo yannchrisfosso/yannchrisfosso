@@ -103,8 +103,8 @@ section.block{padding:clamp(72px,12vw,120px) 0 0;scroll-margin-top:-20px}
 
 /* ---------- Accueil ---------- */
 .hero{position:relative;min-height:100svh;display:flex;align-items:flex-end;overflow:hidden;isolation:isolate}
-.hero picture,.hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}
-.hero img{animation:heroZoom 18s var(--ease) both}
+.hero>picture,.hero>picture img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}
+.hero>picture img{animation:heroZoom 18s var(--ease) both}
 @keyframes heroZoom{from{transform:scale(1.12)}to{transform:scale(1)}}
 .hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(11,14,18,.55) 0%,rgba(11,14,18,.15) 28%,rgba(11,14,18,.55) 58%,rgba(11,14,18,.96) 86%,var(--bg) 100%)}
 .hero-in{padding:0 var(--gutter) calc(48px + env(safe-area-inset-bottom) + var(--badge,0px));max-width:1180px;margin:0 auto;width:100%}
@@ -117,7 +117,7 @@ section.block{padding:clamp(72px,12vw,120px) 0 0;scroll-margin-top:-20px}
 .h-anim{opacity:0;transform:translateY(18px);animation:up 1.1s var(--ease) forwards}
 .h-anim.d1{animation-delay:.15s}.h-anim.d2{animation-delay:.3s}.h-anim.d3{animation-delay:.45s}.h-anim.d4{animation-delay:.6s}
 @keyframes up{to{opacity:1;transform:none}}
-@media (prefers-reduced-motion:reduce){.hero img,.h-anim{animation:none;opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.hero>picture img,.h-anim{animation:none;opacity:1;transform:none}}
 
 /* ---------- Humeurs ---------- */
 .moods{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:28px}
@@ -326,6 +326,31 @@ footer li{margin:0 0 6px;break-inside:avoid}
   .menu-card h2,.menu-card .it h3{color:#111}
 }
 
+/* ---------- Disponibles ce soir ---------- */
+.hero-in{padding-top:calc(88px + env(safe-area-inset-top))}
+.tonight{margin:0 0 26px;padding:14px 14px 12px;border-radius:22px;background:rgba(11,14,18,.6);border:1px solid var(--line);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);max-width:640px}
+.tonight .hd{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.tonight .ti{font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:800;display:block;line-height:1.5}
+.tonight .ti b{color:var(--ink);font-weight:800}
+.tonight .live{display:inline-block;vertical-align:middle;position:relative;top:-1px;width:8px;height:8px;border-radius:50%;background:var(--gold);margin-right:10px;animation:pulse 2.2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(217,166,91,.55)}70%{box-shadow:0 0 0 9px rgba(217,166,91,0)}100%{box-shadow:0 0 0 0 rgba(217,166,91,0)}}
+.tonight .rw{display:flex;gap:10px;overflow-x:auto;margin-top:12px;scrollbar-width:none;padding-bottom:2px}
+.tonight .rw::-webkit-scrollbar{display:none}
+.tonight .it{flex:none;width:80px;background:none;border:0;padding:0;text-align:center}
+.tonight .it img{width:80px;height:80px;border-radius:16px;object-fit:cover;border:1px solid var(--line)}
+.tonight .it span{display:block;font-size:.72rem;line-height:1.2;margin-top:6px;color:var(--ink-2);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tonight .see{background:none;border:0;color:var(--gold-2);font-weight:700;font-size:.82rem;padding:4px 0;white-space:nowrap}
+.card .tn{position:absolute;top:10px;left:10px;font-size:.62rem;padding:4px 9px}
+.card.off img{filter:grayscale(.8) brightness(.5)}
+.card.off .n{color:rgba(255,255,255,.72)}
+.card.off .k{color:var(--muted)}
+.card .offl{position:absolute;top:10px;left:10px;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:var(--ink-2);background:rgba(11,14,18,.7);padding:4px 9px;border-radius:99px}
+.sep{grid-column:1/-1;display:flex;align-items:center;gap:12px;color:var(--muted);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;font-weight:800;margin:16px 0 2px;text-align:center}
+.sep::before,.sep::after{content:"";flex:1;height:1px;background:var(--line-2)}
+.mood .cnt{position:absolute;top:12px;right:12px;padding:5px 10px;border-radius:99px;background:rgba(11,14,18,.55);border:1px solid rgba(255,255,255,.45);color:#fff;font-size:.72rem;font-weight:800;letter-spacing:.02em}
+.mood .cnt.zero{opacity:.65}
+.tn-no{color:var(--muted);font-size:.86rem;font-style:italic;margin:0 0 12px}
+.tn-yes{margin:0 0 12px}
 .toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom) + var(--badge,0px));transform:translate(-50%,20px);z-index:90;background:var(--ink);color:#111;padding:12px 18px;border-radius:999px;font-weight:700;font-size:.9rem;opacity:0;transition:all .35s var(--ease);pointer-events:none;max-width:calc(100% - 32px);text-align:center}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 </style>
@@ -362,6 +387,7 @@ footer li{margin:0 0 6px;break-inside:avoid}
     <img src="images/hero-md.webp" alt="Comptoir d'un bar à cocktails tamisé, bouteilles éclairées" fetchpriority="high" width="1100" height="733">
   </picture>
   <div class="hero-in">
+    <div class="tonight" id="tonight" hidden></div>
     <div class="eyebrow h-anim">Cocktails d'exception · Québec</div>
     <h1 class="h-anim d1">L'art du cocktail, <em class="g">verre après verre.</em></h1>
     <p class="h-anim d2"><span class="js-count">52</span> recettes de bar, des grands classiques aux créations colorées. Choisis, je prépare.</p>
@@ -398,7 +424,7 @@ footer li{margin:0 0 6px;break-inside:avoid}
     <div class="eyebrow reveal">Laisse faire le hasard</div>
     <h2 class="h2 reveal">Tu n'arrives pas <em class="g">à choisir ?</em></h2>
     <div class="slot-card reveal">
-      <p class="lead" style="margin:0 auto 14px">Lance la machine : elle choisit pour toi.</p>
+      <p class="lead" style="margin:0 auto 14px" id="slotHint">Lance la machine : elle choisit pour toi.</p>
       <div class="reel-frame"><div class="reel" id="reel" aria-live="polite"><ul id="reelList"></ul></div></div>
       <button class="pill" id="spin">Lancer la machine</button>
     </div>
@@ -876,6 +902,11 @@ const reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
 const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
 let favs=new Set(store.get("cocktail-favs",[]));
 const saveFavs=()=>store.set("cocktail-favs",[...favs]);
+/* ---------- Disponibles ce soir (état partagé, lu sur le serveur) ---------- */
+let SOIREE={active:false,set:new Set()};
+const tonightOn=()=>SOIREE.active&&SOIREE.set.size>0;
+const isAv=c=>SOIREE.set.has(c.n);
+const pool=()=>tonightOn()?C.map((c,i)=>i).filter(i=>isAv(C[i])):C.map((c,i)=>i);
 function toast(msg){const t=$("toast");t.textContent=msg;t.classList.add("on");clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove("on"),2400);}
 function force(c){return X[c.n].p[3];}
 function alcLabel(c){const f=force(c);return f===0?"Sans alcool":f<=2?"Léger":f===3?"Moyen":"Fort";}
@@ -908,25 +939,41 @@ function tasteHTML(c,animate){
 }
 
 /* ---------- b) Humeurs ---------- */
-$("moods").innerHTML=MOODS.map(m=>`<button class="mood reveal" style="--c:${m.c}" data-mood="${m.id}"><img src="images/${IMG.slugs[m.img]}-sm.webp" alt="" loading="lazy" decoding="async" width="420" height="420"><span class="dot" aria-hidden="true">→</span><b>${m.t}</b><small>${m.ex.join(", ")}</small></button>`).join("");
+function drawMoods(){
+  const on=tonightOn();
+  $("moods").innerHTML=MOODS.map(m=>{
+    let ex=m.ex, img=m.img, badge=`<span class="dot" aria-hidden="true">→</span>`;
+    if(on){
+      const av=C.filter(c=>m.f(c)&&isAv(c)).map(c=>c.n);
+      ex=[...av,...m.ex.filter(n=>!av.includes(n))].slice(0,2); if(av.length)img=av[0];
+      badge=`<span class="cnt${av.length?"":" zero"}">${av.length?`${av.length} ce soir`:"Pas ce soir"}</span>`;
+    }
+    return `<button class="mood reveal${$("moods").dataset.drawn?" in":""}" style="--c:${m.c}" data-mood="${m.id}"><img src="images/${IMG.slugs[img]}-sm.webp" alt="" loading="lazy" decoding="async" width="420" height="420">${badge}<b>${m.t}</b><small>${ex.join(", ")}</small></button>`;}).join("");
+  $("moods").dataset.drawn=1;
+}
+drawMoods();
 $("moods").onclick=e=>{const b=e.target.closest("[data-mood]");if(!b)return;setMood(b.dataset.mood);go("carte");};
 
 /* ---------- c) Cocktail du jour ---------- */
-(function(){
+function drawToday(){
   const d=new Date(); const day=Math.floor((d.getTime()-d.getTimezoneOffset()*6e4)/864e5);
-  const i=((day*7)%C.length+C.length)%C.length; const c=C[i]; const sig=c.tags.includes("signature");
+  const P=pool(); const i=P[((day*7)%P.length+P.length)%P.length]; const c=C[i]; const sig=c.tags.includes("signature");
   $("todayDate").textContent=d.toLocaleDateString("fr-CA",{weekday:"long",day:"numeric",month:"long"});
   $("today").innerHTML=`<div class="ph"><img src="images/${slug(c)}.webp" alt="${esc(c.n)}" loading="lazy" decoding="async" width="900" height="900">${sig?'<span class="badge sig">★ Signature</span>':""}</div>
   <div class="tx"><h3>${esc(c.n)}</h3><p>${esc(c.desc)}</p>
   <div class="tags"><span class="tag"><b>Méthode</b> ${c.m}</span><span class="tag"><b>Niveau</b> ${LEVEL[c.d-1]}</span><span class="tag"><b>Temps</b> ${c.t} min</span><span class="tag"><b>Alcool</b> ${alcLabel(c)}</span></div>
   ${tasteHTML(c,true)}
   <div><button class="pill" data-open="${i}">Voir la recette</button></div></div>`;
-})();
+  if($("today").classList.contains("in"))$("today").querySelectorAll(".bar i[data-w]").forEach(x=>x.style.width=x.dataset.w);
+  if(tonightOn())$("today").querySelector(".ph").insertAdjacentHTML("beforeend",`<span class="badge sig" style="position:absolute;top:16px;right:16px">✦ Ce soir</span>`);
+}
+drawToday();
 
 /* ---------- d) Machine à sous ---------- */
 const ROW=72; let spinning=false, reelOrder=[], reelPos=0;
 function buildReel(){
-  reelOrder=C.map((c,i)=>i).sort(()=>Math.random()-.5);
+  reelOrder=pool().sort(()=>Math.random()-.5);
+  $("slotHint").textContent=tonightOn()?`Elle choisit parmi les ${reelOrder.length} cocktail${reelOrder.length>1?"s":""} disponible${reelOrder.length>1?"s":""} ce soir.`:"Lance la machine : elle choisit pour toi.";
   const loops=6; const items=[];for(let l=0;l<loops;l++)reelOrder.forEach(i=>items.push(i));
   $("reelList").innerHTML=items.map(i=>`<li>${esc(C[i].n)}</li>`).join("");
   reelPos=reelOrder.length; setReel(reelPos,false);
@@ -934,7 +981,7 @@ function buildReel(){
 function setReel(pos,anim,dur){const ul=$("reelList");ul.style.transition=anim?`transform ${dur}ms cubic-bezier(.12,.75,.12,1)`:"none";ul.style.transform=`translateY(${(1-pos)*ROW}px)`;[...ul.children].forEach((li,k)=>li.classList.toggle("hit",k===pos));}
 function spin(){
   if(spinning)return; spinning=true; $("spin").disabled=true;
-  const target=Math.floor(Math.random()*C.length); const n=reelOrder.length;
+  const n=reelOrder.length; const target=reelOrder[Math.floor(Math.random()*n)];
   const ti=reelOrder.indexOf(target); const final=(reduced?2:4)*n+ti; const dur=reduced?200:3400;
   [...$("reelList").children].forEach(li=>li.classList.remove("hit"));
   requestAnimationFrame(()=>setReel(final,true,dur));
@@ -946,7 +993,8 @@ $("surprise").onclick=()=>{go("machine");setTimeout(spin,reduced?50:800);};
 
 /* ---------- e) Carte : filtres ---------- */
 let cat="tous", style=null, mood=null, q="";
-$("cats").innerHTML=CATS.map(([k,l])=>`<button class="chip" data-cat="${k}" aria-pressed="${k===cat}">${l}</button>`).join("");
+function drawCats(){const list=tonightOn()?[["soir","✦ Disponibles ce soir"],...CATS]:CATS;$("cats").innerHTML=list.map(([k,l])=>`<button class="chip" data-cat="${k}" aria-pressed="${k===cat}">${l}</button>`).join("");}
+drawCats();
 $("styles").innerHTML=STYLES.map(t=>`<button class="chip sm" data-style="${t}" aria-pressed="false">${t[0].toUpperCase()+t.slice(1)}</button>`).join("");
 function setCat(k){cat=k;[...$("cats").children].forEach(x=>x.setAttribute("aria-pressed",x.dataset.cat===k));render();}
 function setMood(id){mood=id;const m=MOODS.find(x=>x.id===id);$("activeMood").className="active-mood"+(m?" on":"");$("activeMood").innerHTML=m?`<button class="chip" aria-pressed="true" id="clearMood">Humeur : ${m.t} ✕</button>`:"";if(m){cat="tous";[...$("cats").children].forEach(x=>x.setAttribute("aria-pressed",x.dataset.cat==="tous"));}render();}
@@ -955,18 +1003,23 @@ $("styles").onclick=e=>{const b=e.target.closest("[data-style]");if(!b)return;st
 $("activeMood").onclick=e=>{if(e.target.closest("#clearMood"))setMood(null);};
 $("q").oninput=e=>{q=norm(e.target.value.trim());render();};
 function cardHTML(c,i){
-  return `<button class="card reveal" data-open="${i}" aria-label="${esc(c.n)} : ouvrir la recette"><img src="images/${slug(c)}-sm.webp" alt="" loading="lazy" decoding="async" width="420" height="420">${c.tags.includes("signature")?'<span class="badge sig">Signature</span>':""}${favs.has(c.n)?'<span class="fav" aria-label="Favori">★</span>':""}<span class="t"><span class="n">${esc(c.n)}</span><span class="k">${esc(X[c.n].k)}</span></span></button>`;
+  const on=tonightOn(), av=on&&isAv(c);
+  const top=on?(av?'<span class="badge sig tn">✦ Ce soir</span>':'<span class="offl">Pas ce soir</span>'):(c.tags.includes("signature")?'<span class="badge sig">Signature</span>':"");
+  return `<button class="card reveal${on&&!av?" off":""}" data-open="${i}" aria-label="${esc(c.n)}${on?(av?", disponible ce soir":", pas disponible ce soir"):""} : ouvrir la recette"><img src="images/${slug(c)}-sm.webp" alt="" loading="lazy" decoding="async" width="420" height="420">${top}${favs.has(c.n)?'<span class="fav" aria-label="Favori">★</span>':""}<span class="t"><span class="n">${esc(c.n)}</span><span class="k">${esc(X[c.n].k)}</span></span></button>`;
 }
 function render(){
   const m=MOODS.find(x=>x.id===mood);
   const list=C.map((c,i)=>({c,i})).filter(({c})=>{
     if(cat==="fav"&&!favs.has(c.n))return false;
-    if(cat!=="tous"&&cat!=="fav"&&c.b!==cat)return false;
+    if(cat!=="tous"&&cat!=="fav"&&cat!=="soir"&&c.b!==cat)return false;
     if(style&&!c.tags.includes(style))return false;
     if(m&&!m.f(c))return false;
     if(q){const hay=norm(c.n+" "+c.desc+" "+c.ing.map(x=>x[2]).join(" ")+" "+c.tags.join(" ")+" "+X[c.n].k);if(!hay.includes(q))return false;}
     return true;});
-  $("grid").innerHTML=list.map(({c,i})=>cardHTML(c,i)).join("");
+  if(tonightOn()){
+    const a=list.filter(x=>isAv(x.c)), o=list.filter(x=>!isAv(x.c));
+    $("grid").innerHTML=a.map(({c,i})=>cardHTML(c,i)).join("")+(a.length&&o.length?`<div class="sep">Pas ce soir · recettes à lire</div>`:"")+o.map(({c,i})=>cardHTML(c,i)).join("");
+  } else $("grid").innerHTML=list.map(({c,i})=>cardHTML(c,i)).join("");
   $("empty").hidden=list.length>0;
   $("empty").textContent=cat==="fav"&&!favs.size?"Aucun favori pour l'instant : ouvre une fiche et touche l'étoile.":"Aucun cocktail ne correspond. Essaie un autre mot ou retire un filtre.";
   $("countLine").textContent=list.length&&list.length<C.length?`${list.length} cocktail${list.length>1?"s":""} sur ${C.length}`:"";
@@ -996,6 +1049,7 @@ function drawSheet(){
   $("shBody").innerHTML=`
   <div class="eyebrow">${BASE[c.b]}${c.tags.includes("signature")?' · <span class="g">Signature de la maison</span>':""}</div>
   <h2 id="shName">${esc(c.n)}</h2>
+  ${tonightOn()?(isAv(c)?'<p class="tn-yes"><span class="badge sig">✦ Disponible ce soir</span></p>':'<p class="tn-no">Pas disponible ce soir</p>'):""}
   <p class="desc">${esc(c.desc)}</p>
   <div class="tags"><span class="tag"><b>Méthode</b> ${c.m}</span><span class="tag"><b>Verre</b> ${GLASS[c.g]}</span><span class="tag"><b>Glace</b> ${ICE[c.ice]}</span><span class="tag"><b>Temps</b> ${c.t} min</span><span class="tag"><b>Niveau</b> ${LEVEL[c.d-1]}</span></div>
   <div class="sec"><h3>Profil</h3>
@@ -1154,7 +1208,8 @@ function drawShop(){
   <p class="serv">${r.guests} invité${r.guests>1?"s":""} × ${r.per} verre${r.per>1?"s":""} = <b style="color:var(--gold-2)">${r.total} verres</b>, soit environ <b style="color:var(--gold-2)">${r.each}</b> de chaque cocktail (${r.sel.length} au menu).</p>
   ${Object.keys(GROUPS).filter(g=>r.lines[g]).map(g=>`<h4>${GROUPS[g]}</h4><ul>${r.lines[g].sort((a,b)=>a[0].localeCompare(b[0],"fr")).map(([n,t])=>`<li><span>${esc(n)}</span><span>${t}</span></li>`).join("")}</ul>`).join("")}
   <p class="note">Quantités arrondies vers le haut. Prévois un peu plus de glace par temps chaud.</p>
-  <div class="row-btns"><button class="pill" id="showMenu">Carte pour mes invités</button><button class="pill ghost" id="copyShop">Copier la liste</button></div>`;
+  <div class="row-btns"><button class="pill" id="showMenu">Carte pour mes invités</button><button class="pill ghost" id="copyShop">Copier la liste</button></div>
+  ${adminPin()?`<div class="row-btns"><button class="pill ghost" id="useTonight" style="border-color:var(--gold);color:var(--gold-2)">✦ Utiliser comme carte de ce soir</button></div>`:""}`;
 }
 function shopText(){
   const r=shopCalc(); if(!r)return "";
@@ -1169,8 +1224,22 @@ document.querySelectorAll("[data-step]").forEach(b=>b.onclick=()=>{const i=$(b.d
 ["guests","per"].forEach(id=>$(id).addEventListener("input",partyChanged));
 $("shop").onclick=async e=>{
   if(e.target.closest("#showMenu"))openMenuCard();
+  if(e.target.closest("#useTonight"))useAsTonight();
   if(e.target.closest("#copyShop")){const t=shopText();try{await navigator.clipboard.writeText(t);toast("Liste copiée ✓");}catch(err){if(navigator.share)navigator.share({text:t}).catch(()=>{});}}
 };
+function adminPin(){try{return sessionStorage.getItem("bar-pin")||localStorage.getItem("bar-pin")||"";}catch(e){return "";}}
+async function useAsTonight(){
+  const sel=C.filter(c=>partySel.has(c.n)).map(c=>c.n);
+  if(!sel.length)return;
+  if(!confirm(`Remplacer la carte de ce soir par ces ${sel.length} cocktail${sel.length>1?"s":""} et activer le mode soirée ?`))return;
+  try{
+    const r=await fetch("/api/soiree-admin",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({pin:adminPin(),action:"save",active:true,selection:sel}),cache:"no-store"});
+    const d=await r.json().catch(()=>({}));
+    if(r.status===401){try{sessionStorage.removeItem("bar-pin");localStorage.removeItem("bar-pin");}catch(e){}drawShop();toast("Code PIN expiré : reconnecte-toi sur /bar");return;}
+    if(!r.ok||!d.ok)throw 0;
+    applySoiree(d.state.active,d.state.selection,true); toast(`✦ Carte de ce soir : ${sel.length} cocktail${sel.length>1?"s":""}`);
+  }catch(e){toast("Échec de l'envoi. Réessaie dans un instant.");}
+}
 function openMenuCard(){
   const sel=C.filter(c=>partySel.has(c.n));
   $("menuPaper").innerHTML=`<div class="orn">✦ ✦ ✦</div><h2>La <em class="g">carte</em></h2><p class="sub">Le Bar de Yann · Cocktails d'exception</p>
@@ -1201,6 +1270,43 @@ $("credits").innerHTML=IMG.credits.filter(c=>c.src!=="TheCocktailDB").map(c=>`<l
 function fitBadge(){const f=document.getElementById("nl-badge-frame");let h=0;if(f){const r=f.getBoundingClientRect();if(r.height&&getComputedStyle(f).display!=="none")h=Math.max(0,Math.round(innerHeight-r.top)+6);}document.documentElement.style.setProperty("--badge",h+"px");}
 new MutationObserver(()=>{clearTimeout(fitBadge.t);fitBadge.t=setTimeout(fitBadge,120);}).observe(document.body,{childList:true,subtree:false,attributes:false});
 addEventListener("resize",fitBadge);setTimeout(fitBadge,1500);
+
+/* ---------- Disponibles ce soir : lecture + mise à jour toutes les 60 s ---------- */
+let lastOk=0;
+function drawTonight(){
+  const el=$("tonight");
+  if(!tonightOn()){el.hidden=true;el.innerHTML="";return;}
+  const av=C.map((c,i)=>({c,i})).filter(x=>isAv(x.c)); const n=av.length;
+  el.innerHTML=`<div class="hd"><span class="ti"><i class="live" aria-hidden="true"></i>Ce soir au bar · <b>${n} cocktail${n>1?"s":""} disponible${n>1?"s":""}</b></span><button class="see" data-tonight>Voir →</button></div>
+  <div class="rw">${av.map(({c,i})=>`<button class="it" data-open="${i}"><img src="images/${slug(c)}-sm.webp" alt="" width="80" height="80" decoding="async"><span>${esc(c.n)}</span></button>`).join("")}</div>`;
+  el.hidden=false;
+}
+$("tonight").addEventListener("click",e=>{if(e.target.closest("[data-tonight]")){setCat("soir");go("carte");}});
+function applySoiree(active,selection,force){
+  const names=(selection||[]).filter(n=>byName(n)>=0);
+  const key=(active?1:0)+"|"+names.slice().sort().join("|");
+  if(!force&&key===applySoiree.k)return; const wasOn=tonightOn(); applySoiree.k=key;
+  SOIREE={active:!!active,set:new Set(names)};
+  const on=tonightOn();
+  if(on&&!wasOn&&!mood&&(cat==="tous"))cat="soir";
+  if(!on&&cat==="soir")cat="tous";
+  drawTonight(); drawMoods(); observe($("moods")); drawToday(); observe($("today").parentElement); if(!spinning)buildReel(); drawCats(); render();
+  if(cur&&$("sheet").classList.contains("open")){const y=$("shScroll").scrollTop;drawSheet();$("shScroll").scrollTop=y;}
+}
+async function loadSoiree(){
+  try{
+    const ctl=new AbortController(); const t=setTimeout(()=>ctl.abort(),5000);
+    const r=await fetch("/api/soiree",{cache:"no-store",signal:ctl.signal}); clearTimeout(t);
+    if(!r.ok)throw new Error("http "+r.status);
+    const d=await r.json(); lastOk=Date.now(); applySoiree(!!d.active,Array.isArray(d.selection)?d.selection:[]);
+  }catch(e){
+    // Stockage indisponible : on affiche tout normalement (après 5 min sans réponse si on avait un état).
+    if(!lastOk||Date.now()-lastOk>5*60e3)applySoiree(false,[]);
+  }
+}
+setInterval(loadSoiree,60000);
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")loadSoiree();});
+loadSoiree();
 
 /* ---------- Démarrage ---------- */
 render(); observe();
