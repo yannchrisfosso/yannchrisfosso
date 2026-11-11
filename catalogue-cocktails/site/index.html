@@ -1308,6 +1308,13 @@ setInterval(loadSoiree,60000);
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")loadSoiree();});
 loadSoiree();
 
+/* ---------- Accès discret à l'espace propriétaire : appui long (1,5 s) sur le logo du pied de page ---------- */
+(function(){const l=document.querySelector("footer .logo");if(!l)return;let t=null;
+  const start=()=>{t=setTimeout(()=>{if(navigator.vibrate)navigator.vibrate(20);location.href="/bar";},1500);};
+  const stop=()=>{clearTimeout(t);};
+  l.addEventListener("pointerdown",start);["pointerup","pointerleave","pointercancel"].forEach(ev=>l.addEventListener(ev,stop));
+  l.addEventListener("contextmenu",e=>e.preventDefault());l.style.webkitUserSelect="none";l.style.userSelect="none";l.style.webkitTouchCallout="none";})();
+
 /* ---------- Démarrage ---------- */
 render(); observe();
 if(location.hash) fromHash();

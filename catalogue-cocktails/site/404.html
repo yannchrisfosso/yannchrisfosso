@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Page introuvable · Le Bar de Yann</title>
+<script>
+/* Faute de frappe vers l'espace propriétaire (/bar., /Bar , /bar/xyz…) : on y va directement. */
+if(/^\/+(bar|admin)\b/i.test(decodeURIComponent(location.pathname).trim())) location.replace("/bar");
+</script>
+<style>
+@font-face{font-family:"Cormorant Garamond";font-style:italic;font-weight:500;src:url(/fonts/cormorant-garamond-latin-500-italic.woff2) format("woff2")}
+@font-face{font-family:"Manrope";font-weight:200 800;src:url(/fonts/manrope-latin-wght-normal.woff2) format("woff2")}
+:root{color-scheme:dark}
+body{margin:0;min-height:100svh;display:grid;place-items:center;background:#0b0e12;color:#f4efe6;font-family:"Manrope",system-ui,sans-serif;text-align:center;padding:24px;box-sizing:border-box}
+h1{font-family:"Cormorant Garamond",Georgia,serif;font-style:italic;font-weight:500;color:#d9a65b;font-size:clamp(2.4rem,9vw,3.4rem);margin:0 0 8px}
+p{color:#d8d1c5;margin:0 0 26px}
+a{display:inline-block;border-radius:999px;padding:14px 24px;background:#d9a65b;color:#1a1206;font-weight:700;text-decoration:none}
+</style>
+</head>
+<body><main><h1>Ce verre est vide…</h1><p>La page demandée n'existe pas.</p><a href="/">Retour au bar</a></main></body>
+</html>

@@ -15,6 +15,11 @@
   to = "/bar.html"
   status = 200
 
+[[redirects]]
+  from = "/admin"
+  to = "/bar"
+  status = 302
+
 [[headers]]
   for = "/bar"
   [headers.values]
