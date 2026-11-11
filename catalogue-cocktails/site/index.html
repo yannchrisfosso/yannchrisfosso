@@ -483,10 +483,7 @@ footer li{margin:0 0 6px;break-inside:avoid}
       <h2 class="h2">Un barman pour <em class="g">votre événement ?</em></h2>
       <p class="lead">Anniversaires, mariages, soirées d'entreprise : je compose la carte avec vous, j'apporte le savoir-faire et je sers vos invités toute la soirée.</p>
       <ul><li class="tag">Anniversaires</li><li class="tag">Mariages</li><li class="tag">Soirées d'entreprise</li><li class="tag">Bar sans alcool</li></ul>
-      <div class="ctas">
-        <a class="pill" id="callBtn" href="#">Appeler · <span id="phoneTxt"></span></a>
-        <a class="pill ghost" id="mailBtn" href="#">Écrire · <span id="mailTxt"></span></a>
-      </div>
+      <div class="ctas" id="contactBtns"></div>
     </div>
   </div>
 </section>
@@ -540,10 +537,9 @@ footer li{margin:0 0 6px;break-inside:avoid}
 
 <div class="toast" id="toast" role="status"></div>
 
+<script src="config.js"></script>
 <script>
-/* Coordonnées : remplace ces deux valeurs par ton numéro et ton courriel. */
-const PHONE = "[TÉLÉPHONE]";
-const EMAIL = "[EMAIL]";
+/* Coordonnées : voir config.js (fichier de configuration unique). */
 
 /* ---------- Recettes (inchangées) ---------- */
 const C = [
@@ -1254,12 +1250,9 @@ drawPicks();drawShop();
 
 /* ---------- g) Contact ---------- */
 (function(){
-  const ph=PHONE.trim(), em=EMAIL.trim();
-  $("phoneTxt").textContent=ph; $("mailTxt").textContent=em;
-  const real=s=>s&&!s.startsWith("[");
-  $("callBtn").href=real(ph)?"tel:"+ph.replace(/[^\d+]/g,""):"#";
-  $("mailBtn").href=real(em)?"mailto:"+em+"?subject="+encodeURIComponent("Bar à cocktails pour mon événement"):"#";
-  [$("callBtn"),$("mailBtn")].forEach(a=>a.addEventListener("click",e=>{if(a.getAttribute("href")==="#"){e.preventDefault();toast("Coordonnées bientôt disponibles");}}));
+  const cfg=window.BAR_CONFIG||{}; const phones=cfg.phones||[];
+  $("contactBtns").innerHTML=phones.map(p=>`<a class="pill" href="tel:${esc(p.tel)}">Appeler · ${esc(p.display)}</a>`).join("")
+    +(cfg.email?`<a class="pill ghost" href="mailto:${esc(cfg.email)}?subject=${encodeURIComponent(cfg.emailSubject||"")}">Écrire · ${esc(cfg.email)}</a>`:"");
 })();
 
 /* ---------- h) Crédits ---------- */

@@ -13,9 +13,9 @@ fs.mkdirSync(path.join(OUT,"netlify","shared"),{recursive:true});
 fs.writeFileSync(path.join(OUT,"netlify","shared","names.mjs"),"// Généré par site-src/build.js : noms des cocktails acceptés par le serveur.\nexport const NAMES = "+JSON.stringify(C.map(c=>c.n),null,0)+";\n");
 // Service worker
 const ls=d=>fs.readdirSync(path.join(SITE,d));
-const core=["./","index.html","manifest.webmanifest","favicon-32.png","icon-192.png","icon-512.png","apple-touch-icon.png","images/hero-md.webp",...ls("fonts").map(f=>"fonts/"+f)];
+const core=["./","index.html","config.js","manifest.webmanifest","favicon-32.png","icon-192.png","icon-512.png","apple-touch-icon.png","images/hero-md.webp",...ls("fonts").map(f=>"fonts/"+f)];
 const extra=[...ls("images").filter(f=>f.endsWith("-sm.webp")).map(f=>"images/"+f),...ls("images/ingredients").map(f=>"images/ingredients/"+f)].sort();
-const ver=crypto.createHash("sha1").update(page).digest("hex").slice(0,10);
+const ver=crypto.createHash("sha1").update(page).update(fs.readFileSync(path.join(SITE,"config.js"))).digest("hex").slice(0,10);
 fs.writeFileSync(path.join(SITE,"sw.js"),`/* Le Bar de Yann : fonctionnement hors ligne */
 const VERSION="bar-${ver}";
 const CORE=${JSON.stringify(core)};
