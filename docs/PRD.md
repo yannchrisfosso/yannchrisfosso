@@ -111,15 +111,17 @@ jeton obtenu grâce au PIN.
   Élément              Choix
 
   Front                HTML, CSS et JavaScript sans framework lourd,
-                       fichier de recettes JSON
+                       recettes dans le code (décision du 11 nov. 2026 :
+                       pas de fichier JSON séparé)
 
   Hébergement          Netlify, projet catalogue-cocktails-yann,
-                       déploiement en production uniquement depuis la
-                       branche principale
+                       déploiement depuis la branche principale : à
+                       traiter plus tard (décision du 11 nov. 2026)
 
   Élément                Choix
 
-  Serveur                Netlify Functions (Node 20)
+  Serveur                Netlify Functions (Node 24, décision du
+                         11 nov. 2026)
 
   Stockage               Netlify Blobs (état de la soirée, modèles)
 
@@ -516,6 +518,11 @@ si une manipulation est nécessaire ; numéro de version en ligne.
 Interdits. Déclarer un succès sans test sur la production ; modifier les recettes sans
 demande ; ajouter une bibliothèque lourde sans justification ; changer le design validé
 sans demande.
+
+Budget de déploiement (règle du 11 nov. 2026). Netlify gratuit = environ 20 déploiements
+par mois pour toute l'équipe. Regrouper les changements, tester en local, et ne déployer
+qu'une seule fois par lot validé. Les invités n'appellent /api/soiree que lorsque la page
+est visible à l'écran.
 
 12. Feuille de route
 On n'ouvre une phase que lorsque la précédente a passé sa porte ; aucune date n'est fixée

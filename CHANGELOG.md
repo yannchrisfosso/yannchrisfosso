@@ -2,10 +2,12 @@
 
 Le numéro affiché dans le pied de page et dans `/version.json` vient de `site-src/version.json`.
 
-## Non publié (en attente de crédits Netlify)
-- Blocage après 5 PIN faux : compteur unique toutes adresses confondues, écrit en clés nouvelles
-  (visibles immédiatement) pour que le 5e échec bloque vraiment (T-02). En production, le compteur
-  v1.5 est encore par adresse IP.
+## v1.6 · 11 nov. 2026 — Lot en attente (un seul déploiement)
+- T-02 : blocage après 5 PIN faux, compteur unique toutes adresses confondues, en clés nouvelles
+  (visibles immédiatement), pour que le 5e échec bloque vraiment (B-02, N-06).
+- Règle budget Netlify : les invités n'appellent /api/soiree que si la page est visible (test R-01).
+- Serveur de test local `tests/local/` (`npm run serve:local` puis `npm run test:local`).
+- PRD : décisions Node 24, recettes dans le code, branche principale plus tard ; règle de budget.
 
 ## v1.5 · 11 nov. 2026 — Alignement sur le PRD
 - Espace barman : vocabulaire du PRD (Sélection, Publier, Arrêter la soirée, Modèle), bloc d'état

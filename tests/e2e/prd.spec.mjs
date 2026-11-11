@@ -134,6 +134,23 @@ test("T-10 Serveur injoignable : site complet, aucun bandeau", async ({ browser 
   expect(errors).toEqual([]);
 });
 
+test("R-01 Budget : /api/soiree n'est appelé que si la page est visible", async ({ browser }, info) => {
+  const ctx = await browser.newContext(info.project.use);
+  await ctx.addInitScript(() => {
+    let state = "hidden";
+    Object.defineProperty(document, "visibilityState", { get: () => state, configurable: true });
+    window.__show = () => { state = "visible"; document.dispatchEvent(new Event("visibilitychange")); };
+  });
+  const page = await ctx.newPage();
+  let calls = 0;
+  page.on("request", (r) => { if (new URL(r.url()).pathname === "/api/soiree") calls++; });
+  await page.goto("/");
+  await page.waitForTimeout(3000);
+  expect(calls, "aucun appel tant que la page est cachée").toBe(0);
+  await page.evaluate(() => window.__show());
+  await expect.poll(() => calls).toBe(1);
+});
+
 test("T-08 Arrêt de la soirée", async ({ browser }, info) => {
   const owner = await ownerPage(browser, info.project.use, token);
   await owner.locator("#stop").click();

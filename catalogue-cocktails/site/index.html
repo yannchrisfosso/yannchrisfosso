@@ -500,7 +500,7 @@ footer li{margin:0 0 6px;break-inside:avoid}
     <span class="logo">Le Bar <i>de Yann</i></span>
     <p style="margin:0">Cocktails d'exception · Québec</p>
     <p class="moderation">L'abus d'alcool est dangereux pour la santé. À consommer avec modération.</p>
-    <p style="margin:8px 0 0">Version v1.5 · 11 nov.</p>
+    <p style="margin:8px 0 0">Version v1.6 · 11 nov.</p>
     <details>
       <summary>Crédits photos</summary>
       <p>Photos de cocktails et d'ingrédients : <a href="https://www.thecocktaildb.com" rel="noopener">TheCocktailDB</a>, sauf mention ci-dessous (Wikimedia Commons, licences libres) :</p>
@@ -1304,9 +1304,11 @@ async function loadSoiree(){
     applySoiree(false,[]);
   }
 }
-setInterval(loadSoiree,60000);
-document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")loadSoiree();});
-loadSoiree();
+// Règle du PRD (budget Netlify) : /api/soiree n'est appelé que lorsque la page est visible à l'écran.
+const pageVisible=()=>document.visibilityState==="visible";
+setInterval(()=>{if(pageVisible())loadSoiree();},60000);
+document.addEventListener("visibilitychange",()=>{if(pageVisible())loadSoiree();});
+if(pageVisible())loadSoiree();
 
 /* ---------- Accès discret à l'espace propriétaire : appui long (1,5 s) sur le logo du pied de page ---------- */
 (function(){const l=document.querySelector("footer .logo");if(!l)return;let t=null;
@@ -1318,7 +1320,7 @@ loadSoiree();
 /* ---------- Démarrage ---------- */
 render(); observe();
 if(location.hash) fromHash();
-if("serviceWorker" in navigator && location.protocol==="https:"){
+if("serviceWorker" in navigator && (location.protocol==="https:"||location.hostname==="localhost")){
   // N-02 : quand une nouvelle version prend la main, la page se recharge une seule fois.
   let hadController=!!navigator.serviceWorker.controller;
   navigator.serviceWorker.addEventListener("controllerchange",()=>{

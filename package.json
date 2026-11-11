@@ -4,7 +4,9 @@
   "description": "Tests de bout en bout du PRD (section 10), lancés contre la production.",
   "scripts": {
     "build": "node site-src/build.js",
-    "test:prod": "playwright test --trace off"
+    "test:prod": "playwright test --trace off",
+    "test:local": "BASE_URL=http://localhost:8787 playwright test --trace off",
+    "serve:local": "node tests/local/server.mjs"
   },
   "devDependencies": {
     "@playwright/test": "1.63.0"
