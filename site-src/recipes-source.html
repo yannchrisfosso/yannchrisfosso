@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catalogue de cocktails</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Monde « bar de nuit » : encre bleu-vert, accent laiton. Grille de fiches illustrées, fiche détaillée en panneau. */
+  --bg:#10181d; --surface:#18232a; --surface-2:#203039; --ink:#eef2f0; --muted:#9fb0ad;
+  --accent:#e2a65a; --line:#2b3b44;
+  --display:"DM Serif Display", Georgia, "Times New Roman", serif;
+  --body:"Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
+button{font-family:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto;padding:20px 16px 60px}
+header h1{font-family:var(--display);font-weight:400;font-size:clamp(2rem,6vw,3.2rem);margin:6px 0 4px;text-wrap:balance;line-height:1.1}
+header p{color:var(--muted);margin:0 0 16px;max-width:62ch}
+.count{color:var(--accent);font-weight:700}
+details.guide{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin-bottom:16px}
+details.guide summary{cursor:pointer;font-weight:700}
+.guide-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px 22px;margin-top:10px;font-size:.93rem}
+.guide-grid b{color:var(--accent)}
+.controls{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0;display:flex;flex-direction:column;gap:8px;border-bottom:1px solid var(--line)}
+.search{width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1px solid var(--line);background:var(--surface);padding:6px 12px;border-radius:999px;font-size:.88rem;cursor:pointer;white-space:nowrap}
+.chip[aria-pressed="true"]{background:var(--accent);color:#1b1205;border-color:var(--accent);font-weight:700}
+.chips.tags .chip{font-size:.82rem;padding:5px 10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:12px;margin-top:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer;text-align:left;padding:0;display:flex;flex-direction:column;transition:transform .15s}
+.card:hover{transform:translateY(-2px)}
+.card .art{height:150px;display:flex;align-items:center;justify-content:center}
+.card .art svg{height:140px;width:auto}
+.card .info{padding:10px 12px 12px;display:flex;flex-direction:column;gap:3px}
+.card .name{font-family:var(--display);font-size:1.15rem;line-height:1.15}
+.card .meta{font-size:.78rem;color:var(--muted)}
+.dots{color:var(--accent);letter-spacing:1px}
+.empty{color:var(--muted);padding:30px 0;text-align:center}
+/* Fiche détaillée */
+.sheet-bg{position:fixed;inset:0;background:rgba(5,9,11,.72);z-index:20;display:none;align-items:flex-end;justify-content:center}
+.sheet-bg.open{display:flex}
+.sheet{background:var(--surface);width:100%;max-width:760px;max-height:94%;overflow-y:auto;border-radius:18px 18px 0 0;border:1px solid var(--line);border-bottom:none}
+@media(min-width:760px){.sheet-bg{align-items:center}.sheet{border-radius:18px;border-bottom:1px solid var(--line)}}
+.sheet-top{display:grid;grid-template-columns:150px 1fr;gap:14px;padding:18px 18px 8px;align-items:center}
+@media(max-width:420px){.sheet-top{grid-template-columns:110px 1fr}}
+.sheet-top svg{width:100%;height:auto}
+.sheet h2{font-family:var(--display);font-weight:400;font-size:1.9rem;margin:0;line-height:1.1;text-wrap:balance}
+.sheet .desc{color:var(--muted);margin:6px 0 0;font-size:.95rem}
+.facts{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.fact{background:var(--surface-2);border-radius:8px;padding:4px 9px;font-size:.8rem}
+.fact b{color:var(--accent);font-weight:600}
+.sec{padding:8px 18px}
+.sec h3{font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin:12px 0 8px}
+.portions{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:.88rem}
+.ing{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.ing li{display:flex;gap:12px;padding:9px 0;border-bottom:1px solid var(--line)}
+.ing .q{min-width:108px;font-weight:700;font-variant-numeric:tabular-nums}
+.ing .oz{color:var(--muted);font-weight:500;font-size:.82rem}
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.steps li button{display:flex;gap:12px;width:100%;text-align:left;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;cursor:pointer;font-size:.95rem;line-height:1.45}
+.steps .n{flex:none;width:26px;height:26px;border-radius:50%;border:1.5px solid var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;color:var(--accent)}
+.steps li.done button{opacity:.45}
+.steps li.done .n{background:var(--accent);color:#1b1205}
+.tip{background:rgba(226,166,90,.1);border-left:3px solid var(--accent);padding:10px 12px;border-radius:0 8px 8px 0;font-size:.93rem}
+.sheet-actions{display:flex;gap:8px;padding:14px 18px 22px;position:sticky;bottom:0;background:var(--surface);border-top:1px solid var(--line)}
+.btn{flex:1;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);font-weight:700;cursor:pointer}
+.btn.primary{background:var(--accent);color:#1b1205;border-color:var(--accent)}
+.fav-on{color:var(--accent)}
+@media (prefers-reduced-motion:reduce){.card{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Catalogue de cocktails</h1>
+  <p><span class="count" id="count"></span> recettes de bar, des grands classiques aux cocktails colorés et sans alcool. Touche une fiche pour voir les doses, les étapes à cocher et l'astuce de pro. Les doses s'ajustent au nombre de verres.</p>
+</header>
+
+<details class="guide">
+  <summary>Repères avant de commencer</summary>
+  <div class="guide-grid">
+    <div><b>Shaker.</b> Remplis-le aux ¾ de glace, ferme, secoue fort 12 à 15 secondes jusqu'à ce que le métal soit glacé. Pour tout cocktail avec du jus, des œufs ou de la crème.</div>
+    <div><b>Remué.</b> Dans un verre à mélange plein de glace, tourne la cuillère environ 30 secondes. Pour les cocktails qui n'ont que de l'alcool.</div>
+    <div><b>Construit.</b> Directement dans le verre de service, sur la glace, dans l'ordre de la recette.</div>
+    <div><b>Pilon.</b> Écrase doucement la menthe ou le basilic (presse, ne déchire pas). Pour la lime, écrase fort.</div>
+    <div><b>Dry shake.</b> Secouer sans glace 10 secondes pour monter le blanc d'œuf, puis secouer à nouveau avec glace.</div>
+    <div><b>Double filtrage.</b> Passoire Hawthorne + passoire fine en même temps : pas de pulpe ni d'éclats de glace.</div>
+    <div><b>Sirop simple.</b> 1 tasse de sucre + 1 tasse d'eau chaude, mélanger, refroidir. Se garde 2 semaines au frigo.</div>
+    <div><b>Doses.</b> 30 ml ≈ 1 oz. Un trait (« dash ») ≈ 1 ml. Presse les agrumes le jour même.</div>
+  </div>
+</details>
+
+<div class="controls">
+  <input class="search" id="q" type="search" placeholder="Chercher un cocktail ou un ingrédient (menthe, ananas, gin…)" aria-label="Chercher un cocktail">
+  <div class="chips" id="cats" role="group" aria-label="Alcool de base"></div>
+  <div class="chips tags" id="tags" role="group" aria-label="Style"></div>
+</div>
+
+<div class="grid" id="grid"></div>
+<div class="empty" id="empty" hidden>Aucun cocktail ne correspond. Essaie un autre mot ou retire un filtre.</div>
+</div>
+
+<div class="sheet-bg" id="sheetBg" role="dialog" aria-modal="true" aria-labelledby="sTitle">
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<script>
+const C = [
+/* ---------- WHISKY ---------- */
+{n:"Old Fashioned",b:"whisky",g:"rocks",c:["#d08a32","#8a4a12"],ice:"gros",gar:["twist-o","cherry"],m:"Remué",d:1,t:3,tags:["fort","classique"],
+desc:"Le roi des cocktails au whisky : bourbon, sucre, amer et zeste d'orange.",
+ing:[[60,"ml","Bourbon"],[7.5,"ml","Sirop simple (ou 1 cube de sucre)"],[2,"traits","Angostura bitters"],[1,"","Zeste d'orange"],[1,"","Cerise à cocktail (optionnel)"]],
+st:["Verse le sirop et l'Angostura dans le verre « rocks ».","Ajoute le bourbon puis un gros glaçon.","Remue 30 secondes avec la cuillère à mélange.","Presse le zeste d'orange au-dessus du verre (peau vers le verre), frotte le bord, puis dépose-le."],
+tip:"Un seul gros glaçon fond lentement : le cocktail reste fort et froid plus longtemps."},
+{n:"Whiskey Sour",b:"whisky",g:"rocks",c:["#f1d58a","#d9a94a"],ice:"cube",foam:1,gar:["cherry","lemon"],m:"Shaker",d:2,t:4,tags:["acidulé","classique","événement"],
+desc:"Bourbon, citron et sucre, avec une mousse soyeuse de blanc d'œuf.",
+ing:[[60,"ml","Bourbon"],[30,"ml","Jus de citron frais"],[22,"ml","Sirop simple"],[1,"","Blanc d'œuf (optionnel)"],[3,"gouttes","Angostura sur la mousse"]],
+st:["Mets tout sauf l'Angostura dans le shaker.","Dry shake : secoue 10 secondes sans glace.","Ajoute la glace et secoue fort 12 secondes.","Filtre sur glaçons frais dans un verre rocks.","Dépose 3 gouttes d'Angostura sur la mousse."],
+tip:"Sans œuf, c'est aussi bon. Pour un effet « wow », dessine un cœur dans les gouttes avec un cure-dent."},
+{n:"Manhattan",b:"whisky",g:"coupe",c:["#b8452a","#7a2414"],ice:"none",gar:["cherry"],m:"Remué",d:1,t:3,tags:["fort","classique"],
+desc:"Whisky rye et vermouth rouge, élégant et profond.",
+ing:[[60,"ml","Whisky rye (ou bourbon)"],[30,"ml","Vermouth rouge"],[2,"traits","Angostura bitters"],[1,"","Cerise à cocktail"]],
+st:["Mets un verre coupe au congélateur 10 minutes.","Remplis le verre à mélange de glace et ajoute tous les liquides.","Remue 30 secondes.","Filtre dans la coupe glacée et ajoute la cerise."],
+tip:"Garde ton vermouth au frigo une fois ouvert : il s'oxyde comme du vin."},
+{n:"Boulevardier",b:"whisky",g:"rocks",c:["#c2361f","#7a1a10"],ice:"gros",gar:["twist-o"],m:"Remué",d:1,t:3,tags:["fort","amer"],
+desc:"Le cousin du Negroni, avec du bourbon à la place du gin.",
+ing:[[45,"ml","Bourbon"],[30,"ml","Campari"],[30,"ml","Vermouth rouge"],[1,"","Zeste d'orange"]],
+st:["Verse les trois alcools dans un verre à mélange rempli de glace.","Remue 30 secondes.","Filtre sur un gros glaçon dans un verre rocks.","Exprime le zeste d'orange au-dessus et dépose-le."],
+tip:"Parfait pour les amateurs de whisky qui trouvent le Negroni trop sec."},
+{n:"Penicillin",b:"whisky",g:"rocks",c:["#e6c46a","#c18f2c"],ice:"gros",gar:["ginger"],m:"Shaker",d:3,t:6,tags:["épicé","moderne"],
+desc:"Scotch, citron, miel et gingembre, avec une touche fumée.",
+ing:[[60,"ml","Scotch blended"],[22,"ml","Jus de citron frais"],[22,"ml","Sirop miel-gingembre"],[7.5,"ml","Scotch tourbé (Laphroaig, Ardbeg)"]],
+st:["Sirop miel-gingembre : chauffe 1 tasse de miel, ½ tasse d'eau et 5 cm de gingembre râpé, filtre et refroidis.","Secoue le scotch blended, le citron et le sirop avec de la glace.","Filtre sur un gros glaçon.","Verse doucement le scotch tourbé sur le dos d'une cuillère pour qu'il flotte en surface."],
+tip:"Le scotch tourbé en surface donne l'odeur fumée dès la première gorgée."},
+{n:"Mint Julep",b:"whisky",g:"julep",c:["#e0b25a","#b07a28"],ice:"pilee",gar:["mint","straw"],m:"Pilon",d:2,t:4,tags:["menthe","fort"],
+desc:"Bourbon et menthe fraîche sur glace pilée, le classique du Kentucky.",
+ing:[[60,"ml","Bourbon"],[15,"ml","Sirop simple"],[8,"feuilles","Menthe fraîche"],[1,"bouquet","Menthe pour décorer"]],
+st:["Presse doucement la menthe avec le sirop dans le fond de la timbale.","Ajoute le bourbon et remplis de glace pilée.","Remue jusqu'à ce que la timbale soit givrée.","Complète avec un dôme de glace pilée et un gros bouquet de menthe tapé dans la main."],
+tip:"Tape le bouquet de menthe entre tes mains avant de le poser : il libère son parfum."},
+{n:"Irish Coffee",b:"whisky",g:"irish",c:["#e9dcc4","#3b1f12"],layers:[[0,"#efe4cf"],[.22,"#efe4cf"],[.24,"#4a2615"],[1,"#2a140a"]],ice:"none",gar:[],m:"Construit",d:2,t:5,tags:["chaud","crémeux"],
+desc:"Café chaud, whiskey irlandais, sucre brun et un chapeau de crème.",
+ing:[[40,"ml","Whiskey irlandais (Jameson)"],[15,"ml","Sirop de cassonade"],[120,"ml","Café filtre chaud"],[30,"ml","Crème 35 % légèrement fouettée"]],
+st:["Réchauffe le verre avec de l'eau chaude, puis vide-le.","Verse le sirop, le whiskey et le café chaud. Remue.","Fouette la crème juste assez pour qu'elle épaississe mais coule encore.","Verse la crème sur le dos d'une cuillère pour qu'elle flotte. Ne remue pas."],
+tip:"On boit le café chaud à travers la crème froide : c'est tout le plaisir."},
+{n:"Whisky Highball",b:"whisky",g:"highball",c:["#f0cf86","#d5a24b"],ice:"cube",bub:1,gar:["twist-l"],m:"Construit",d:1,t:2,tags:["facile","pétillant","événement"],
+desc:"Le plus simple et le plus rafraîchissant : whisky et eau gazeuse.",
+ing:[[50,"ml","Whisky (bourbon ou canadien)"],[150,"ml","Soda (eau gazeuse) bien froid"],[1,"","Zeste de citron"]],
+st:["Remplis un verre highball de glaçons.","Verse le whisky.","Complète doucement avec le soda le long de la cuillère.","Une seule petite remontée de cuillère, puis le zeste de citron."],
+tip:"Remue à peine pour garder les bulles. Idéal pour servir vite en événement."},
+/* ---------- RHUM ---------- */
+{n:"Mojito",b:"rhum",g:"highball",c:["#e3f2c8","#b9dd8c"],ice:"pilee",bub:1,gar:["mint","lime","straw"],m:"Pilon",d:2,t:4,tags:["menthe","fruité","événement","facile"],
+desc:"Rhum blanc, lime, menthe et eau gazeuse : la fraîcheur cubaine.",
+ing:[[50,"ml","Rhum blanc"],[25,"ml","Jus de lime frais"],[20,"ml","Sirop simple"],[10,"feuilles","Menthe fraîche"],[60,"ml","Soda (eau gazeuse)"]],
+st:["Dans le verre, presse doucement la menthe avec le sirop et le jus de lime.","Ajoute le rhum et remplis de glace pilée.","Remue de bas en haut pour remonter la menthe.","Complète avec le soda et décore d'une branche de menthe et d'une rondelle de lime."],
+tip:"Ne déchiquette pas la menthe : écrasée trop fort, elle devient amère."},
+{n:"Daiquiri",b:"rhum",g:"coupe",c:["#f4f1cf","#e5e0a6"],ice:"none",gar:["lime"],m:"Shaker",d:1,t:3,tags:["acidulé","classique"],
+desc:"Rhum, lime, sucre. Le test de tout bon barman.",
+ing:[[60,"ml","Rhum blanc"],[25,"ml","Jus de lime frais"],[15,"ml","Sirop simple"]],
+st:["Mets une coupe au congélateur.","Verse tout dans le shaker avec beaucoup de glace.","Secoue fort 12 secondes.","Double filtre dans la coupe glacée. Décore d'une rondelle de lime."],
+tip:"Goûte et ajuste : si c'est trop acide, +5 ml de sirop. C'est l'exercice parfait pour apprendre l'équilibre."},
+{n:"Daiquiri fraise",b:"rhum",g:"coupe",c:["#ff5a6e","#d7263d"],ice:"none",gar:["strawberry"],m:"Shaker",d:1,t:4,tags:["fruité","coloré","événement"],
+desc:"Le Daiquiri en version rouge vif aux fraises fraîches.",
+ing:[[50,"ml","Rhum blanc"],[25,"ml","Jus de lime frais"],[20,"ml","Sirop simple"],[5,"","Fraises fraîches"]],
+st:["Écrase les fraises au pilon dans le shaker.","Ajoute le rhum, la lime, le sirop et la glace.","Secoue fort 15 secondes.","Double filtre dans une coupe et pose une fraise entaillée sur le bord."],
+tip:"Version glacée : passe tout au mélangeur avec 1 tasse de glace."},
+{n:"Piña Colada",b:"rhum",g:"hurricane",c:["#fff6d8","#f6df9a"],ice:"none",gar:["pineapple","cherry","umbrella"],m:"Blender",d:1,t:4,tags:["fruité","crémeux","tropical","événement"],
+desc:"Rhum, ananas et coco : les vacances dans un verre.",
+ing:[[60,"ml","Rhum blanc ou ambré"],[90,"ml","Jus d'ananas"],[45,"ml","Crème de coco (Coco López)"],[15,"ml","Jus de lime (optionnel)"],[1,"tasse","Glace"]],
+st:["Mets tous les ingrédients dans le mélangeur.","Mixe 20 secondes jusqu'à texture lisse.","Verse dans un verre hurricane.","Décore d'un quartier d'ananas, d'une cerise et d'une ombrelle."],
+tip:"La « crème de coco » sucrée n'est pas du lait de coco. Prends Coco López ou équivalent."},
+{n:"Mai Tai",b:"rhum",g:"rocks",c:["#f0a64a","#b8621c"],ice:"pilee",gar:["mint","lime"],m:"Shaker",d:3,t:5,tags:["tropical","fort","fruité"],
+desc:"Le classique tiki : deux rhums, orange et amande.",
+ing:[[30,"ml","Rhum ambré jamaïcain"],[30,"ml","Rhum agricole ou ambré"],[15,"ml","Curaçao orange (ou Cointreau)"],[15,"ml","Sirop d'orgeat (amande)"],[25,"ml","Jus de lime frais"]],
+st:["Mets tout dans le shaker avec quelques glaçons.","Secoue brièvement 5 secondes.","Verse tout (sans filtrer) sur glace pilée dans un verre rocks.","Décore d'une demi-lime vidée et d'un bouquet de menthe."],
+tip:"La demi-lime posée à l'envers ressemble à une île, et la menthe à un palmier."},
+{n:"Dark 'n' Stormy",b:"rhum",g:"highball",c:["#e8c88a","#2d160a"],layers:[[0,"#3a1d0c"],[.3,"#6b3a16"],[.45,"#e2c07e"],[1,"#efd59b"]],ice:"cube",bub:1,gar:["lime"],m:"Construit",d:1,t:2,tags:["épicé","facile","coloré"],
+desc:"Rhum brun flottant sur la bière de gingembre, effet orage.",
+ing:[[120,"ml","Ginger beer"],[10,"ml","Jus de lime"],[60,"ml","Rhum brun (Gosling's)"]],
+st:["Remplis un highball de glaçons.","Verse la ginger beer et le jus de lime.","Verse le rhum lentement sur le dos d'une cuillère pour qu'il reste en haut.","Ajoute un quartier de lime."],
+tip:"Sers sans remuer : le dégradé fait tout l'effet."},
+{n:"Caïpirinha",b:"rhum",g:"rocks",c:["#eef5d6","#d3e6a2"],ice:"pilee",gar:["lime"],m:"Pilon",d:1,t:3,tags:["acidulé","facile"],
+desc:"Le cocktail national du Brésil : cachaça, lime et sucre.",
+ing:[[50,"ml","Cachaça"],[0.5,"lime","Lime coupée en quartiers"],[2,"c. à thé","Sucre"]],
+st:["Mets les quartiers de lime et le sucre dans le verre.","Écrase fort au pilon pour extraire jus et huiles.","Remplis de glace pilée et ajoute la cachaça.","Remue bien."],
+tip:"Sans cachaça, fais une Caïpiroska avec de la vodka."},
+/* ---------- VODKA ---------- */
+{n:"Moscow Mule",b:"vodka",g:"mug",c:["#efe2b8","#d9c486"],ice:"cube",bub:1,gar:["lime","mint"],m:"Construit",d:1,t:2,tags:["épicé","facile","événement"],
+desc:"Vodka, lime et ginger beer servis dans une tasse en cuivre.",
+ing:[[50,"ml","Vodka"],[15,"ml","Jus de lime frais"],[120,"ml","Ginger beer"]],
+st:["Remplis la tasse de glaçons.","Verse la vodka et le jus de lime.","Complète avec la ginger beer.","Remue une fois, ajoute une rondelle de lime et de la menthe."],
+tip:"Choisis une ginger beer bien piquante (Fever-Tree, Bundaberg), pas un ginger ale."},
+{n:"Cosmopolitan",b:"vodka",g:"martini",c:["#ff7a96","#e0335b"],ice:"none",gar:["twist-o"],m:"Shaker",d:1,t:3,tags:["fruité","coloré","événement"],
+desc:"Rose vif, fruité et acidulé, rendu célèbre par Sex and the City.",
+ing:[[45,"ml","Vodka citron"],[15,"ml","Cointreau"],[30,"ml","Jus de canneberge"],[15,"ml","Jus de lime frais"]],
+st:["Glace un verre à martini.","Secoue tout avec de la glace 12 secondes.","Double filtre dans le verre.","Flambe ou exprime un zeste d'orange au-dessus."],
+tip:"Exprimer le zeste au-dessus d'une flamme de briquet fait des étincelles : effet garanti en événement."},
+{n:"Espresso Martini",b:"vodka",g:"martini",c:["#5a3320","#2a140a"],ice:"none",foam:"#c89a6a",gar:["coffee"],m:"Shaker",d:2,t:4,tags:["café","événement","moderne"],
+desc:"Vodka, café et liqueur de café, avec une mousse crémeuse.",
+ing:[[50,"ml","Vodka"],[30,"ml","Liqueur de café (Kahlúa)"],[30,"ml","Espresso frais"],[10,"ml","Sirop simple (optionnel)"],[3,"grains","Grains de café"]],
+st:["Prépare un espresso et laisse-le tiédir 1 minute.","Mets tout dans le shaker avec beaucoup de glace.","Secoue TRÈS fort 15 secondes pour créer la mousse.","Double filtre dans un verre glacé et pose 3 grains de café."],
+tip:"Le secret de la mousse : un espresso frais et un shake énergique."},
+{n:"Pornstar Martini",b:"vodka",g:"coupe",c:["#ffd45e","#f0a21c"],ice:"none",foam:"#fff2c4",gar:["passion"],m:"Shaker",d:2,t:5,tags:["fruité","tropical","coloré","événement"],
+desc:"Vanille et fruit de la passion, servi avec un petit verre de prosecco.",
+ing:[[40,"ml","Vodka vanille"],[15,"ml","Liqueur de passion (Passoa)"],[30,"ml","Purée de fruit de la passion"],[15,"ml","Jus de lime"],[15,"ml","Sirop de vanille"],[60,"ml","Prosecco (à côté)"]],
+st:["Secoue tout sauf le prosecco avec de la glace.","Double filtre dans une coupe.","Pose un demi fruit de la passion sur la mousse.","Sers le prosecco dans un petit verre à côté."],
+tip:"Le prosecco se boit en alternance ou se verse dans le cocktail, au choix de l'invité."},
+{n:"Sex on the Beach",b:"vodka",g:"highball",c:["#ffb347","#e23a3a"],layers:[[0,"#ffb347"],[.55,"#ff8a3d"],[1,"#d42b3c"]],ice:"cube",gar:["orange","straw"],m:"Construit",d:1,t:2,tags:["fruité","coloré","facile","événement"],
+desc:"Pêche, orange et canneberge, en dégradé orange-rouge.",
+ing:[[40,"ml","Vodka"],[20,"ml","Schnapps à la pêche"],[40,"ml","Jus d'orange"],[40,"ml","Jus de canneberge"]],
+st:["Remplis un highball de glaçons.","Verse la vodka, le schnapps et le jus d'orange. Remue.","Verse le jus de canneberge en dernier, doucement.","Décore d'une tranche d'orange."],
+tip:"Verse la canneberge lentement pour garder le dégradé coucher de soleil."},
+{n:"Bloody Mary",b:"vodka",g:"highball",c:["#d33a2c","#a3221a"],ice:"cube",gar:["celery","lemon"],m:"Construit",d:2,t:4,tags:["épicé","brunch"],
+desc:"Vodka et tomate relevée, le classique du brunch.",
+ing:[[45,"ml","Vodka"],[90,"ml","Jus de tomate"],[15,"ml","Jus de citron"],[2,"traits","Sauce Worcestershire"],[2,"traits","Tabasco"],[1,"pincée","Sel de céleri et poivre"]],
+st:["Mets tous les ingrédients dans le shaker avec de la glace.","Fais rouler : verse doucement d'une partie du shaker à l'autre 4 à 5 fois (ne secoue pas).","Verse sur glace dans un highball.","Décore d'une branche de céleri et d'un quartier de citron."],
+tip:"Au Québec, le Caesar remplace le jus de tomate par du Clamato, avec un bord de sel de céleri."},
+{n:"Blue Lagoon",b:"vodka",g:"highball",c:["#3fc6ff","#0f74d6"],ice:"cube",bub:1,gar:["lemon","cherry","straw"],m:"Construit",d:1,t:2,tags:["coloré","fruité","facile","événement"],
+desc:"Bleu électrique, frais et citronné.",
+ing:[[40,"ml","Vodka"],[20,"ml","Curaçao bleu"],[120,"ml","Limonade (ou Sprite)"]],
+st:["Remplis un highball de glaçons.","Verse la vodka et le curaçao bleu.","Complète avec la limonade et remue doucement.","Décore d'une rondelle de citron et d'une cerise."],
+tip:"Le curaçao bleu donne la couleur : c'est l'ingrédient vedette des cocktails « Instagram »."},
+{n:"Lemon Drop",b:"vodka",g:"martini",c:["#fff3a0","#f2dc4c"],rim:"sucre",ice:"none",gar:["lemon"],m:"Shaker",d:1,t:3,tags:["acidulé","coloré"],
+desc:"Comme un bonbon au citron, avec un bord sucré.",
+ing:[[45,"ml","Vodka"],[15,"ml","Triple sec"],[30,"ml","Jus de citron frais"],[15,"ml","Sirop simple"],[1,"","Sucre pour le bord"]],
+st:["Passe un quartier de citron sur le bord du verre et trempe-le dans le sucre.","Secoue tous les liquides avec de la glace.","Filtre dans le verre.","Pose une rondelle de citron."],
+tip:"Ne sucre que l'extérieur du bord : le sucre ne tombe pas dans le cocktail."},
+{n:"White Russian",b:"vodka",g:"rocks",c:["#e8d8c0","#6b3d22"],layers:[[0,"#efe3d0"],[.45,"#c9a27c"],[1,"#5a2f17"]],ice:"cube",gar:[],m:"Construit",d:1,t:2,tags:["crémeux","café","facile"],
+desc:"Vodka, liqueur de café et crème, doux comme un dessert.",
+ing:[[50,"ml","Vodka"],[20,"ml","Liqueur de café"],[30,"ml","Crème 10 % ou 15 %"]],
+st:["Remplis un verre rocks de glaçons.","Verse la vodka et la liqueur de café.","Verse la crème doucement sur le dessus.","Sers ainsi : chacun remue à son goût."],
+tip:"Sans crème, c'est un Black Russian."},
+/* ---------- GIN ---------- */
+{n:"Gin Tonic",b:"gin",g:"wine",c:["#eef8f6","#d7efe9"],ice:"cube",bub:1,gar:["lime","cucumber"],m:"Construit",d:1,t:2,tags:["facile","pétillant","événement"],
+desc:"Le grand classique, servi à l'espagnole dans un verre ballon.",
+ing:[[50,"ml","Gin"],[150,"ml","Tonic bien froid"],[1,"","Rondelle de lime ou concombre"]],
+st:["Remplis un verre ballon de glaçons.","Verse le gin.","Verse le tonic le long de la cuillère pour garder les bulles.","Ajoute la garniture : lime, concombre ou romarin."],
+tip:"La garniture suit le gin : concombre pour un gin floral, agrumes pour un gin classique."},
+{n:"Negroni",b:"gin",g:"rocks",c:["#d8301f","#8e1810"],ice:"gros",gar:["orange"],m:"Remué",d:1,t:2,tags:["amer","fort","classique"],
+desc:"Gin, Campari et vermouth rouge en parts égales.",
+ing:[[30,"ml","Gin"],[30,"ml","Campari"],[30,"ml","Vermouth rouge"],[1,"","Tranche ou zeste d'orange"]],
+st:["Verse les trois alcools dans un verre à mélange rempli de glace.","Remue 30 secondes.","Filtre sur un gros glaçon dans un verre rocks.","Ajoute une demi-tranche d'orange."],
+tip:"Facile à retenir : 1-1-1. Excellent pour préparer en grande bouteille à l'avance."},
+{n:"Tom Collins",b:"gin",g:"highball",c:["#f6f6dc","#e9e7b8"],ice:"cube",bub:1,gar:["lemon","cherry"],m:"Shaker",d:1,t:3,tags:["acidulé","pétillant","facile"],
+desc:"Une limonade pétillante au gin.",
+ing:[[50,"ml","Gin"],[25,"ml","Jus de citron frais"],[15,"ml","Sirop simple"],[60,"ml","Soda (eau gazeuse)"]],
+st:["Secoue le gin, le citron et le sirop avec de la glace.","Filtre dans un highball plein de glaçons.","Complète avec le soda.","Décore d'une rondelle de citron et d'une cerise."],
+tip:"Remplace le gin par du bourbon et tu as un John Collins."},
+{n:"Bramble",b:"gin",g:"rocks",c:["#f3e7ea","#6a1e4f"],layers:[[0,"#5e1747"],[.3,"#9b3a76"],[.5,"#efdfe6"],[1,"#f5ecef"]],ice:"pilee",gar:["berry","lemon"],m:"Shaker",d:2,t:4,tags:["fruité","coloré"],
+desc:"Gin citronné sur glace pilée, avec un filet de liqueur de mûre qui coule.",
+ing:[[50,"ml","Gin"],[25,"ml","Jus de citron frais"],[15,"ml","Sirop simple"],[15,"ml","Crème de mûre"]],
+st:["Secoue le gin, le citron et le sirop avec de la glace.","Filtre sur glace pilée tassée dans un verre rocks.","Verse la crème de mûre en filet sur le dessus : elle descend en rubans violets.","Décore de mûres et d'un zeste de citron."],
+tip:"Le filet violet qui coule dans la glace, c'est le moment à filmer."},
+{n:"Gin Basil Smash",b:"gin",g:"rocks",c:["#a7e07a","#5fae3a"],ice:"cube",gar:["basil"],m:"Pilon",d:2,t:4,tags:["vert","coloré","herbes"],
+desc:"Vert éclatant, herbacé et citronné.",
+ing:[[60,"ml","Gin"],[25,"ml","Jus de citron frais"],[20,"ml","Sirop simple"],[10,"feuilles","Basilic frais"]],
+st:["Écrase le basilic avec le citron dans le shaker.","Ajoute le gin, le sirop et la glace.","Secoue fort 15 secondes.","Double filtre sur glaçons et décore d'une feuille de basilic."],
+tip:"Le double filtrage est obligatoire ici, sinon il y a des bouts de feuilles dans le verre."},
+{n:"French 75",b:"gin",g:"flute",c:["#f7ecb6","#e7d27a"],ice:"none",bub:1,gar:["twist-l"],m:"Shaker",d:2,t:3,tags:["pétillant","chic","événement"],
+desc:"Gin, citron et champagne : chic pour les mariages et les galas.",
+ing:[[30,"ml","Gin"],[15,"ml","Jus de citron frais"],[15,"ml","Sirop simple"],[75,"ml","Champagne ou mousseux"]],
+st:["Secoue le gin, le citron et le sirop avec de la glace.","Filtre dans une flûte.","Complète doucement avec le mousseux.","Décore d'un long zeste de citron en spirale."],
+tip:"Un mousseux sec (brut) suffit : pas besoin d'un champagne cher."},
+{n:"Aviation",b:"gin",g:"coupe",c:["#d9cdf4","#b6a3e6"],ice:"none",gar:["cherry"],m:"Shaker",d:3,t:3,tags:["coloré","floral","classique"],
+desc:"Un classique couleur lavande, floral et acidulé.",
+ing:[[45,"ml","Gin"],[15,"ml","Liqueur de marasquin"],[7.5,"ml","Crème de violette"],[20,"ml","Jus de citron frais"]],
+st:["Glace une coupe.","Secoue tout avec de la glace 12 secondes.","Double filtre dans la coupe.","Dépose une cerise au fond du verre."],
+tip:"Dose la violette avec précision : trop, et ça goûte le savon."},
+{n:"Clover Club",b:"gin",g:"coupe",c:["#ff9db0","#e2577a"],foam:"#ffe3ea",ice:"none",gar:["raspberry"],m:"Shaker",d:2,t:5,tags:["fruité","coloré","classique"],
+desc:"Rose framboise avec une mousse veloutée.",
+ing:[[45,"ml","Gin"],[15,"ml","Jus de citron frais"],[15,"ml","Sirop simple"],[4,"","Framboises fraîches"],[1,"","Blanc d'œuf"]],
+st:["Écrase les framboises dans le shaker.","Ajoute le reste et dry shake 10 secondes sans glace.","Ajoute la glace et secoue de nouveau 12 secondes.","Double filtre dans une coupe et pique 3 framboises sur un pic."],
+tip:"Le dry shake fait une mousse rose épaisse et stable."},
+{n:"Dry Martini",b:"gin",g:"martini",c:["#f2f6f2","#e1e9e2"],ice:"none",gar:["olive"],m:"Remué",d:2,t:3,tags:["fort","classique","chic"],
+desc:"Le cocktail de James Bond : gin et un soupçon de vermouth.",
+ing:[[60,"ml","Gin"],[15,"ml","Vermouth dry"],[1,"trait","Orange bitters (optionnel)"],[1,"","Olive ou zeste de citron"]],
+st:["Glace bien le verre à martini.","Remue le gin et le vermouth sur glace 30 secondes.","Filtre dans le verre glacé.","Ajoute une olive sur un pic, ou exprime un zeste de citron."],
+tip:"Remué, pas secoué : le martini reste limpide et soyeux."},
+/* ---------- TEQUILA ---------- */
+{n:"Margarita",b:"tequila",g:"coupe",c:["#f2f3c4","#d8e08a"],rim:"sel",ice:"none",gar:["lime"],m:"Shaker",d:1,t:3,tags:["acidulé","classique","événement"],
+desc:"Tequila, Cointreau et lime, avec un bord de sel.",
+ing:[[50,"ml","Tequila 100 % agave"],[20,"ml","Cointreau"],[25,"ml","Jus de lime frais"],[5,"ml","Sirop d'agave (optionnel)"],[1,"","Sel pour le bord"]],
+st:["Passe la lime sur la moitié du bord et trempe-le dans le sel.","Secoue tous les liquides avec de la glace 12 secondes.","Filtre dans la coupe (ou sur glace dans un verre rocks).","Ajoute une rondelle de lime."],
+tip:"Ne sale que la moitié du bord : l'invité choisit son côté."},
+{n:"Margarita mangue glacée",b:"tequila",g:"hurricane",c:["#ffc04a","#f08a1c"],rim:"tajin",ice:"none",gar:["lime","straw"],m:"Blender",d:1,t:4,tags:["fruité","coloré","tropical","événement"],
+desc:"Version frappée et orange vif à la mangue.",
+ing:[[50,"ml","Tequila"],[20,"ml","Cointreau"],[25,"ml","Jus de lime"],[100,"g","Mangue congelée"],[15,"ml","Sirop d'agave"],[1,"tasse","Glace"]],
+st:["Fais un bord de Tajín (ou sucre + piment) sur le verre.","Mets tout dans le mélangeur.","Mixe jusqu'à texture de sorbet.","Verse et décore d'une rondelle de lime."],
+tip:"Mangue congelée = moins de glace, donc plus de goût."},
+{n:"Paloma",b:"tequila",g:"highball",c:["#ffc9c2","#f69a92"],rim:"sel",ice:"cube",bub:1,gar:["grapefruit"],m:"Construit",d:1,t:2,tags:["fruité","pétillant","facile"],
+desc:"Le cocktail préféré du Mexique : tequila et pamplemousse.",
+ing:[[50,"ml","Tequila"],[15,"ml","Jus de lime"],[120,"ml","Soda pamplemousse (Jarritos, Fresca)"],[1,"pincée","Sel"]],
+st:["Sale le bord d'un verre highball (optionnel).","Remplis de glace, verse la tequila, la lime et une pincée de sel.","Complète avec le soda pamplemousse.","Remue une fois et ajoute un quartier de pamplemousse."],
+tip:"Sans soda : 60 ml de jus de pamplemousse rose + 60 ml d'eau gazeuse + 10 ml d'agave."},
+{n:"Tequila Sunrise",b:"tequila",g:"highball",c:["#ffb02e","#d01c2c"],layers:[[0,"#ffc23d"],[.5,"#ff8f2a"],[.8,"#e7432f"],[1,"#b9152a"]],ice:"cube",gar:["orange","cherry"],m:"Construit",d:1,t:2,tags:["fruité","coloré","facile","événement"],
+desc:"Un lever de soleil : orange en haut, rouge grenadine en bas.",
+ing:[[45,"ml","Tequila"],[90,"ml","Jus d'orange"],[15,"ml","Grenadine"]],
+st:["Remplis un highball de glaçons.","Verse la tequila et le jus d'orange. Remue.","Verse la grenadine lentement le long du verre : elle coule au fond.","Ne remue plus. Décore d'une tranche d'orange et d'une cerise."],
+tip:"La grenadine est plus lourde : elle descend toute seule et crée le dégradé."},
+{n:"Margarita épicée",b:"tequila",g:"rocks",c:["#e4f0b0","#b8d36a"],rim:"tajin",ice:"cube",gar:["jalapeno","lime"],m:"Pilon",d:2,t:4,tags:["épicé","acidulé"],
+desc:"La Margarita relevée au jalapeño.",
+ing:[[50,"ml","Tequila"],[25,"ml","Jus de lime"],[20,"ml","Sirop d'agave"],[2,"rondelles","Jalapeño"]],
+st:["Fais un bord de Tajín sur un verre rocks.","Écrase légèrement le jalapeño dans le shaker.","Ajoute le reste, la glace, et secoue 12 secondes.","Double filtre sur glace et pose une rondelle de jalapeño."],
+tip:"Retire les pépins du jalapeño pour un piquant plus doux."},
+/* ---------- BULLES / APÉRITIFS ---------- */
+{n:"Aperol Spritz",b:"bulles",g:"wine",c:["#ff8a2b","#f2601a"],ice:"cube",bub:1,gar:["orange"],m:"Construit",d:1,t:2,tags:["pétillant","coloré","facile","événement"],
+desc:"L'apéritif orange de l'Italie, léger et pétillant.",
+ing:[[90,"ml","Prosecco"],[60,"ml","Aperol"],[30,"ml","Soda (eau gazeuse)"]],
+st:["Remplis un verre à vin de glaçons.","Verse le prosecco, puis l'Aperol.","Complète avec le soda.","Remue doucement et ajoute une tranche d'orange."],
+tip:"La règle 3-2-1 : 3 parts de prosecco, 2 d'Aperol, 1 de soda."},
+{n:"Hugo Spritz",b:"bulles",g:"wine",c:["#f3f8e4","#e2edc0"],ice:"cube",bub:1,gar:["mint","lime"],m:"Construit",d:1,t:2,tags:["pétillant","menthe","floral","événement"],
+desc:"Sureau, menthe et prosecco : frais et floral.",
+ing:[[20,"ml","Liqueur de sureau (St-Germain)"],[6,"feuilles","Menthe"],[90,"ml","Prosecco"],[30,"ml","Soda"]],
+st:["Tape la menthe entre tes mains et mets-la dans un verre à vin.","Ajoute la glace et la liqueur de sureau.","Verse le prosecco puis le soda.","Remue doucement et ajoute une rondelle de lime."],
+tip:"Une alternative plus légère et moins amère que l'Aperol Spritz."},
+{n:"Kir Royal",b:"bulles",g:"flute",c:["#d44d7e","#8e1b4c"],ice:"none",bub:1,gar:["raspberry"],m:"Construit",d:1,t:1,tags:["pétillant","chic","facile"],
+desc:"Crème de cassis et champagne, simple et élégant.",
+ing:[[15,"ml","Crème de cassis"],[120,"ml","Champagne ou mousseux"]],
+st:["Verse la crème de cassis au fond d'une flûte.","Complète doucement avec le mousseux bien froid.","Ajoute une framboise."],
+tip:"Avec du vin blanc à la place du champagne, c'est un Kir classique."},
+{n:"Bellini",b:"bulles",g:"flute",c:["#ffd2a6","#f8b07a"],ice:"none",bub:1,gar:[],m:"Construit",d:1,t:2,tags:["pétillant","fruité","brunch"],
+desc:"Purée de pêche et prosecco, né à Venise.",
+ing:[[50,"ml","Purée de pêche blanche"],[100,"ml","Prosecco"]],
+st:["Verse la purée de pêche bien froide dans une flûte.","Ajoute le prosecco lentement en inclinant le verre.","Remue une fois très doucement."],
+tip:"Purée maison : mixe des pêches pelées avec un peu de citron et de sucre."},
+/* ---------- CRÉMEUX / DESSERT ---------- */
+{n:"Grasshopper",b:"creme",g:"coupe",c:["#b6efb0","#6fcf73"],ice:"none",gar:["choco"],m:"Shaker",d:1,t:3,tags:["menthe","crémeux","coloré"],
+desc:"Vert menthe et chocolat, comme un After Eight liquide.",
+ing:[[30,"ml","Crème de menthe verte"],[30,"ml","Crème de cacao blanche"],[30,"ml","Crème 35 %"]],
+st:["Mets tout dans le shaker avec de la glace.","Secoue fort 15 secondes.","Filtre dans une coupe.","Râpe un peu de chocolat noir sur le dessus."],
+tip:"Parfait pour finir une soirée, en version dessert."},
+{n:"Blue Hawaiian",b:"creme",g:"hurricane",c:["#5fd3ff","#1a8ad6"],ice:"none",gar:["pineapple","cherry","umbrella"],m:"Blender",d:1,t:4,tags:["tropical","coloré","crémeux","événement"],
+desc:"Une Piña Colada bleu lagon.",
+ing:[[30,"ml","Rhum blanc"],[30,"ml","Curaçao bleu"],[60,"ml","Jus d'ananas"],[30,"ml","Crème de coco"],[1,"tasse","Glace"]],
+st:["Mets tout dans le mélangeur.","Mixe jusqu'à texture lisse.","Verse dans un verre hurricane.","Décore d'ananas, de cerise et d'une ombrelle."],
+tip:"Le cocktail le plus photographié en événement tropical."},
+/* ---------- SHOTS ---------- */
+{n:"B-52",b:"shot",g:"shot",c:["#e0904a","#3a1d0c"],layers:[[0,"#e48b3c"],[.33,"#e48b3c"],[.34,"#e9d6bb"],[.66,"#e9d6bb"],[.67,"#3a1d0c"],[1,"#3a1d0c"]],ice:"none",gar:[],m:"Superposé",d:3,t:3,tags:["coloré","fort"],
+desc:"Trois couches parfaites : café, crème irlandaise, orange.",
+ing:[[15,"ml","Liqueur de café (Kahlúa)"],[15,"ml","Crème irlandaise (Baileys)"],[15,"ml","Grand Marnier"]],
+st:["Verse la liqueur de café au fond du verre à shot.","Pose la cuillère à l'envers contre la paroi, juste au-dessus du liquide.","Verse le Baileys très lentement sur la cuillère.","Fais pareil avec le Grand Marnier."],
+tip:"Le dos de la cuillère casse la chute du liquide : c'est la technique de toutes les superpositions."},
+{n:"Baby Guinness",b:"shot",g:"shot",c:["#2a140a","#1a0b05"],layers:[[0,"#f1e6d2"],[.25,"#f1e6d2"],[.27,"#2a140a"],[1,"#1a0b05"]],ice:"none",gar:[],m:"Superposé",d:2,t:2,tags:["café","fun"],
+desc:"Un mini verre de bière noire… qui n'en est pas une.",
+ing:[[25,"ml","Liqueur de café"],[10,"ml","Crème irlandaise (Baileys)"]],
+st:["Verse la liqueur de café dans le verre à shot.","Verse le Baileys très lentement sur le dos d'une cuillère pour faire la « mousse »."],
+tip:"Fais-en un plateau entier : effet garanti au moment des toasts."},
+/* ---------- SANS ALCOOL ---------- */
+{n:"Foléré Fizz",b:"sans",g:"highball",c:["#c3203f","#7a0c25"],ice:"cube",bub:1,gar:["mint","lime","straw"],m:"Construit",d:1,t:5,tags:["fruité","coloré","signature","événement"],
+desc:"Signature à l'hibiscus (foléré / bissap), gingembre et lime. Rouge profond.",
+ing:[[90,"ml","Infusion de foléré froide"],[20,"ml","Sirop de gingembre (ou simple)"],[15,"ml","Jus de lime"],[60,"ml","Soda (eau gazeuse)"],[45,"ml","Version alcoolisée : gin ou rhum (optionnel)"]],
+st:["Infusion : 30 g de fleurs séchées dans 1 L d'eau bouillante, 15 minutes. Filtre et refroidis.","Remplis un highball de glaçons.","Verse l'infusion, le sirop et la lime (et le gin ou le rhum si tu veux).","Complète avec le soda et décore de menthe et de lime."],
+tip:"Prépare 2 L d'infusion à l'avance : tu sers 20 verres en quelques minutes. Une saveur qu'on ne trouve pas chez les autres barmans."},
+{n:"Virgin Mojito",b:"sans",g:"highball",c:["#e9f6d6","#c4e4a0"],ice:"pilee",bub:1,gar:["mint","lime","straw"],m:"Pilon",d:1,t:3,tags:["menthe","facile","événement"],
+desc:"Toute la fraîcheur du Mojito, sans alcool.",
+ing:[[30,"ml","Jus de lime"],[20,"ml","Sirop simple"],[10,"feuilles","Menthe"],[150,"ml","Soda ou Sprite"]],
+st:["Presse doucement la menthe avec le sirop et la lime dans le verre.","Remplis de glace pilée.","Complète avec le soda.","Remue de bas en haut, décore de menthe et de lime."],
+tip:"Avec du Sprite à la place du soda, il plaît beaucoup aux enfants."},
+{n:"Shirley Temple",b:"sans",g:"highball",c:["#ffb3b8","#ef4a5c"],layers:[[0,"#ffd7d0"],[.6,"#ff8a90"],[1,"#d8233c"]],ice:"cube",bub:1,gar:["cherry","straw"],m:"Construit",d:1,t:1,tags:["coloré","facile","enfants"],
+desc:"Ginger ale et grenadine, le mocktail rose le plus connu.",
+ing:[[150,"ml","Ginger ale"],[15,"ml","Grenadine"],[1,"","Cerise"]],
+st:["Remplis un highball de glaçons.","Verse le ginger ale.","Ajoute la grenadine : elle coule au fond.","Décore de deux cerises."],
+tip:"Version adulte : ajoute 45 ml de vodka et ça devient un Dirty Shirley."},
+{n:"Virgin Piña Colada",b:"sans",g:"hurricane",c:["#fff8de","#f7e3a5"],ice:"none",gar:["pineapple","cherry","umbrella"],m:"Blender",d:1,t:3,tags:["tropical","crémeux","fruité"],
+desc:"Ananas et coco frappés, sans alcool.",
+ing:[[120,"ml","Jus d'ananas"],[60,"ml","Crème de coco"],[15,"ml","Jus de lime"],[1,"tasse","Glace"]],
+st:["Mets tout dans le mélangeur.","Mixe jusqu'à texture lisse.","Verse dans un verre hurricane et décore."],
+tip:"Ajoute une banane congelée pour plus de texture."},
+{n:"Sunset sans alcool",b:"sans",g:"highball",c:["#ffbf3a","#d6243b"],layers:[[0,"#ffcf4a"],[.55,"#ff9a3a"],[.85,"#e8423b"],[1,"#b8162d"]],ice:"cube",gar:["orange","straw"],m:"Construit",d:1,t:2,tags:["fruité","coloré","facile","enfants"],
+desc:"Orange, ananas et grenadine en dégradé coucher de soleil.",
+ing:[[90,"ml","Jus d'orange"],[60,"ml","Jus d'ananas"],[15,"ml","Grenadine"]],
+st:["Remplis un highball de glaçons.","Verse les jus d'orange et d'ananas, remue.","Verse la grenadine doucement le long du verre.","Décore d'une tranche d'orange."],
+tip:"La version sans alcool du Tequila Sunrise : aussi belle en photo."},
+{n:"Limonade framboise-basilic",b:"sans",g:"highball",c:["#ffc2d1","#f1708f"],ice:"cube",bub:1,gar:["raspberry","basil"],m:"Pilon",d:1,t:3,tags:["fruité","coloré","herbes"],
+desc:"Rose, pétillante et parfumée au basilic.",
+ing:[[6,"","Framboises"],[4,"feuilles","Basilic"],[30,"ml","Jus de citron"],[20,"ml","Sirop simple"],[120,"ml","Soda"]],
+st:["Écrase les framboises et le basilic avec le sirop.","Ajoute le citron et la glace, secoue 10 secondes.","Filtre sur glace dans un highball.","Complète avec le soda et décore."],
+tip:"Prépare-la en grand pichet pour un bar sans alcool en événement."}
+];
+
+/* ---------- Illustrations ---------- */
+const G = {
+  rocks:{p:"M24 62 L96 62 L91 140 Q90 146 84 146 L36 146 Q30 146 29 140 Z",top:76,rimL:24,rimR:96,rimY:62},
+  highball:{p:"M34 28 L86 28 L83 146 L37 146 Z",top:44,rimL:34,rimR:86,rimY:28},
+  coupe:{p:"M14 46 L106 46 Q102 86 60 89 Q18 86 14 46 Z",top:53,rimL:14,rimR:106,rimY:46,stem:[89,136]},
+  martini:{p:"M12 38 L108 38 L60 92 Z",top:46,rimL:12,rimR:108,rimY:38,stem:[92,136]},
+  flute:{p:"M44 18 L76 18 Q78 82 60 96 Q42 82 44 18 Z",top:32,rimL:44,rimR:76,rimY:18,stem:[96,136]},
+  wine:{p:"M28 30 L92 30 Q96 98 60 102 Q24 98 28 30 Z",top:56,rimL:28,rimR:92,rimY:30,stem:[102,136]},
+  hurricane:{p:"M36 22 L84 22 Q92 56 76 82 Q92 112 80 136 L40 136 Q28 112 44 82 Q28 56 36 22 Z",top:38,rimL:36,rimR:84,rimY:22,foot:1},
+  irish:{p:"M32 34 L88 34 L82 112 Q81 116 76 116 L44 116 Q39 116 38 112 Z",top:42,rimL:32,rimR:88,rimY:34,stem:[116,136],handle:1},
+  shot:{p:"M40 86 L80 86 L76 146 L44 146 Z",top:92,rimL:40,rimR:80,rimY:86},
+  mug:{metal:"#c8743c",metal2:"#e3a06c",rimL:28,rimR:88,rimY:52,top:56,handle:1},
+  julep:{metal:"#b9c2c6",metal2:"#e6ecee",rimL:30,rimR:90,rimY:50,top:54}
+};
+let uid=0;
+function art(c){
+  const id="g"+(uid++); const gl=G[c.g]; let s=`<svg viewBox="0 0 120 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${c.n}"><defs>`;
+  const stops=c.layers?c.layers.map(l=>`<stop offset="${l[0]}" stop-color="${l[1]}"/>`).join(""):`<stop offset="0" stop-color="${c.c[0]}"/><stop offset="1" stop-color="${c.c[1]}"/>`;
+  s+=`<linearGradient id="${id}l" x1="0" y1="0" x2="0" y2="1">${stops}</linearGradient>`;
+  s+=`<radialGradient id="${id}h" cx=".5" cy=".6" r=".55"><stop offset="0" stop-color="${c.c[0]}" stop-opacity=".35"/><stop offset="1" stop-color="${c.c[0]}" stop-opacity="0"/></radialGradient>`;
+  if(gl.p) s+=`<clipPath id="${id}c"><path d="${gl.p}"/></clipPath>`;
+  s+=`</defs><ellipse cx="60" cy="96" rx="58" ry="62" fill="url(#${id}h)"/>`;
+  // garnitures derrière le verre
+  s+=garnish(c,gl,"back");
+  if(gl.metal){
+    s+=`<ellipse cx="60" cy="${gl.rimY+2}" rx="${(gl.rimR-gl.rimL)/2-2}" ry="5" fill="url(#${id}l)"/>`;
+    if(c.ice==="pilee"||c.ice==="cube") for(let i=0;i<5;i++) s+=`<rect x="${38+i*9}" y="${gl.rimY-4+(i%2)*3}" width="9" height="7" rx="2" fill="#fff" opacity=".55"/>`;
+    s+=`<path d="M${gl.rimL} ${gl.rimY} L${gl.rimR} ${gl.rimY} L${gl.rimR-4} 146 L${gl.rimL+4} 146 Z" fill="${gl.metal}"/>`;
+    s+=`<path d="M${gl.rimL+8} ${gl.rimY+6} L${gl.rimL+12} 140" stroke="${gl.metal2}" stroke-width="5" opacity=".7" stroke-linecap="round"/>`;
+    s+=`<ellipse cx="60" cy="${gl.rimY}" rx="${(gl.rimR-gl.rimL)/2}" ry="5" fill="none" stroke="${gl.metal2}" stroke-width="2"/>`;
+    if(gl.handle) s+=`<path d="M${gl.rimR-2} 70 Q${gl.rimR+20} 72 ${gl.rimR+18} 98 Q${gl.rimR+16} 122 ${gl.rimR-4} 124" fill="none" stroke="${gl.metal}" stroke-width="7"/>`;
+    if(c.g==="julep") for(let i=0;i<14;i++) s+=`<circle cx="${36+(i*7)%48}" cy="${66+(i*13)%70}" r="1.6" fill="#fff" opacity=".6"/>`;
+  } else {
+    if(gl.stem){ s+=`<line x1="60" y1="${gl.stem[0]}" x2="60" y2="${gl.stem[1]}" stroke="rgba(255,255,255,.55)" stroke-width="3"/><ellipse cx="60" cy="${gl.stem[1]+2}" rx="24" ry="4" fill="rgba(255,255,255,.12)" stroke="rgba(255,255,255,.55)" stroke-width="2"/>`; }
+    if(gl.foot) s+=`<ellipse cx="60" cy="140" rx="26" ry="5" fill="rgba(255,255,255,.12)" stroke="rgba(255,255,255,.55)" stroke-width="2"/>`;
+    if(gl.handle) s+=`<path d="M87 48 Q108 52 104 76 Q101 96 84 98" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="3"/>`;
+    s+=`<g clip-path="url(#${id}c)"><rect x="0" y="${gl.top}" width="120" height="${160-gl.top}" fill="url(#${id}l)"/>`;
+    if(c.foam){ s+=`<rect x="0" y="${gl.top}" width="120" height="7" fill="${typeof c.foam==="string"?c.foam:"#fbf6e8"}"/>`; }
+    if(c.ice==="cube"||c.ice==="gros"||c.ice==="pilee"){
+      if(c.ice==="gros") s+=`<rect x="${(gl.rimL+gl.rimR)/2-20}" y="${gl.top+8}" width="40" height="38" rx="6" fill="#fff" opacity=".28" stroke="#fff" stroke-opacity=".5"/>`;
+      else { const n=c.ice==="pilee"?16:6, w=c.ice==="pilee"?9:17; for(let i=0;i<n;i++){ const x=gl.rimL+6+((i*23)%(gl.rimR-gl.rimL-14)), y=gl.top+4+((i*31)%60); s+=`<rect x="${x}" y="${y}" width="${w}" height="${w}" rx="3" transform="rotate(${(i*17)%30-15} ${x+w/2} ${y+w/2})" fill="#fff" opacity="${c.ice==="pilee"?.32:.24}" stroke="#fff" stroke-opacity=".45"/>`; } }
+    }
+    if(c.bub) for(let i=0;i<14;i++){ s+=`<circle cx="${gl.rimL+8+((i*29)%(gl.rimR-gl.rimL-14))}" cy="${gl.top+10+((i*37)%90)}" r="${1+(i%3)*.6}" fill="#fff" opacity=".7"/>`; }
+    s+=`</g>`;
+    s+=`<path d="${gl.p}" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.6)" stroke-width="2.2" stroke-linejoin="round"/>`;
+    s+=`<path d="M${gl.rimL+7} ${gl.rimY+8} L${gl.rimL+(c.g==="martini"?24:9)} ${gl.rimY+(c.g==="martini"?22:44)}" stroke="#fff" stroke-width="3" opacity=".3" stroke-linecap="round"/>`;
+    if(c.rim){ const col=c.rim==="sel"?"#ffffff":c.rim==="sucre"?"#fff7df":"#d9502b"; for(let x=gl.rimL+2;x<=gl.rimR-2;x+=3.2) s+=`<circle cx="${x}" cy="${gl.rimY+1.5+((x*7)%3)}" r="1.5" fill="${col}"/>`; }
+  }
+  s+=garnish(c,gl,"front");
+  return s+`</svg>`;
+}
+function wheel(x,y,r,col,inner){let s=`<circle cx="${x}" cy="${y}" r="${r}" fill="${col}"/><circle cx="${x}" cy="${y}" r="${r-2.5}" fill="${inner}"/>`;for(let a=0;a<6;a++){const t=a*Math.PI/3;s+=`<line x1="${x}" y1="${y}" x2="${x+Math.cos(t)*(r-3)}" y2="${y+Math.sin(t)*(r-3)}" stroke="${col}" stroke-width="1.2"/>`;}return s;}
+function leaf(x,y,rot,col){return `<ellipse cx="${x}" cy="${y}" rx="5" ry="10" transform="rotate(${rot} ${x} ${y})" fill="${col}"/><line x1="${x}" y1="${y-8}" x2="${x}" y2="${y+8}" transform="rotate(${rot} ${x} ${y})" stroke="#1f5a22" stroke-width=".8"/>`;}
+function garnish(c,gl,layer){
+  let s=""; const R=gl.rimR, L=gl.rimL, Y=gl.rimY, mid=(L+R)/2;
+  for(const g of c.gar){
+    if(layer==="back"){
+      if(g==="straw") s+=`<line x1="${R-14}" y1="${Y+40}" x2="${R+6}" y2="${Y-30}" stroke="#e8e8e8" stroke-width="4" stroke-linecap="round"/><line x1="${R-14}" y1="${Y+40}" x2="${R+6}" y2="${Y-30}" stroke="${c.c[1]}" stroke-width="4" stroke-dasharray="4 5" opacity=".7"/>`;
+      if(g==="mint") s+=leaf(L+10,Y-10,-25,"#3fae4a")+leaf(L+20,Y-16,5,"#4cc357")+leaf(L+29,Y-9,30,"#36a043");
+      if(g==="basil") s+=leaf(mid-6,Y-8,-20,"#2f8f3a")+leaf(mid+6,Y-9,22,"#3aa346");
+      if(g==="celery") s+=`<rect x="${R-20}" y="${Y-34}" width="7" height="70" rx="3" fill="#8fcf5a"/>`+leaf(R-17,Y-38,-15,"#6dbb44")+leaf(R-12,Y-40,20,"#7ccc4c");
+      if(g==="umbrella") s+=`<line x1="${L+12}" y1="${Y+10}" x2="${L+4}" y2="${Y-30}" stroke="#d9c8a0" stroke-width="2"/><path d="M${L-14} ${Y-26} Q${L+4} ${Y-50} ${L+22} ${Y-34} Z" fill="#ff5f7e"/><path d="M${L-14} ${Y-26} Q${L+4} ${Y-40} ${L+22} ${Y-34}" fill="none" stroke="#fff" stroke-width="1" opacity=".6"/>`;
+    } else {
+      if(g==="lime") s+=wheel(R-2,Y-2,12,"#4c9a2a","#b7e07a");
+      if(g==="lemon") s+=wheel(R-2,Y-2,12,"#e7c021","#fff09a");
+      if(g==="orange") s+=wheel(R-2,Y-2,13,"#e9771b","#ffc46b");
+      if(g==="grapefruit") s+=wheel(R-2,Y-2,13,"#e8693f","#ff9f8a");
+      if(g==="cucumber") s+=wheel(L+8,Y+18,10,"#2f7d38","#d6f0c0");
+      if(g==="twist-o"||g==="twist-l") s+=`<path d="M${R-26} ${Y+4} q6 -10 12 0 t12 0 t10 -6" fill="none" stroke="${g==="twist-o"?"#f08a24":"#f2d23a"}" stroke-width="4" stroke-linecap="round"/>`;
+      if(g==="cherry") s+=`<path d="M${mid+4} ${gl.top+8} q4 -18 14 -22" fill="none" stroke="#5a3a1a" stroke-width="1.6"/><circle cx="${mid+3}" cy="${gl.top+10}" r="6.5" fill="#b3122b"/><circle cx="${mid+1}" cy="${gl.top+8}" r="2" fill="#fff" opacity=".5"/>`;
+      if(g==="olive") s+=`<line x1="${mid-14}" y1="${gl.top-14}" x2="${mid+10}" y2="${gl.top+22}" stroke="#d9c8a0" stroke-width="2"/><ellipse cx="${mid}" cy="${gl.top+8}" rx="6" ry="8" fill="#7a8f2a"/><circle cx="${mid}" cy="${gl.top+5}" r="2.3" fill="#c0392b"/>`;
+      if(g==="pineapple") s+=`<path d="M${R-6} ${Y+6} L${R+16} ${Y+6} L${R+5} ${Y-16} Z" fill="#ffd34d"/><path d="M${R+5} ${Y-16} l-6 -14 M${R+5} ${Y-16} l2 -16 M${R+5} ${Y-16} l8 -12" stroke="#3a9a3a" stroke-width="3" stroke-linecap="round"/>`;
+      if(g==="coffee") for(let i=-1;i<=1;i++) s+=`<ellipse cx="${mid+i*9}" cy="${gl.top+2}" rx="3.6" ry="2.4" fill="#3a1d0c"/><line x1="${mid+i*9-2.5}" y1="${gl.top+2}" x2="${mid+i*9+2.5}" y2="${gl.top+2}" stroke="#8a5a3a" stroke-width=".7"/>`;
+      if(g==="berry") for(let i=0;i<3;i++) s+=`<circle cx="${R-12+i*7}" cy="${Y-4-(i%2)*5}" r="5" fill="#3d0f33"/><circle cx="${R-13+i*7}" cy="${Y-6-(i%2)*5}" r="1.5" fill="#fff" opacity=".4"/>`;
+      if(g==="raspberry") for(let i=0;i<2;i++) s+=`<circle cx="${R-10+i*8}" cy="${Y-4-i*3}" r="5" fill="#e0284f"/>`;
+      if(g==="strawberry") s+=`<path d="M${R-10} ${Y-10} q10 -4 20 0 q-2 14 -10 20 q-8 -6 -10 -20 Z" fill="#e5293d"/><path d="M${R-10} ${Y-10} l5 -5 l5 4 l5 -4 l5 5" fill="#3a9a3a"/>`;
+      if(g==="passion") s+=`<ellipse cx="${mid}" cy="${gl.top+2}" rx="11" ry="5" fill="#f2b81e" stroke="#7b2d6b" stroke-width="2"/><circle cx="${mid-3}" cy="${gl.top+2}" r="1.2" fill="#222"/><circle cx="${mid+3}" cy="${gl.top+1}" r="1.2" fill="#222"/>`;
+      if(g==="ginger") s+=`<rect x="${R-14}" y="${Y-8}" width="12" height="9" rx="3" fill="#e9c27a" transform="rotate(-12 ${R-8} ${Y-4})"/>`;
+      if(g==="jalapeno") s+=wheel(R-4,Y-2,9,"#2f8a2f","#b8e08a");
+      if(g==="choco") for(let i=0;i<9;i++) s+=`<rect x="${mid-16+(i*7)%32}" y="${gl.top+((i*5)%4)}" width="3" height="2" fill="#3a1d0c"/>`;
+    }
+  }
+  return s;
+}
+
+/* ---------- Filtres & rendu ---------- */
+const CATS=[["tous","Tous"],["fav","★ Favoris"],["whisky","Whisky"],["rhum","Rhum"],["vodka","Vodka"],["gin","Gin"],["tequila","Tequila"],["bulles","Bulles & spritz"],["creme","Crémeux"],["shot","Shots"],["sans","Sans alcool"]];
+const BASE={whisky:"Whisky",rhum:"Rhum",vodka:"Vodka",gin:"Gin",tequila:"Tequila",bulles:"Bulles",creme:"Crémeux",shot:"Shot",sans:"Sans alcool"};
+const GLASS={rocks:"Verre rocks",highball:"Verre highball",coupe:"Coupe",martini:"Verre à martini",flute:"Flûte",wine:"Verre ballon",hurricane:"Verre hurricane",irish:"Verre à irish coffee",shot:"Verre à shot",mug:"Tasse en cuivre",julep:"Timbale à julep"};
+const ICE={none:"Sans glace",cube:"Glaçons",gros:"1 gros glaçon",pilee:"Glace pilée"};
+const TAGS=["fruité","menthe","coloré","tropical","acidulé","pétillant","crémeux","épicé","fort","facile","événement","café"];
+let cat="tous", tag=null, q="", favs=new Set();
+try{favs=new Set(JSON.parse(localStorage.getItem("cocktail-favs")||"[]"));}catch(e){}
+function saveFavs(){try{localStorage.setItem("cocktail-favs",JSON.stringify([...favs]));}catch(e){}}
+const norm=s=>s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+
+const $=id=>document.getElementById(id);
+$("count").textContent=C.length;
+$("cats").innerHTML=CATS.map(([k,l])=>`<button class="chip" data-cat="${k}" aria-pressed="${k===cat}">${l}</button>`).join("");
+$("tags").innerHTML=TAGS.map(t=>`<button class="chip" data-tag="${t}" aria-pressed="false">${t[0].toUpperCase()+t.slice(1)}</button>`).join("");
+$("cats").onclick=e=>{const b=e.target.closest("[data-cat]");if(!b)return;cat=b.dataset.cat;[...$("cats").children].forEach(x=>x.setAttribute("aria-pressed",x===b));render();};
+$("tags").onclick=e=>{const b=e.target.closest("[data-tag]");if(!b)return;tag=tag===b.dataset.tag?null:b.dataset.tag;[...$("tags").children].forEach(x=>x.setAttribute("aria-pressed",x.dataset.tag===tag));render();};
+$("q").oninput=e=>{q=norm(e.target.value.trim());render();};
+
+function render(){
+  const list=C.map((c,i)=>({c,i})).filter(({c,i})=>{
+    if(cat==="fav"&&!favs.has(c.n))return false;
+    if(cat!=="tous"&&cat!=="fav"&&c.b!==cat)return false;
+    if(tag&&!c.tags.includes(tag))return false;
+    if(q){const hay=norm(c.n+" "+c.desc+" "+c.ing.map(x=>x[2]).join(" ")+" "+c.tags.join(" "));if(!hay.includes(q))return false;}
+    return true;});
+  $("grid").innerHTML=list.map(({c,i})=>`<button class="card" data-i="${i}" aria-label="Ouvrir la recette ${c.n}"><div class="art">${art(c)}</div><div class="info"><div class="name">${favs.has(c.n)?'<span class="fav-on">★</span> ':""}${c.n}</div><div class="meta">${BASE[c.b]} · ${c.m} · <span class="dots" title="Difficulté">${"●".repeat(c.d)}${"○".repeat(3-c.d)}</span></div></div></button>`).join("");
+  $("empty").hidden=list.length>0;
+}
+$("grid").onclick=e=>{const b=e.target.closest(".card");if(b)open(+b.dataset.i);};
+
+let cur=null, portions=1, done=new Set();
+function fmt(n){const r=Math.round(n*2)/2;return (r%1===0?r:r.toFixed(1)).toString().replace(".",",");}
+function qty(x){
+  const [v,u,name]=x; if(v==null) return "";
+  const t=v*portions;
+  if(u==="ml") return `${fmt(t)} ml <span class="oz">(${(t/29.57).toFixed(1).replace(".",",")} oz)</span>`;
+  if(u==="") return fmt(t);
+  return `${fmt(t)} ${u}`;
+}
+function open(i){cur=C[i];portions=1;done=new Set();drawSheet();$("sheetBg").classList.add("open");document.body.style.overflow="hidden";}
+function close(){$("sheetBg").classList.remove("open");document.body.style.overflow="";}
+function drawSheet(){
+  const c=cur; const fav=favs.has(c.n);
+  $("sheet").innerHTML=`
+  <div class="sheet-top"><div>${art(c)}</div><div>
+    <h2 id="sTitle">${c.n}</h2><p class="desc">${c.desc}</p>
+    <div class="facts"><span class="fact"><b>Méthode</b> ${c.m}</span><span class="fact"><b>Verre</b> ${GLASS[c.g]}</span><span class="fact"><b>Glace</b> ${ICE[c.ice]}</span><span class="fact"><b>Temps</b> ${c.t} min</span><span class="fact"><b>Niveau</b> ${["Facile","Moyen","Avancé"][c.d-1]}</span></div>
+  </div></div>
+  <div class="sec"><h3>Ingrédients</h3>
+    <div class="portions">Verres :${[1,2,4,10,20].map(p=>`<button class="chip" data-p="${p}" aria-pressed="${p===portions}">${p}</button>`).join("")}</div>
+    <ul class="ing" style="margin-top:10px">${c.ing.map(x=>`<li><span class="q">${qty(x)}</span><span>${x[2]}</span></li>`).join("")}</ul></div>
+  <div class="sec"><h3>Étapes (touche pour cocher)</h3>
+    <ol class="steps">${c.st.map((s,k)=>`<li class="${done.has(k)?"done":""}"><button data-k="${k}"><span class="n">${k+1}</span><span>${s}</span></button></li>`).join("")}</ol></div>
+  <div class="sec"><h3>Astuce de pro</h3><div class="tip">${c.tip}</div></div>
+  <div class="sheet-actions"><button class="btn" id="favBtn">${fav?"★ Retirer des favoris":"☆ Ajouter aux favoris"}</button><button class="btn primary" id="closeBtn">Fermer</button></div>`;
+  $("closeBtn").onclick=close; $("closeBtn").focus({preventScroll:true});
+  $("favBtn").onclick=()=>{fav?favs.delete(c.n):favs.add(c.n);saveFavs();drawSheet();render();};
+  $("sheet").querySelector(".portions").onclick=e=>{const b=e.target.closest("[data-p]");if(!b)return;portions=+b.dataset.p;drawSheet();};
+  $("sheet").querySelector(".steps").onclick=e=>{const b=e.target.closest("[data-k]");if(!b)return;const k=+b.dataset.k;done.has(k)?done.delete(k):done.add(k);b.parentElement.classList.toggle("done");};
+}
+$("sheetBg").onclick=e=>{if(e.target.id==="sheetBg")close();};
+document.addEventListener("keydown",e=>{if(e.key==="Escape")close();});
+render();
+</script>
+</body>
+</html>

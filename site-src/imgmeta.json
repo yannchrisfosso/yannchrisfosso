@@ -1,0 +1,533 @@
+{
+ "slugs": {
+  "Old Fashioned": "old-fashioned",
+  "Whiskey Sour": "whiskey-sour",
+  "Manhattan": "manhattan",
+  "Boulevardier": "boulevardier",
+  "Penicillin": "penicillin",
+  "Mint Julep": "mint-julep",
+  "Irish Coffee": "irish-coffee",
+  "Whisky Highball": "whisky-highball",
+  "Mojito": "mojito",
+  "Daiquiri": "daiquiri",
+  "Daiquiri fraise": "daiquiri-fraise",
+  "Piña Colada": "pina-colada",
+  "Mai Tai": "mai-tai",
+  "Dark 'n' Stormy": "dark-n-stormy",
+  "Caïpirinha": "caipirinha",
+  "Moscow Mule": "moscow-mule",
+  "Cosmopolitan": "cosmopolitan",
+  "Espresso Martini": "espresso-martini",
+  "Pornstar Martini": "pornstar-martini",
+  "Sex on the Beach": "sex-on-the-beach",
+  "Bloody Mary": "bloody-mary",
+  "Blue Lagoon": "blue-lagoon",
+  "Lemon Drop": "lemon-drop",
+  "White Russian": "white-russian",
+  "Gin Tonic": "gin-tonic",
+  "Negroni": "negroni",
+  "Tom Collins": "tom-collins",
+  "Bramble": "bramble",
+  "Gin Basil Smash": "gin-basil-smash",
+  "French 75": "french-75",
+  "Aviation": "aviation",
+  "Clover Club": "clover-club",
+  "Dry Martini": "dry-martini",
+  "Margarita": "margarita",
+  "Margarita mangue glacée": "margarita-mangue-glacee",
+  "Paloma": "paloma",
+  "Tequila Sunrise": "tequila-sunrise",
+  "Margarita épicée": "margarita-epicee",
+  "Aperol Spritz": "aperol-spritz",
+  "Hugo Spritz": "hugo-spritz",
+  "Kir Royal": "kir-royal",
+  "Bellini": "bellini",
+  "Grasshopper": "grasshopper",
+  "Blue Hawaiian": "blue-hawaiian",
+  "B-52": "b-52",
+  "Baby Guinness": "baby-guinness",
+  "Foléré Fizz": "folere-fizz",
+  "Virgin Mojito": "virgin-mojito",
+  "Shirley Temple": "shirley-temple",
+  "Virgin Piña Colada": "virgin-pina-colada",
+  "Sunset sans alcool": "sunset-sans-alcool",
+  "Limonade framboise-basilic": "limonade-framboise-basilic"
+ },
+ "credits": [
+  {
+   "for": "Old Fashioned",
+   "title": "Old Fashioned",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/11001"
+  },
+  {
+   "for": "Whiskey Sour",
+   "title": "Whiskey Sour",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/11004"
+  },
+  {
+   "for": "Manhattan",
+   "title": "Manhattan",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/11008"
+  },
+  {
+   "for": "Boulevardier",
+   "title": "Boulevardier",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/17251"
+  },
+  {
+   "for": "Penicillin",
+   "title": "Penicillin",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/17829"
+  },
+  {
+   "for": "Mint Julep",
+   "title": "Mint Julep",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/17206"
+  },
+  {
+   "for": "Irish Coffee",
+   "title": "Irish Coffee",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/13971"
+  },
+  {
+   "for": "Whisky Highball",
+   "title": "Bermuda Highball",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/11084"
+  },
+  {
+   "for": "Mojito",
+   "title": "Mojito",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/11000"
+  },
+  {
+   "for": "Daiquiri",
+   "title": "Daiquiri",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/11006"
+  },
+  {
+   "for": "Daiquiri fraise",
+   "title": "Strawberry Daiquiri",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/12316"
+  },
+  {
+   "for": "Piña Colada",
+   "title": "Pina Colada",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/17207"
+  },
+  {
+   "for": "Mai Tai",
+   "title": "Mai Tai",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/11690"
+  },
+  {
+   "for": "Dark 'n' Stormy",
+   "title": "Dark and Stormy",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/17211"
+  },
+  {
+   "for": "Caïpirinha",
+   "title": "Caipirinha",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/11202"
+  },
+  {
+   "for": "Moscow Mule",
+   "title": "Moscow Mule",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/11009"
+  },
+  {
+   "for": "Cosmopolitan",
+   "title": "Cosmopolitan",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/17196"
+  },
+  {
+   "for": "Espresso Martini",
+   "title": "Espresso Martini",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/17212"
+  },
+  {
+   "for": "Pornstar Martini",
+   "title": "Pornstar Martini",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/178357"
+  },
+  {
+   "for": "Sex on the Beach",
+   "title": "Sex on the Beach",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/12754"
+  },
+  {
+   "for": "Bloody Mary",
+   "title": "Bloody Mary",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/11113"
+  },
+  {
+   "for": "Blue Lagoon",
+   "title": "Blue Lagoon",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/11117"
+  },
+  {
+   "for": "Lemon Drop",
+   "title": "Lemon Drop",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/14366"
+  },
+  {
+   "for": "White Russian",
+   "title": "White Russian",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/12528"
+  },
+  {
+   "for": "Gin Tonic",
+   "title": "Gin And Tonic",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/11403"
+  },
+  {
+   "for": "Negroni",
+   "title": "Negroni",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/11003"
+  },
+  {
+   "for": "Tom Collins",
+   "title": "Tom Collins",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/12402"
+  },
+  {
+   "for": "Bramble",
+   "title": "Bramble",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/17210"
+  },
+  {
+   "for": "Gin Basil Smash",
+   "title": "Gin Basil Smash",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/178314"
+  },
+  {
+   "for": "French 75",
+   "title": "French 75",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/17197"
+  },
+  {
+   "for": "Aviation",
+   "title": "Aviation",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/17180"
+  },
+  {
+   "for": "Clover Club",
+   "title": "Clover Club",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/17186"
+  },
+  {
+   "for": "Dry Martini",
+   "title": "Dry Martini",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/11005"
+  },
+  {
+   "for": "Margarita",
+   "title": "Margarita",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/11007"
+  },
+  {
+   "for": "Margarita mangue glacée",
+   "title": "Mango Tango, Hard Rock Cafe Paris.jpg",
+   "artist": "Flavio Ensiki",
+   "lic": "CC BY 2.0",
+   "url": "https://commons.wikimedia.org/wiki/File:Mango_Tango,_Hard_Rock_Cafe_Paris.jpg",
+   "src": "Wikimedia Commons"
+  },
+  {
+   "for": "Paloma",
+   "title": "Paloma",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/17253"
+  },
+  {
+   "for": "Tequila Sunrise",
+   "title": "Tequila Sunrise",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/13621"
+  },
+  {
+   "for": "Margarita épicée",
+   "title": "MargaritaReal.jpg",
+   "artist": "Akke Monasso",
+   "lic": "CC BY-SA 3.0",
+   "url": "https://commons.wikimedia.org/wiki/File:MargaritaReal.jpg",
+   "src": "Wikimedia Commons"
+  },
+  {
+   "for": "Aperol Spritz",
+   "title": "Aperol Spritz",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/178325"
+  },
+  {
+   "for": "Hugo Spritz",
+   "title": "15-09-26-RalfR-WLC-0059.jpg",
+   "artist": "Ralf Roletschek",
+   "lic": "CC BY-SA 3.0",
+   "url": "https://commons.wikimedia.org/wiki/File:15-09-26-RalfR-WLC-0059.jpg",
+   "src": "Wikimedia Commons"
+  },
+  {
+   "for": "Kir Royal",
+   "title": "Kir Royale",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/13837"
+  },
+  {
+   "for": "Bellini",
+   "title": "Bellini",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/17195"
+  },
+  {
+   "for": "Grasshopper",
+   "title": "Grasshopper",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/17200"
+  },
+  {
+   "for": "Blue Hawaiian",
+   "title": "Koh Lipe & Blue Hawaii 💚💙.jpg",
+   "artist": "Sharon Hahn Darlin",
+   "lic": "CC BY 2.0",
+   "url": "https://commons.wikimedia.org/wiki/File:Koh_Lipe_%26_Blue_Hawaii_%F0%9F%92%9A%F0%9F%92%99.jpg",
+   "src": "Wikimedia Commons"
+  },
+  {
+   "for": "B-52",
+   "title": "B-52",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/15853"
+  },
+  {
+   "for": "Baby Guinness",
+   "title": "Baby Guinness",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/17079"
+  },
+  {
+   "for": "Foléré Fizz",
+   "title": "Sparkling Hibiscus Iced Tea with Raspberry & Tarragon - GAIL's 2025-07-14.jpg",
+   "artist": "Andy Li",
+   "lic": "CC0",
+   "url": "https://commons.wikimedia.org/wiki/File:Sparkling_Hibiscus_Iced_Tea_with_Raspberry_%26_Tarragon_-_GAIL%27s_2025-07-14.jpg",
+   "src": "Wikimedia Commons"
+  },
+  {
+   "for": "Virgin Mojito",
+   "title": "Limeade",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/12704"
+  },
+  {
+   "for": "Shirley Temple",
+   "title": "Shirley Temple (16426317324).jpg",
+   "artist": "Marie from Malang, East Java, Indonesia",
+   "lic": "CC BY-SA 2.0",
+   "url": "https://commons.wikimedia.org/wiki/File:Shirley_Temple_(16426317324).jpg",
+   "src": "Wikimedia Commons"
+  },
+  {
+   "for": "Virgin Piña Colada",
+   "title": "Pina Colada at Aruba.jpg",
+   "artist": "DDJJ",
+   "lic": "CC BY-SA 4.0",
+   "url": "https://commons.wikimedia.org/wiki/File:Pina_Colada_at_Aruba.jpg",
+   "src": "Wikimedia Commons"
+  },
+  {
+   "for": "Sunset sans alcool",
+   "title": "Amaretto Sunrise",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/14578"
+  },
+  {
+   "for": "Limonade framboise-basilic",
+   "title": "Raspberry Cooler",
+   "src": "TheCocktailDB",
+   "url": "https://www.thecocktaildb.com/drink/17167"
+  },
+  {
+   "for": "Accueil",
+   "title": "Casa Classic Cocktail Bar & Jazz Club by Roland Barrera.jpg",
+   "artist": "Roland Barrera",
+   "lic": "CC BY-SA 4.0",
+   "url": "https://commons.wikimedia.org/wiki/File:Casa_Classic_Cocktail_Bar_%26_Jazz_Club_by_Roland_Barrera.jpg",
+   "src": "Wikimedia Commons"
+  },
+  {
+   "for": "Ingrédient : framboises",
+   "title": "Raspberries (40971).jpg",
+   "artist": "Rhododendrites",
+   "lic": "CC BY-SA 4.0",
+   "url": "https://commons.wikimedia.org/wiki/File:Raspberries_(40971).jpg",
+   "src": "Wikimedia Commons"
+  },
+  {
+   "for": "Ingrédient : jalapeno",
+   "title": "Liat Portal for Foodie Disorder - Jalapeño Peppers.jpg",
+   "artist": "HaJunkiyada",
+   "lic": "CC BY-SA 4.0",
+   "url": "https://commons.wikimedia.org/wiki/File:Liat_Portal_for_Foodie_Disorder_-_Jalape%C3%B1o_Peppers.jpg",
+   "src": "Wikimedia Commons"
+  },
+  {
+   "for": "Ingrédient : hibiscus",
+   "title": "Zobo leaf seller.jpg",
+   "artist": "Major Lyte",
+   "lic": "CC BY-SA 4.0",
+   "url": "https://commons.wikimedia.org/wiki/File:Zobo_leaf_seller.jpg",
+   "src": "Wikimedia Commons"
+  }
+ ],
+ "ing": {
+  "Angostura bitters": "angostura-bitters",
+  "Angostura sur la mousse": "angostura-bitters",
+  "Aperol": "aperol",
+  "Basilic": "basil",
+  "Basilic frais": "basil",
+  "Blanc d'œuf": "egg-white",
+  "Blanc d'œuf (optionnel)": "egg-white",
+  "Bourbon": "bourbon",
+  "Cachaça": "cachaca",
+  "Café filtre chaud": "coffee",
+  "Campari": "campari",
+  "Cerise": "maraschino-cherry",
+  "Cerise à cocktail": "maraschino-cherry",
+  "Cerise à cocktail (optionnel)": "maraschino-cherry",
+  "Champagne ou mousseux": "champagne",
+  "Cointreau": "cointreau",
+  "Crème 10 % ou 15 %": "heavy-cream",
+  "Crème 35 %": "heavy-cream",
+  "Crème 35 % légèrement fouettée": "heavy-cream",
+  "Crème de cacao blanche": "creme-de-cacao",
+  "Crème de cassis": "creme-de-cassis",
+  "Crème de coco": "cream-of-coconut",
+  "Crème de coco (Coco López)": "cream-of-coconut",
+  "Crème de menthe verte": "green-creme-de-menthe",
+  "Crème de mûre": "creme-de-mure",
+  "Crème de violette": "creme-de-violette",
+  "Crème irlandaise (Baileys)": "baileys-irish-cream",
+  "Curaçao bleu": "blue-curacao",
+  "Curaçao orange (ou Cointreau)": "orange-curacao",
+  "Espresso frais": "espresso",
+  "Fraises fraîches": "strawberries",
+  "Gin": "gin",
+  "Ginger ale": "gin",
+  "Ginger beer": "gin",
+  "Glace": "ice",
+  "Grains de café": "coffee",
+  "Grand Marnier": "grand-marnier",
+  "Grenadine": "grenadine",
+  "Jus d'ananas": "pineapple-juice",
+  "Jus d'orange": "orange-juice",
+  "Jus de canneberge": "cranberry-juice",
+  "Jus de citron": "lemon-juice",
+  "Jus de citron frais": "lemon-juice",
+  "Jus de lime": "lime-juice",
+  "Jus de lime (optionnel)": "lime-juice",
+  "Jus de lime frais": "lime-juice",
+  "Jus de tomate": "tomato-juice",
+  "Lime coupée en quartiers": "lime",
+  "Limonade (ou Sprite)": "lemonade",
+  "Liqueur de café": "kahlua",
+  "Liqueur de café (Kahlúa)": "kahlua",
+  "Liqueur de marasquin": "maraschino-liqueur",
+  "Liqueur de passion (Passoa)": "passoa",
+  "Liqueur de sureau (St-Germain)": "st-germain",
+  "Mangue congelée": "mango",
+  "Menthe": "mint",
+  "Menthe fraîche": "mint",
+  "Menthe pour décorer": "mint",
+  "Olive ou zeste de citron": "olive",
+  "Orange bitters (optionnel)": "orange-bitters",
+  "Prosecco": "prosecco",
+  "Prosecco (à côté)": "prosecco",
+  "Purée de fruit de la passion": "passion-fruit-juice",
+  "Purée de pêche blanche": "peach-nectar",
+  "Rhum agricole ou ambré": "gold-rum",
+  "Rhum ambré jamaïcain": "gold-rum",
+  "Rhum blanc": "light-rum",
+  "Rhum blanc ou ambré": "light-rum",
+  "Rhum brun (Gosling's)": "dark-rum",
+  "Rondelle de lime ou concombre": "cucumber",
+  "Sauce Worcestershire": "worcestershire-sauce",
+  "Schnapps à la pêche": "peach-schnapps",
+  "Scotch blended": "blended-scotch",
+  "Scotch tourbé (Laphroaig, Ardbeg)": "islay-single-malt-scotch",
+  "Sel": "salt",
+  "Sel de céleri et poivre": "celery-salt",
+  "Sel pour le bord": "salt",
+  "Sirop d'agave": "agave-syrup",
+  "Sirop d'agave (optionnel)": "agave-syrup",
+  "Sirop d'orgeat (amande)": "orgeat-syrup",
+  "Sirop de cassonade": "brown-sugar",
+  "Sirop de gingembre (ou simple)": "ginger-syrup",
+  "Sirop de vanille": "vanilla-syrup",
+  "Sirop miel-gingembre": "honey-syrup",
+  "Sirop simple": "sugar-syrup",
+  "Sirop simple (optionnel)": "sugar-syrup",
+  "Sirop simple (ou 1 cube de sucre)": "sugar-syrup",
+  "Soda": "soda-water",
+  "Soda (eau gazeuse)": "soda-water",
+  "Soda (eau gazeuse) bien froid": "soda-water",
+  "Soda ou Sprite": "sprite",
+  "Soda pamplemousse (Jarritos, Fresca)": "grapefruit-juice",
+  "Sucre": "sugar",
+  "Sucre pour le bord": "sugar",
+  "Tabasco": "tabasco-sauce",
+  "Tequila": "tequila",
+  "Tequila 100 % agave": "tequila",
+  "Tonic bien froid": "tonic-water",
+  "Tranche ou zeste d'orange": "orange-peel",
+  "Triple sec": "triple-sec",
+  "Vermouth dry": "dry-vermouth",
+  "Vermouth rouge": "sweet-vermouth",
+  "Version alcoolisée : gin ou rhum (optionnel)": "gin",
+  "Vodka": "vodka",
+  "Vodka citron": "citrus-vodka",
+  "Vodka vanille": "vanilla-vodka",
+  "Whiskey irlandais (Jameson)": "irish-whiskey",
+  "Whisky (bourbon ou canadien)": "blended-whiskey",
+  "Whisky rye (ou bourbon)": "rye-whiskey",
+  "Zeste d'orange": "orange-peel",
+  "Zeste de citron": "lemon-peel",
+  "Framboises": "framboises",
+  "Framboises fraîches": "framboises",
+  "Jalapeño": "jalapeno",
+  "Infusion de foléré froide": "hibiscus"
+ }
+}

@@ -2,118 +2,524 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Catalogue de cocktails</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Le Bar de Yann · Cocktails d'exception</title>
+<meta name="description" content="52 recettes de bar, des grands classiques aux créations colorées. Le Bar de Yann, barman pour vos événements au Québec.">
+<meta name="theme-color" content="#0b0e12">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Le Bar de Yann">
+<meta property="og:title" content="Le Bar de Yann · Cocktails d'exception">
+<meta property="og:description" content="52 recettes de bar, des grands classiques aux créations colorées. Choisis, je prépare.">
+<meta property="og:image" content="https://catalogue-cocktails-yann.netlify.app/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://catalogue-cocktails-yann.netlify.app/">
+<meta property="og:locale" content="fr_CA">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Bar de Yann">
+<link rel="preload" href="images/hero-md.webp" as="image" media="(max-width: 1100px)">
+<link rel="preload" href="images/hero.webp" as="image" media="(min-width: 1101px)">
+<link rel="preload" href="fonts/cormorant-garamond-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <style>
+@font-face{font-family:"Cormorant Garamond";font-style:normal;font-weight:500;font-display:swap;src:url(fonts/cormorant-garamond-latin-500-normal.woff2) format("woff2")}
+@font-face{font-family:"Cormorant Garamond";font-style:italic;font-weight:500;font-display:swap;src:url(fonts/cormorant-garamond-latin-500-italic.woff2) format("woff2")}
+@font-face{font-family:"Cormorant Garamond";font-style:normal;font-weight:600;font-display:swap;src:url(fonts/cormorant-garamond-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:"Cormorant Garamond";font-style:italic;font-weight:600;font-display:swap;src:url(fonts/cormorant-garamond-latin-600-italic.woff2) format("woff2")}
+@font-face{font-family:"Manrope";font-style:normal;font-weight:200 800;font-display:swap;src:url(fonts/manrope-latin-wght-normal.woff2) format("woff2")}
 :root{
-  /* Monde « bar de nuit » : encre bleu-vert, accent laiton. Grille de fiches illustrées, fiche détaillée en panneau. */
-  --bg:#10181d; --surface:#18232a; --surface-2:#203039; --ink:#eef2f0; --muted:#9fb0ad;
-  --accent:#e2a65a; --line:#2b3b44;
-  --display:"DM Serif Display", Georgia, "Times New Roman", serif;
-  --body:"Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --bg:#0b0e12; --bg-2:#10141a; --card:#151a21; --card-2:#1b212a;
+  --gold:#d9a65b; --gold-2:#f0cb8e; --gold-soft:rgba(217,166,91,.14); --line:rgba(217,166,91,.2); --line-2:rgba(255,255,255,.08);
+  --ink:#f4efe6; --ink-2:#d8d1c5; --muted:#9a948a;
+  --serif:"Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+  --sans:"Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --r:20px; --r-lg:24px; --r-sm:14px;
+  --ease:cubic-bezier(.22,.8,.24,1);
+  --gutter:clamp(16px,4vw,40px);
   color-scheme:dark;
 }
 *{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
-button{font-family:inherit;color:inherit}
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.wrap{max-width:1180px;margin:0 auto;padding:20px 16px 60px}
-header h1{font-family:var(--display);font-weight:400;font-size:clamp(2rem,6vw,3.2rem);margin:6px 0 4px;text-wrap:balance;line-height:1.1}
-header p{color:var(--muted);margin:0 0 16px;max-width:62ch}
-.count{color:var(--accent);font-weight:700}
-details.guide{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin-bottom:16px}
-details.guide summary{cursor:pointer;font-weight:700}
-.guide-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px 22px;margin-top:10px;font-size:.93rem}
-.guide-grid b{color:var(--accent)}
-.controls{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0;display:flex;flex-direction:column;gap:8px;border-bottom:1px solid var(--line)}
-.search{width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit}
-.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55}
+body{overflow-x:hidden}
+body.lock{overflow:hidden}
+img{display:block;max-width:100%}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+a{color:var(--gold-2)}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:6px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+em.g,.g{font-style:italic;color:var(--gold)}
+.serif{font-family:var(--serif)}
+.wrap{max-width:1180px;margin:0 auto;padding:0 var(--gutter)}
+.eyebrow{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:700}
+.h2{font-family:var(--serif);font-weight:500;font-size:clamp(2.1rem,7.5vw,3.4rem);line-height:1.02;margin:.35rem 0 .6rem;letter-spacing:-.01em;text-wrap:balance}
+.lead{color:var(--ink-2);max-width:56ch;margin:0}
+section.block{padding:clamp(72px,12vw,120px) 0 0;scroll-margin-top:-20px}
+.pill{display:inline-flex;align-items:center;justify-content:center;gap:.5em;border-radius:999px;padding:14px 24px;font-weight:700;font-size:.95rem;letter-spacing:.01em;border:1px solid var(--gold);background:var(--gold);color:#1a1206;text-decoration:none;transition:transform .25s var(--ease),background .25s,box-shadow .25s;box-shadow:0 10px 30px -12px rgba(217,166,91,.6)}
+.pill:hover{transform:translateY(-1px);background:var(--gold-2)}
+.pill:active{transform:scale(.98)}
+.pill.ghost{background:rgba(11,14,18,.35);color:var(--ink);border-color:rgba(244,239,230,.45);box-shadow:none;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.pill.ghost:hover{border-color:var(--gold);color:var(--gold-2)}
+.pill.small{padding:10px 16px;font-size:.86rem}
+.chip{flex:none;border:1px solid var(--line-2);background:var(--card);padding:9px 16px;border-radius:999px;font-size:.88rem;font-weight:600;white-space:nowrap;transition:all .2s}
+.chip[aria-pressed="true"]{background:var(--gold);border-color:var(--gold);color:#1a1206}
+.chip.sm{padding:6px 12px;font-size:.8rem;font-weight:600;color:var(--ink-2);background:transparent;border-color:var(--line)}
+.chip.sm[aria-pressed="true"]{color:#1a1206;background:var(--gold)}
+.badge{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 11px;font-size:.74rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.badge.sig{background:linear-gradient(135deg,#f3d39b,#c88d3c);color:#1a1206}
+.tag{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);border:1px solid var(--line-2);border-radius:999px;padding:6px 12px;font-size:.8rem;color:var(--ink-2)}
+.tag b{color:var(--gold);font-weight:700}
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+
+/* ---------- En-tête ---------- */
+.top{position:fixed;inset:0 0 auto;z-index:30;display:flex;align-items:center;justify-content:space-between;padding:calc(12px + env(safe-area-inset-top)) var(--gutter) 12px;transition:background .3s,backdrop-filter .3s,border-color .3s;border-bottom:1px solid transparent}
+.top.solid{background:rgba(11,14,18,.82);backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px) saturate(1.2);border-bottom-color:var(--line-2)}
+.logo{font-family:var(--serif);font-size:1.45rem;font-weight:600;letter-spacing:.01em;color:var(--ink);text-decoration:none;line-height:1}
+.logo i{color:var(--gold);font-weight:500}
+.icon-btn{width:46px;height:46px;border-radius:50%;border:1px solid rgba(244,239,230,.25);background:rgba(11,14,18,.4);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:grid;place-items:center;transition:border-color .2s,background .2s}
+.icon-btn:hover{border-color:var(--gold)}
+.icon-btn svg{width:20px;height:20px}
+.burger span{display:block;width:18px;height:1.5px;background:var(--ink);margin:4px 0;border-radius:2px}
+
+/* ---------- Menu ---------- */
+.drawer{position:fixed;inset:0;z-index:60;background:rgba(6,8,11,.97);display:flex;flex-direction:column;padding:calc(18px + env(safe-area-inset-top)) var(--gutter) 30px;opacity:0;visibility:hidden;transition:opacity .35s,visibility .35s}
+.drawer.open{opacity:1;visibility:visible}
+.drawer nav{display:flex;flex-direction:column;gap:4px;margin-top:40px}
+.drawer nav button{background:none;border:0;text-align:left;font-family:var(--serif);font-size:clamp(2rem,8vw,2.8rem);font-weight:500;padding:6px 0;color:var(--ink);transform:translateY(12px);opacity:0;transition:transform .5s var(--ease),opacity .5s,color .2s}
+.drawer nav button:hover{color:var(--gold)}
+.drawer nav button i{color:var(--gold)}
+.drawer.open nav button{transform:none;opacity:1}
+.drawer.open nav button:nth-child(2){transition-delay:.04s}.drawer.open nav button:nth-child(3){transition-delay:.08s}.drawer.open nav button:nth-child(4){transition-delay:.12s}.drawer.open nav button:nth-child(5){transition-delay:.16s}.drawer.open nav button:nth-child(6){transition-delay:.2s}.drawer.open nav button:nth-child(7){transition-delay:.24s}
+.drawer .foot{margin-top:auto;color:var(--muted);font-size:.86rem}
+
+/* ---------- Accueil ---------- */
+.hero{position:relative;min-height:100svh;display:flex;align-items:flex-end;overflow:hidden;isolation:isolate}
+.hero picture,.hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}
+.hero img{animation:heroZoom 18s var(--ease) both}
+@keyframes heroZoom{from{transform:scale(1.12)}to{transform:scale(1)}}
+.hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(11,14,18,.55) 0%,rgba(11,14,18,.15) 28%,rgba(11,14,18,.55) 58%,rgba(11,14,18,.96) 86%,var(--bg) 100%)}
+.hero-in{padding:0 var(--gutter) calc(48px + env(safe-area-inset-bottom) + var(--badge,0px));max-width:1180px;margin:0 auto;width:100%}
+.hero h1{font-family:var(--serif);font-weight:500;font-size:clamp(3rem,13vw,6.4rem);line-height:.95;margin:14px 0 18px;letter-spacing:-.015em;text-wrap:balance;max-width:12ch}
+.hero p{color:var(--ink-2);font-size:clamp(1rem,3.6vw,1.15rem);max-width:40ch;margin:0 0 28px}
+.hero .ctas{display:flex;gap:12px;flex-wrap:wrap}
+.hero .ctas .pill{flex:1 1 180px}
+.scroll-hint{display:flex;align-items:center;gap:10px;margin-top:34px;color:var(--muted);font-size:.78rem;letter-spacing:.18em;text-transform:uppercase}
+.scroll-hint::before{content:"";width:34px;height:1px;background:var(--gold)}
+.h-anim{opacity:0;transform:translateY(18px);animation:up 1.1s var(--ease) forwards}
+.h-anim.d1{animation-delay:.15s}.h-anim.d2{animation-delay:.3s}.h-anim.d3{animation-delay:.45s}.h-anim.d4{animation-delay:.6s}
+@keyframes up{to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.hero img,.h-anim{animation:none;opacity:1;transform:none}}
+
+/* ---------- Humeurs ---------- */
+.moods{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:28px}
+@media(min-width:900px){.moods{grid-template-columns:repeat(3,1fr);gap:16px}}
+.mood{position:relative;overflow:hidden;border-radius:var(--r);border:1px solid var(--line-2);min-height:178px;padding:16px;display:flex;flex-direction:column;justify-content:flex-end;text-align:left;background:var(--card);isolation:isolate;transition:transform .35s var(--ease),border-color .3s}
+@media(min-width:600px){.mood{min-height:230px;padding:20px}}
+.mood img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;transition:transform 1.2s var(--ease)}
+.mood::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,color-mix(in srgb,var(--c) 30%,transparent) 0%,color-mix(in srgb,var(--c) 62%,#0b0e12) 62%,color-mix(in srgb,var(--c) 40%,#06080b) 100%);mix-blend-mode:normal}
+.mood:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--c) 70%,white)}
+.mood:hover img{transform:scale(1.06)}
+.mood b{font-family:var(--serif);font-weight:600;font-size:clamp(1.35rem,5vw,1.8rem);line-height:1.05;color:#fff;text-shadow:0 2px 16px rgba(0,0,0,.35)}
+.mood small{display:block;margin-top:6px;font-size:.78rem;color:rgba(255,255,255,.86);line-height:1.35}
+.mood .dot{position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:50%;border:1px solid rgba(255,255,255,.5);display:grid;place-items:center;font-size:.9rem;color:#fff;background:rgba(0,0,0,.18)}
+
+/* ---------- Cocktail du jour ---------- */
+.today{margin-top:28px;display:grid;border-radius:var(--r-lg);overflow:hidden;background:var(--card);border:1px solid var(--line)}
+@media(min-width:860px){.today{grid-template-columns:1.05fr 1fr}}
+.today .ph{position:relative;aspect-ratio:1/1;max-height:560px;overflow:hidden;width:100%}
+.today .ph img{width:100%;height:100%;object-fit:cover}
+.today .ph .badge{position:absolute;top:16px;left:16px}
+.today .tx{padding:24px 20px 26px;display:flex;flex-direction:column;gap:14px}
+@media(min-width:860px){.today .tx{padding:40px}}
+.today h3{font-family:var(--serif);font-weight:500;font-size:clamp(2.2rem,8vw,3.2rem);margin:0;line-height:1}
+.today p{margin:0;color:var(--ink-2)}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.taste{display:grid;gap:9px;margin:4px 0}
+.taste .row{display:grid;grid-template-columns:62px 1fr;align-items:center;gap:12px;font-size:.8rem;color:var(--ink-2);font-weight:600}
+.taste .bar{height:6px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden}
+.taste .bar i{display:block;height:100%;width:0;border-radius:inherit;background:linear-gradient(90deg,#9c6c2c,var(--gold),var(--gold-2));transition:width 1.2s var(--ease)}
+@media (prefers-reduced-motion:reduce){.taste .bar i{transition:none}}
+
+/* ---------- Machine ---------- */
+.slot-card{margin-top:28px;border-radius:var(--r-lg);padding:28px 18px;background:radial-gradient(120% 90% at 50% 0%,rgba(217,166,91,.16),transparent 60%),var(--card);border:1px solid var(--line);text-align:center}
+.reel{position:relative;height:216px;overflow:hidden;margin:6px auto 24px;max-width:520px;-webkit-mask-image:linear-gradient(180deg,transparent,#000 32%,#000 68%,transparent);mask-image:linear-gradient(180deg,transparent,#000 32%,#000 68%,transparent)}
+.reel ul{list-style:none;margin:0;padding:0;will-change:transform}
+.reel li{height:72px;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:clamp(1.6rem,6.5vw,2.3rem);font-weight:500;color:var(--ink-2);white-space:nowrap;opacity:.55}
+.reel li.hit{opacity:1;color:var(--ink)}
+.reel-frame{position:relative;max-width:520px;margin:0 auto}
+.reel-frame::before,.reel-frame::after{content:"";position:absolute;left:8%;right:8%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);z-index:2}
+.reel-frame::before{top:78px}.reel-frame::after{top:150px}
+.slot-card .pill{min-width:240px}
+
+/* ---------- Carte ---------- */
+.tools{position:sticky;top:70px;z-index:10;background:linear-gradient(180deg,var(--bg) 82%,rgba(11,14,18,0));padding:14px 0 12px;margin-top:20px}
+.search{position:relative}
+.search input{width:100%;padding:15px 18px 15px 48px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:1rem;outline:none;transition:border-color .2s}
+.search input:focus{border-color:var(--gold)}
+.search svg{position:absolute;left:18px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--gold)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:12px 2px 2px;scrollbar-width:none;-webkit-mask-image:linear-gradient(90deg,#000 90%,transparent);mask-image:linear-gradient(90deg,#000 90%,transparent)}
 .chips::-webkit-scrollbar{display:none}
-.chip{flex:none;border:1px solid var(--line);background:var(--surface);padding:6px 12px;border-radius:999px;font-size:.88rem;cursor:pointer;white-space:nowrap}
-.chip[aria-pressed="true"]{background:var(--accent);color:#1b1205;border-color:var(--accent);font-weight:700}
-.chips.tags .chip{font-size:.82rem;padding:5px 10px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:12px;margin-top:14px}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer;text-align:left;padding:0;display:flex;flex-direction:column;transition:transform .15s}
-.card:hover{transform:translateY(-2px)}
-.card .art{height:150px;display:flex;align-items:center;justify-content:center}
-.card .art svg{height:140px;width:auto}
-.card .info{padding:10px 12px 12px;display:flex;flex-direction:column;gap:3px}
-.card .name{font-family:var(--display);font-size:1.15rem;line-height:1.15}
-.card .meta{font-size:.78rem;color:var(--muted)}
-.dots{color:var(--accent);letter-spacing:1px}
-.empty{color:var(--muted);padding:30px 0;text-align:center}
-/* Fiche détaillée */
-.sheet-bg{position:fixed;inset:0;background:rgba(5,9,11,.72);z-index:20;display:none;align-items:flex-end;justify-content:center}
-.sheet-bg.open{display:flex}
-.sheet{background:var(--surface);width:100%;max-width:760px;max-height:94%;overflow-y:auto;border-radius:18px 18px 0 0;border:1px solid var(--line);border-bottom:none}
-@media(min-width:760px){.sheet-bg{align-items:center}.sheet{border-radius:18px;border-bottom:1px solid var(--line)}}
-.sheet-top{display:grid;grid-template-columns:150px 1fr;gap:14px;padding:18px 18px 8px;align-items:center}
-@media(max-width:420px){.sheet-top{grid-template-columns:110px 1fr}}
-.sheet-top svg{width:100%;height:auto}
-.sheet h2{font-family:var(--display);font-weight:400;font-size:1.9rem;margin:0;line-height:1.1;text-wrap:balance}
-.sheet .desc{color:var(--muted);margin:6px 0 0;font-size:.95rem}
-.facts{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-.fact{background:var(--surface-2);border-radius:8px;padding:4px 9px;font-size:.8rem}
-.fact b{color:var(--accent);font-weight:600}
-.sec{padding:8px 18px}
-.sec h3{font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin:12px 0 8px}
-.portions{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:.88rem}
-.ing{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
-.ing li{display:flex;gap:12px;padding:9px 0;border-bottom:1px solid var(--line)}
-.ing .q{min-width:108px;font-weight:700;font-variant-numeric:tabular-nums}
-.ing .oz{color:var(--muted);font-weight:500;font-size:.82rem}
-.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
-.steps li button{display:flex;gap:12px;width:100%;text-align:left;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;cursor:pointer;font-size:.95rem;line-height:1.45}
-.steps .n{flex:none;width:26px;height:26px;border-radius:50%;border:1.5px solid var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;color:var(--accent)}
-.steps li.done button{opacity:.45}
-.steps li.done .n{background:var(--accent);color:#1b1205}
-.tip{background:rgba(226,166,90,.1);border-left:3px solid var(--accent);padding:10px 12px;border-radius:0 8px 8px 0;font-size:.93rem}
-.sheet-actions{display:flex;gap:8px;padding:14px 18px 22px;position:sticky;bottom:0;background:var(--surface);border-top:1px solid var(--line)}
-.btn{flex:1;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);font-weight:700;cursor:pointer}
-.btn.primary{background:var(--accent);color:#1b1205;border-color:var(--accent)}
-.fav-on{color:var(--accent)}
-@media (prefers-reduced-motion:reduce){.card{transition:none}}
+.chips.styles{padding-top:8px}
+.active-mood{display:none;margin-top:10px}
+.active-mood.on{display:flex}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:10px}
+@media(min-width:700px){.grid{grid-template-columns:repeat(3,1fr);gap:16px}}
+@media(min-width:1060px){.grid{grid-template-columns:repeat(4,1fr)}}
+.card{position:relative;display:block;padding:0;border:1px solid var(--line-2);border-radius:var(--r);overflow:hidden;background:var(--card);aspect-ratio:3/4;text-align:left;isolation:isolate;transition:transform .4s var(--ease),border-color .3s,box-shadow .4s}
+.card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;transition:transform 1s var(--ease)}
+.card::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(11,14,18,0) 40%,rgba(11,14,18,.55) 66%,rgba(11,14,18,.95) 100%)}
+.card:hover{transform:translateY(-4px);border-color:var(--line);box-shadow:0 22px 40px -24px rgba(0,0,0,.9)}
+.card:hover img{transform:scale(1.05)}
+.card .t{position:absolute;left:14px;right:14px;bottom:14px}
+.card .n{display:block;font-family:var(--serif);font-weight:600;font-size:clamp(1.25rem,4.6vw,1.6rem);line-height:1.04;color:#fff;text-wrap:balance}
+.card .k{display:block;margin-top:6px;font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-2);font-weight:700}
+.card .fav{position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:rgba(11,14,18,.55);color:var(--gold);font-size:.95rem;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.card .sig{position:absolute;top:10px;left:10px;font-size:.62rem;padding:4px 9px}
+.empty{color:var(--muted);text-align:center;padding:40px 0}
+.count-line{color:var(--muted);font-size:.85rem;margin-top:12px}
+
+/* ---------- Soirée ---------- */
+.party{margin-top:28px;display:grid;gap:16px;grid-template-columns:minmax(0,1fr)}
+@media(min-width:900px){.party{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);align-items:start}}
+.panel{min-width:0;background:var(--card);border:1px solid var(--line-2);border-radius:var(--r-lg);padding:20px}
+.panel h3{font-family:var(--serif);font-weight:600;font-size:1.5rem;margin:0 0 12px}
+.picks{display:flex;flex-wrap:wrap;gap:8px;max-height:340px;overflow-y:auto;padding:2px;scrollbar-width:thin}
+.pick{display:inline-flex;align-items:center;gap:8px;padding:5px 12px 5px 5px;border-radius:999px;border:1px solid var(--line-2);background:var(--bg-2);font-size:.84rem;font-weight:600;transition:all .2s}
+.pick img{width:28px;height:28px;border-radius:50%;object-fit:cover}
+.pick[aria-pressed="true"]{border-color:var(--gold);background:var(--gold-soft);color:var(--gold-2)}
+.pick[aria-pressed="true"]::after{content:"✓";color:var(--gold);font-weight:800}
+.steppers{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0 4px}
+.stepper{background:var(--bg-2);border:1px solid var(--line-2);border-radius:var(--r-sm);padding:10px 12px}
+.stepper label{display:block;font-size:.74rem;color:var(--muted);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
+.stepper div{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.stepper button{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:none;font-size:1.2rem;line-height:1;color:var(--gold)}
+.stepper input{width:56px;min-width:0;text-align:center;background:none;border:0;font-family:var(--serif);font-size:1.7rem;font-weight:600;color:var(--ink);-moz-appearance:textfield}
+.stepper input::-webkit-outer-spin-button,.stepper input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.shop h4{margin:18px 0 6px;font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+.shop ul{list-style:none;margin:0;padding:0}
+.shop li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line-2);font-size:.93rem}
+.shop li span:last-child{font-weight:700;text-align:right;white-space:nowrap}
+.shop .note{color:var(--muted);font-size:.82rem;margin:12px 0 0}
+.shop .row-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+.shop .row-btns .pill{flex:1 1 160px}
+.serv{color:var(--ink-2);font-size:.86rem;margin:0 0 4px}
+
+/* ---------- Événements ---------- */
+.event{margin-top:6px;border-radius:var(--r-lg);overflow:hidden;position:relative;padding:40px 22px;border:1px solid var(--line);background:radial-gradient(90% 120% at 100% 0%,rgba(217,166,91,.2),transparent 60%),linear-gradient(160deg,#151a21,#0e1217)}
+@media(min-width:800px){.event{padding:56px}}
+.event .ctas{display:flex;flex-direction:column;gap:12px;margin-top:26px;max-width:460px}
+.event ul{display:flex;flex-wrap:wrap;gap:8px;list-style:none;padding:0;margin:20px 0 0}
+
+/* ---------- Pied ---------- */
+footer{margin-top:clamp(72px,12vw,120px);border-top:1px solid var(--line-2);padding:40px 0 calc(40px + env(safe-area-inset-bottom));color:var(--muted);font-size:.84rem}
+footer .logo{font-size:1.8rem;display:inline-block;margin-bottom:10px}
+footer details{margin-top:18px}
+footer summary{cursor:pointer;color:var(--ink-2);font-weight:600}
+footer ol{padding-left:18px;margin:12px 0 0;columns:1}
+@media(min-width:800px){footer ol{columns:2;column-gap:40px}}
+footer li{margin:0 0 6px;break-inside:avoid}
+.moderation{margin-top:22px;color:var(--ink-2);font-family:var(--serif);font-style:italic;font-size:1.15rem}
+
+/* ---------- Fiche ---------- */
+.sheet{position:fixed;inset:0;z-index:50;visibility:hidden;pointer-events:none}
+.sheet.open{visibility:visible;pointer-events:auto}
+.sheet .bgph{position:fixed;inset:0;background:#000;opacity:0;transition:opacity .6s var(--ease)}
+.sheet.open .bgph{opacity:1}
+.sheet .bgph img{position:absolute;inset:0;width:100%;height:72svh;object-fit:cover;transform:scale(1.1);transition:transform 1.4s var(--ease),filter .6s}
+@media(min-width:900px){.sheet .bgph img{height:100%;width:50%}}
+.sheet.open .bgph img{transform:scale(1)}
+.sheet .bgph::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.35) 0%,rgba(0,0,0,0) 22%,rgba(11,14,18,0) 46%,rgba(11,14,18,.85) 68%,var(--bg) 74%)}
+@media(min-width:900px){.sheet .bgph::after{background:linear-gradient(90deg,rgba(11,14,18,0) 30%,rgba(11,14,18,.9) 50%,var(--bg) 52%)}}
+.sheet .scroller{position:absolute;inset:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.sheet .spacer{height:56svh}
+@media(min-width:900px){.sheet .spacer{display:none}.sheet .scroller{left:50%}}
+.sheet .body{position:relative;padding:56px var(--gutter) calc(120px + env(safe-area-inset-bottom));margin-top:-56px;background:linear-gradient(180deg,rgba(11,14,18,0) 0,rgba(11,14,18,.88) 56px,var(--bg) 110px);min-height:100svh;max-width:720px;opacity:0;transform:translateY(40px);transition:opacity .8s var(--ease) .32s,transform .9s var(--ease) .32s}
+@media(min-width:900px){.sheet .body{padding-top:96px;margin-top:0;background:var(--bg)}}
+.sheet.open .body{opacity:1;transform:none}
+.sheet .sh-top{position:fixed;z-index:3;top:0;left:0;right:0;display:flex;justify-content:space-between;padding:calc(14px + env(safe-area-inset-top)) var(--gutter) 22px;background:linear-gradient(180deg,rgba(11,14,18,.75),rgba(11,14,18,0));pointer-events:none;opacity:0;transition:opacity .5s .2s}
+.sheet .sh-top button{pointer-events:auto}
+.sheet.open .sh-top{opacity:1}
+.sheet h2{font-family:var(--serif);font-weight:500;font-size:clamp(2.8rem,12vw,4.4rem);line-height:.95;margin:10px 0 12px;letter-spacing:-.01em;text-wrap:balance}
+.sheet .desc{font-size:1.06rem;color:var(--ink-2);margin:0 0 18px}
+.sec{margin-top:34px}
+.sec h3{font-size:.74rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin:0 0 14px;font-weight:700;display:flex;align-items:center;gap:12px}
+.sec h3::after{content:"";flex:1;height:1px;background:var(--line)}
+.anec{font-family:var(--serif);font-style:italic;font-size:1.22rem;line-height:1.45;color:var(--ink);border-left:2px solid var(--gold);padding:4px 0 4px 16px;margin:0}
+.alc{display:inline-flex;align-items:center;gap:8px}
+.alc .lv{display:inline-flex;gap:3px}
+.alc .lv i{width:8px;height:14px;border-radius:2px;background:rgba(255,255,255,.14)}
+.alc .lv i.on{background:var(--gold)}
+.ings{display:flex;gap:14px;overflow-x:auto;padding:4px 2px 10px;scroll-snap-type:x mandatory;scrollbar-width:none;margin:0 calc(-1 * var(--gutter));padding-left:var(--gutter);padding-right:var(--gutter)}
+.ings::-webkit-scrollbar{display:none}
+.ing{flex:none;width:84px;text-align:center;scroll-snap-align:start}
+.ing .ph{width:72px;height:72px;margin:0 auto;border-radius:50%;background:radial-gradient(circle at 50% 35%,#fbf7ef,#e9e0d0);display:grid;place-items:center;overflow:hidden;border:2px solid rgba(217,166,91,.55);box-shadow:0 8px 20px -10px rgba(0,0,0,.8)}
+.ing .ph img{width:78%;height:78%;object-fit:contain}
+.ing .ph.photo img{width:100%;height:100%;object-fit:cover}
+.ing .ph.ini{background:var(--gold-soft);color:var(--gold);font-family:var(--serif);font-size:1.8rem;font-weight:600}
+.ing .q{display:block;margin-top:8px;font-weight:800;font-size:.84rem;color:var(--gold-2);font-variant-numeric:tabular-nums}
+.ing .nm{display:block;font-size:.74rem;color:var(--ink-2);line-height:1.25;margin-top:2px}
+.portions{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:12px;font-size:.86rem;color:var(--ink-2);font-weight:600}
+.portions .chip{padding:7px 14px}
+.dose{list-style:none;margin:0;padding:0;border-top:1px solid var(--line-2)}
+.dose li{display:flex;gap:14px;padding:12px 0;border-bottom:1px solid var(--line-2)}
+.dose .q{min-width:112px;font-weight:800;font-variant-numeric:tabular-nums}
+.dose .oz{color:var(--muted);font-weight:500;font-size:.8rem}
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.steps button{display:flex;gap:14px;width:100%;text-align:left;background:var(--card);border:1px solid var(--line-2);border-radius:var(--r-sm);padding:14px;font-size:.98rem;line-height:1.5;transition:opacity .3s,border-color .3s}
+.steps .n{flex:none;width:30px;height:30px;border-radius:50%;border:1.5px solid var(--gold);display:grid;place-items:center;font-weight:800;font-size:.86rem;color:var(--gold);transition:background .3s,color .3s}
+.steps li.done button{opacity:.5}
+.steps li.done .n{background:var(--gold);color:#1a1206}
+.tip{background:linear-gradient(135deg,rgba(217,166,91,.14),rgba(217,166,91,.04));border:1px solid var(--line);padding:16px 18px;border-radius:var(--r-sm);font-size:.98rem}
+.actions{position:fixed;z-index:4;left:0;right:0;bottom:0;display:flex;gap:8px;padding:12px var(--gutter) calc(12px + env(safe-area-inset-bottom) + var(--badge,0px));background:linear-gradient(180deg,rgba(11,14,18,0),rgba(11,14,18,.92) 30%,var(--bg));opacity:0;transform:translateY(20px);transition:opacity .6s .6s,transform .6s var(--ease) .6s}
+@media(min-width:900px){.actions{left:50%}}
+.sheet.open .actions{opacity:1;transform:none}
+.actions .pill{flex:1;padding:13px 10px;font-size:.86rem}
+.actions .pill.ghost{background:var(--card)}
+.actions .icon-pill{flex:0 0 52px;padding:0}
+
+/* ---------- Mode bar ---------- */
+.barmode{position:fixed;inset:0;z-index:70;background:#05070a;display:none;flex-direction:column;padding:calc(18px + env(safe-area-inset-top)) var(--gutter) calc(22px + env(safe-area-inset-bottom) + var(--badge,0px))}
+.barmode.open{display:flex}
+.barmode .hd{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.barmode .hd .nm{font-family:var(--serif);font-size:1.5rem;color:var(--gold)}
+.barmode .prog{display:flex;gap:6px;margin:18px 0}
+.barmode .prog i{flex:1;height:3px;border-radius:3px;background:rgba(255,255,255,.12)}
+.barmode .prog i.on{background:var(--gold)}
+.barmode .stage{flex:1;display:flex;flex-direction:column;justify-content:center;overflow-y:auto}
+.barmode .lbl{color:var(--gold);font-weight:800;letter-spacing:.2em;text-transform:uppercase;font-size:.85rem;margin-bottom:14px}
+.barmode .big{font-size:clamp(1.7rem,7vw,3rem);line-height:1.3;font-weight:600}
+.barmode .big ul{list-style:none;padding:0;margin:0}
+.barmode .big li{padding:6px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+.barmode .big li b{color:var(--gold-2)}
+.barmode .nav{display:flex;gap:10px}
+.barmode .nav .pill{flex:1;padding:20px;font-size:1.1rem}
+.barmode .wake{color:var(--muted);font-size:.8rem}
+
+/* ---------- Carte invités ---------- */
+.menu-card{position:fixed;inset:0;z-index:80;background:#0b0e12;overflow-y:auto;display:none}
+.menu-card.open{display:block}
+.menu-card .paper{max-width:640px;margin:0 auto;padding:calc(30px + env(safe-area-inset-top)) 26px 120px;text-align:center}
+.menu-card .orn{color:var(--gold);letter-spacing:.4em;font-size:.8rem}
+.menu-card h2{font-family:var(--serif);font-weight:500;font-size:clamp(2.6rem,10vw,3.6rem);margin:10px 0 4px;line-height:1}
+.menu-card .sub{color:var(--muted);margin:0 0 30px}
+.menu-card .it{display:flex;align-items:center;gap:16px;text-align:left;padding:16px 0;border-top:1px solid var(--line)}
+.menu-card .it img{width:76px;height:76px;border-radius:50%;object-fit:cover;flex:none;border:2px solid rgba(217,166,91,.5)}
+.menu-card .it h3{font-family:var(--serif);font-weight:600;font-size:1.55rem;margin:0;line-height:1.05}
+.menu-card .it p{margin:4px 0 0;color:var(--ink-2);font-size:.9rem}
+.menu-card .it .sa{color:var(--gold);font-size:.72rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.menu-card .bar-btns{position:fixed;bottom:0;left:0;right:0;display:flex;gap:8px;padding:12px var(--gutter) calc(12px + env(safe-area-inset-bottom) + var(--badge,0px));background:linear-gradient(180deg,rgba(11,14,18,0),var(--bg) 40%)}
+.menu-card .bar-btns .pill{flex:1}
+@media print{
+  body>*:not(.menu-card){display:none!important}
+  .menu-card{position:static;display:block!important;background:#fff;color:#111}
+  .menu-card .bar-btns{display:none}
+  .menu-card .it p,.menu-card .sub{color:#444}
+  .menu-card h2,.menu-card .it h3{color:#111}
+}
+
+.toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom) + var(--badge,0px));transform:translate(-50%,20px);z-index:90;background:var(--ink);color:#111;padding:12px 18px;border-radius:999px;font-weight:700;font-size:.9rem;opacity:0;transition:all .35s var(--ease);pointer-events:none;max-width:calc(100% - 32px);text-align:center}
+.toast.on{opacity:1;transform:translate(-50%,0)}
 </style>
 </head>
 <body>
-<div class="wrap">
-<header>
-  <h1>Catalogue de cocktails</h1>
-  <p><span class="count" id="count"></span> recettes de bar, des grands classiques aux cocktails colorés et sans alcool. Touche une fiche pour voir les doses, les étapes à cocher et l'astuce de pro. Les doses s'ajustent au nombre de verres.</p>
+
+<header class="top" id="top">
+  <a class="logo" href="#" data-go="accueil" aria-label="Le Bar de Yann, accueil">Le Bar <i>de Yann</i></a>
+  <button class="icon-btn burger" id="menuBtn" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="drawer"><span></span><span></span><span style="width:12px"></span></button>
 </header>
 
-<details class="guide">
-  <summary>Repères avant de commencer</summary>
-  <div class="guide-grid">
-    <div><b>Shaker.</b> Remplis-le aux ¾ de glace, ferme, secoue fort 12 à 15 secondes jusqu'à ce que le métal soit glacé. Pour tout cocktail avec du jus, des œufs ou de la crème.</div>
-    <div><b>Remué.</b> Dans un verre à mélange plein de glace, tourne la cuillère environ 30 secondes. Pour les cocktails qui n'ont que de l'alcool.</div>
-    <div><b>Construit.</b> Directement dans le verre de service, sur la glace, dans l'ordre de la recette.</div>
-    <div><b>Pilon.</b> Écrase doucement la menthe ou le basilic (presse, ne déchire pas). Pour la lime, écrase fort.</div>
-    <div><b>Dry shake.</b> Secouer sans glace 10 secondes pour monter le blanc d'œuf, puis secouer à nouveau avec glace.</div>
-    <div><b>Double filtrage.</b> Passoire Hawthorne + passoire fine en même temps : pas de pulpe ni d'éclats de glace.</div>
-    <div><b>Sirop simple.</b> 1 tasse de sucre + 1 tasse d'eau chaude, mélanger, refroidir. Se garde 2 semaines au frigo.</div>
-    <div><b>Doses.</b> 30 ml ≈ 1 oz. Un trait (« dash ») ≈ 1 ml. Presse les agrumes le jour même.</div>
+<div class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label="Menu">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <span class="logo">Le Bar <i>de Yann</i></span>
+    <button class="icon-btn" id="menuClose" aria-label="Fermer le menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
   </div>
-</details>
-
-<div class="controls">
-  <input class="search" id="q" type="search" placeholder="Chercher un cocktail ou un ingrédient (menthe, ananas, gin…)" aria-label="Chercher un cocktail">
-  <div class="chips" id="cats" role="group" aria-label="Alcool de base"></div>
-  <div class="chips tags" id="tags" role="group" aria-label="Style"></div>
+  <nav>
+    <button data-go="humeurs">Humeurs <i>du soir</i></button>
+    <button data-go="dujour">Le cocktail <i>du jour</i></button>
+    <button data-go="machine">La <i>machine</i></button>
+    <button data-go="carte">La <i>carte</i></button>
+    <button data-go="favoris">Mes <i>favoris</i></button>
+    <button data-go="soiree">Préparer <i>une soirée</i></button>
+    <button data-go="evenements">Un barman <i>pour vous</i></button>
+  </nav>
+  <p class="foot">Cocktails d'exception · Québec — À consommer avec modération.</p>
 </div>
 
-<div class="grid" id="grid"></div>
-<div class="empty" id="empty" hidden>Aucun cocktail ne correspond. Essaie un autre mot ou retire un filtre.</div>
+<main>
+<!-- a) Accueil -->
+<section class="hero" id="accueil">
+  <picture>
+    <source media="(min-width:1101px)" srcset="images/hero.webp">
+    <img src="images/hero-md.webp" alt="Comptoir d'un bar à cocktails tamisé, bouteilles éclairées" fetchpriority="high" width="1100" height="733">
+  </picture>
+  <div class="hero-in">
+    <div class="eyebrow h-anim">Cocktails d'exception · Québec</div>
+    <h1 class="h-anim d1">L'art du cocktail, <em class="g">verre après verre.</em></h1>
+    <p class="h-anim d2"><span class="js-count">52</span> recettes de bar, des grands classiques aux créations colorées. Choisis, je prépare.</p>
+    <div class="ctas h-anim d3">
+      <button class="pill" data-go="carte">Choisis ton cocktail</button>
+      <button class="pill ghost" id="surprise">Surprends-moi</button>
+    </div>
+    <div class="scroll-hint h-anim d4">Défile pour découvrir</div>
+  </div>
+</section>
+
+<!-- b) Humeurs -->
+<section class="block" id="humeurs">
+  <div class="wrap">
+    <div class="eyebrow reveal">Ce soir</div>
+    <h2 class="h2 reveal">Quelle est ton <em class="g">humeur</em> ce soir ?</h2>
+    <p class="lead reveal">Touche une humeur, je te montre les cocktails qui vont avec.</p>
+    <div class="moods" id="moods"></div>
+  </div>
+</section>
+
+<!-- c) Cocktail du jour -->
+<section class="block" id="dujour">
+  <div class="wrap">
+    <div class="eyebrow reveal" id="todayDate">Aujourd'hui</div>
+    <h2 class="h2 reveal">Le cocktail <em class="g">du jour</em></h2>
+    <article class="today reveal" id="today"></article>
+  </div>
+</section>
+
+<!-- d) Machine -->
+<section class="block" id="machine">
+  <div class="wrap">
+    <div class="eyebrow reveal">Laisse faire le hasard</div>
+    <h2 class="h2 reveal">Tu n'arrives pas <em class="g">à choisir ?</em></h2>
+    <div class="slot-card reveal">
+      <p class="lead" style="margin:0 auto 14px">Lance la machine : elle choisit pour toi.</p>
+      <div class="reel-frame"><div class="reel" id="reel" aria-live="polite"><ul id="reelList"></ul></div></div>
+      <button class="pill" id="spin">Lancer la machine</button>
+    </div>
+  </div>
+</section>
+
+<!-- e) Carte -->
+<section class="block" id="carte">
+  <div class="wrap">
+    <div class="eyebrow reveal">La carte</div>
+    <h2 class="h2 reveal"><span class="js-count">52</span> cocktails <em class="g">à découvrir</em></h2>
+    <div class="tools">
+      <div class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <input id="q" type="search" placeholder="Un cocktail, un ingrédient (menthe, gin…)" aria-label="Chercher un cocktail ou un ingrédient" autocomplete="off">
+      </div>
+      <div class="chips" id="cats" role="group" aria-label="Alcool de base"></div>
+      <div class="chips styles" id="styles" role="group" aria-label="Style"></div>
+      <div class="active-mood" id="activeMood"></div>
+    </div>
+    <div class="grid" id="grid"></div>
+    <p class="empty" id="empty" hidden>Aucun cocktail ne correspond. Essaie un autre mot ou retire un filtre.</p>
+    <p class="count-line" id="countLine"></p>
+  </div>
+</section>
+
+<!-- f) Soirée -->
+<section class="block" id="soiree">
+  <div class="wrap">
+    <div class="eyebrow reveal">Organisation</div>
+    <h2 class="h2 reveal">Préparer <em class="g">une soirée</em></h2>
+    <p class="lead reveal">Coche les cocktails que tu veux servir, indique le nombre d'invités : je calcule la liste de courses et je prépare la carte à montrer à tes invités.</p>
+    <div class="party">
+      <div class="panel reveal">
+        <h3>1. Les cocktails</h3>
+        <div class="search" style="margin-bottom:12px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+          <input id="pq" type="search" placeholder="Filtrer la liste" aria-label="Filtrer les cocktails à servir" autocomplete="off">
+        </div>
+        <div class="picks" id="picks" role="group" aria-label="Cocktails à servir"></div>
+        <div class="steppers">
+          <div class="stepper"><label for="guests">Invités</label><div><button data-step="guests" data-d="-1" aria-label="Moins d'invités">−</button><input id="guests" type="number" inputmode="numeric" min="1" max="500" value="20"><button data-step="guests" data-d="1" aria-label="Plus d'invités">+</button></div></div>
+          <div class="stepper"><label for="per">Verres / invité</label><div><button data-step="per" data-d="-1" aria-label="Moins de verres">−</button><input id="per" type="number" inputmode="numeric" min="1" max="10" value="3"><button data-step="per" data-d="1" aria-label="Plus de verres">+</button></div></div>
+        </div>
+      </div>
+      <div class="panel shop reveal" id="shop" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+
+<!-- g) Événements -->
+<section class="block" id="evenements">
+  <div class="wrap">
+    <div class="event reveal">
+      <div class="eyebrow">Service de bar</div>
+      <h2 class="h2">Un barman pour <em class="g">votre événement ?</em></h2>
+      <p class="lead">Anniversaires, mariages, soirées d'entreprise : je compose la carte avec vous, j'apporte le savoir-faire et je sers vos invités toute la soirée.</p>
+      <ul><li class="tag">Anniversaires</li><li class="tag">Mariages</li><li class="tag">Soirées d'entreprise</li><li class="tag">Bar sans alcool</li></ul>
+      <div class="ctas">
+        <a class="pill" id="callBtn" href="#">Appeler · <span id="phoneTxt"></span></a>
+        <a class="pill ghost" id="mailBtn" href="#">Écrire · <span id="mailTxt"></span></a>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- h) Pied de page -->
+<footer>
+  <div class="wrap">
+    <span class="logo">Le Bar <i>de Yann</i></span>
+    <p style="margin:0">Cocktails d'exception · Québec</p>
+    <p class="moderation">L'abus d'alcool est dangereux pour la santé. À consommer avec modération.</p>
+    <details>
+      <summary>Crédits photos</summary>
+      <p>Photos de cocktails et d'ingrédients : <a href="https://www.thecocktaildb.com" rel="noopener">TheCocktailDB</a>, sauf mention ci-dessous (Wikimedia Commons, licences libres) :</p>
+      <ol id="credits"></ol>
+    </details>
+  </div>
+</footer>
+
+<!-- Fiche cocktail -->
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="shName" aria-hidden="true">
+  <div class="bgph"><img id="shImg" alt=""></div>
+  <div class="sh-top">
+    <button class="icon-btn" id="shClose" aria-label="Fermer la fiche"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <button class="icon-btn" id="shFav" aria-label="Ajouter aux favoris" aria-pressed="false"></button>
+  </div>
+  <div class="scroller" id="shScroll">
+    <div class="spacer"></div>
+    <div class="body" id="shBody"></div>
+  </div>
+  <div class="actions">
+    <button class="pill ghost" id="shShare"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v13M7 8l5-5 5 5M5 14v5a2 2 0 002 2h10a2 2 0 002-2v-5"/></svg> Partager ce cocktail</button>
+    <button class="pill" id="shBar">Mode bar</button>
+  </div>
 </div>
 
-<div class="sheet-bg" id="sheetBg" role="dialog" aria-modal="true" aria-labelledby="sTitle">
-  <div class="sheet" id="sheet"></div>
+<!-- Mode bar -->
+<div class="barmode" id="barmode" role="dialog" aria-modal="true" aria-label="Mode bar">
+  <div class="hd"><span class="nm" id="bmName"></span><button class="icon-btn" id="bmClose" aria-label="Quitter le mode bar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="prog" id="bmProg"></div>
+  <div class="stage" id="bmStage" aria-live="polite"></div>
+  <p class="wake" id="bmWake"></p>
+  <div class="nav"><button class="pill ghost" id="bmPrev">Précédent</button><button class="pill" id="bmNext">Suivant</button></div>
 </div>
+
+<!-- Carte pour les invités -->
+<div class="menu-card" id="menuCard" role="dialog" aria-modal="true" aria-label="Carte des cocktails">
+  <div class="paper" id="menuPaper"></div>
+  <div class="bar-btns"><button class="pill ghost" id="mcClose">Fermer</button><button class="pill ghost" id="mcPrint">Imprimer</button><button class="pill" id="mcShare">Partager</button></div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
 
 <script>
+/* Coordonnées : remplace ces deux valeurs par ton numéro et ton courriel. */
+const PHONE = "[TÉLÉPHONE]";
+const EMAIL = "[EMAIL]";
+
+/* ---------- Recettes (inchangées) ---------- */
 const C = [
 /* ---------- WHISKY ---------- */
 {n:"Old Fashioned",b:"whisky",g:"rocks",c:["#d08a32","#8a4a12"],ice:"gros",gar:["twist-o","cherry"],m:"Remué",d:1,t:3,tags:["fort","classique"],
@@ -386,155 +792,420 @@ st:["Écrase les framboises et le basilic avec le sirop.","Ajoute le citron et l
 tip:"Prépare-la en grand pichet pour un bar sans alcool en événement."}
 ];
 
-/* ---------- Illustrations ---------- */
-const G = {
-  rocks:{p:"M24 62 L96 62 L91 140 Q90 146 84 146 L36 146 Q30 146 29 140 Z",top:76,rimL:24,rimR:96,rimY:62},
-  highball:{p:"M34 28 L86 28 L83 146 L37 146 Z",top:44,rimL:34,rimR:86,rimY:28},
-  coupe:{p:"M14 46 L106 46 Q102 86 60 89 Q18 86 14 46 Z",top:53,rimL:14,rimR:106,rimY:46,stem:[89,136]},
-  martini:{p:"M12 38 L108 38 L60 92 Z",top:46,rimL:12,rimR:108,rimY:38,stem:[92,136]},
-  flute:{p:"M44 18 L76 18 Q78 82 60 96 Q42 82 44 18 Z",top:32,rimL:44,rimR:76,rimY:18,stem:[96,136]},
-  wine:{p:"M28 30 L92 30 Q96 98 60 102 Q24 98 28 30 Z",top:56,rimL:28,rimR:92,rimY:30,stem:[102,136]},
-  hurricane:{p:"M36 22 L84 22 Q92 56 76 82 Q92 112 80 136 L40 136 Q28 112 44 82 Q28 56 36 22 Z",top:38,rimL:36,rimR:84,rimY:22,foot:1},
-  irish:{p:"M32 34 L88 34 L82 112 Q81 116 76 116 L44 116 Q39 116 38 112 Z",top:42,rimL:32,rimR:88,rimY:34,stem:[116,136],handle:1},
-  shot:{p:"M40 86 L80 86 L76 146 L44 146 Z",top:92,rimL:40,rimR:80,rimY:86},
-  mug:{metal:"#c8743c",metal2:"#e3a06c",rimL:28,rimR:88,rimY:52,top:56,handle:1},
-  julep:{metal:"#b9c2c6",metal2:"#e6ecee",rimL:30,rimR:90,rimY:50,top:54}
-};
-let uid=0;
-function art(c){
-  const id="g"+(uid++); const gl=G[c.g]; let s=`<svg viewBox="0 0 120 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${c.n}"><defs>`;
-  const stops=c.layers?c.layers.map(l=>`<stop offset="${l[0]}" stop-color="${l[1]}"/>`).join(""):`<stop offset="0" stop-color="${c.c[0]}"/><stop offset="1" stop-color="${c.c[1]}"/>`;
-  s+=`<linearGradient id="${id}l" x1="0" y1="0" x2="0" y2="1">${stops}</linearGradient>`;
-  s+=`<radialGradient id="${id}h" cx=".5" cy=".6" r=".55"><stop offset="0" stop-color="${c.c[0]}" stop-opacity=".35"/><stop offset="1" stop-color="${c.c[0]}" stop-opacity="0"/></radialGradient>`;
-  if(gl.p) s+=`<clipPath id="${id}c"><path d="${gl.p}"/></clipPath>`;
-  s+=`</defs><ellipse cx="60" cy="96" rx="58" ry="62" fill="url(#${id}h)"/>`;
-  // garnitures derrière le verre
-  s+=garnish(c,gl,"back");
-  if(gl.metal){
-    s+=`<ellipse cx="60" cy="${gl.rimY+2}" rx="${(gl.rimR-gl.rimL)/2-2}" ry="5" fill="url(#${id}l)"/>`;
-    if(c.ice==="pilee"||c.ice==="cube") for(let i=0;i<5;i++) s+=`<rect x="${38+i*9}" y="${gl.rimY-4+(i%2)*3}" width="9" height="7" rx="2" fill="#fff" opacity=".55"/>`;
-    s+=`<path d="M${gl.rimL} ${gl.rimY} L${gl.rimR} ${gl.rimY} L${gl.rimR-4} 146 L${gl.rimL+4} 146 Z" fill="${gl.metal}"/>`;
-    s+=`<path d="M${gl.rimL+8} ${gl.rimY+6} L${gl.rimL+12} 140" stroke="${gl.metal2}" stroke-width="5" opacity=".7" stroke-linecap="round"/>`;
-    s+=`<ellipse cx="60" cy="${gl.rimY}" rx="${(gl.rimR-gl.rimL)/2}" ry="5" fill="none" stroke="${gl.metal2}" stroke-width="2"/>`;
-    if(gl.handle) s+=`<path d="M${gl.rimR-2} 70 Q${gl.rimR+20} 72 ${gl.rimR+18} 98 Q${gl.rimR+16} 122 ${gl.rimR-4} 124" fill="none" stroke="${gl.metal}" stroke-width="7"/>`;
-    if(c.g==="julep") for(let i=0;i<14;i++) s+=`<circle cx="${36+(i*7)%48}" cy="${66+(i*13)%70}" r="1.6" fill="#fff" opacity=".6"/>`;
-  } else {
-    if(gl.stem){ s+=`<line x1="60" y1="${gl.stem[0]}" x2="60" y2="${gl.stem[1]}" stroke="rgba(255,255,255,.55)" stroke-width="3"/><ellipse cx="60" cy="${gl.stem[1]+2}" rx="24" ry="4" fill="rgba(255,255,255,.12)" stroke="rgba(255,255,255,.55)" stroke-width="2"/>`; }
-    if(gl.foot) s+=`<ellipse cx="60" cy="140" rx="26" ry="5" fill="rgba(255,255,255,.12)" stroke="rgba(255,255,255,.55)" stroke-width="2"/>`;
-    if(gl.handle) s+=`<path d="M87 48 Q108 52 104 76 Q101 96 84 98" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="3"/>`;
-    s+=`<g clip-path="url(#${id}c)"><rect x="0" y="${gl.top}" width="120" height="${160-gl.top}" fill="url(#${id}l)"/>`;
-    if(c.foam){ s+=`<rect x="0" y="${gl.top}" width="120" height="7" fill="${typeof c.foam==="string"?c.foam:"#fbf6e8"}"/>`; }
-    if(c.ice==="cube"||c.ice==="gros"||c.ice==="pilee"){
-      if(c.ice==="gros") s+=`<rect x="${(gl.rimL+gl.rimR)/2-20}" y="${gl.top+8}" width="40" height="38" rx="6" fill="#fff" opacity=".28" stroke="#fff" stroke-opacity=".5"/>`;
-      else { const n=c.ice==="pilee"?16:6, w=c.ice==="pilee"?9:17; for(let i=0;i<n;i++){ const x=gl.rimL+6+((i*23)%(gl.rimR-gl.rimL-14)), y=gl.top+4+((i*31)%60); s+=`<rect x="${x}" y="${y}" width="${w}" height="${w}" rx="3" transform="rotate(${(i*17)%30-15} ${x+w/2} ${y+w/2})" fill="#fff" opacity="${c.ice==="pilee"?.32:.24}" stroke="#fff" stroke-opacity=".45"/>`; } }
-    }
-    if(c.bub) for(let i=0;i<14;i++){ s+=`<circle cx="${gl.rimL+8+((i*29)%(gl.rimR-gl.rimL-14))}" cy="${gl.top+10+((i*37)%90)}" r="${1+(i%3)*.6}" fill="#fff" opacity=".7"/>`; }
-    s+=`</g>`;
-    s+=`<path d="${gl.p}" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.6)" stroke-width="2.2" stroke-linejoin="round"/>`;
-    s+=`<path d="M${gl.rimL+7} ${gl.rimY+8} L${gl.rimL+(c.g==="martini"?24:9)} ${gl.rimY+(c.g==="martini"?22:44)}" stroke="#fff" stroke-width="3" opacity=".3" stroke-linecap="round"/>`;
-    if(c.rim){ const col=c.rim==="sel"?"#ffffff":c.rim==="sucre"?"#fff7df":"#d9502b"; for(let x=gl.rimL+2;x<=gl.rimR-2;x+=3.2) s+=`<circle cx="${x}" cy="${gl.rimY+1.5+((x*7)%3)}" r="1.5" fill="${col}"/>`; }
-  }
-  s+=garnish(c,gl,"front");
-  return s+`</svg>`;
-}
-function wheel(x,y,r,col,inner){let s=`<circle cx="${x}" cy="${y}" r="${r}" fill="${col}"/><circle cx="${x}" cy="${y}" r="${r-2.5}" fill="${inner}"/>`;for(let a=0;a<6;a++){const t=a*Math.PI/3;s+=`<line x1="${x}" y1="${y}" x2="${x+Math.cos(t)*(r-3)}" y2="${y+Math.sin(t)*(r-3)}" stroke="${col}" stroke-width="1.2"/>`;}return s;}
-function leaf(x,y,rot,col){return `<ellipse cx="${x}" cy="${y}" rx="5" ry="10" transform="rotate(${rot} ${x} ${y})" fill="${col}"/><line x1="${x}" y1="${y-8}" x2="${x}" y2="${y+8}" transform="rotate(${rot} ${x} ${y})" stroke="#1f5a22" stroke-width=".8"/>`;}
-function garnish(c,gl,layer){
-  let s=""; const R=gl.rimR, L=gl.rimL, Y=gl.rimY, mid=(L+R)/2;
-  for(const g of c.gar){
-    if(layer==="back"){
-      if(g==="straw") s+=`<line x1="${R-14}" y1="${Y+40}" x2="${R+6}" y2="${Y-30}" stroke="#e8e8e8" stroke-width="4" stroke-linecap="round"/><line x1="${R-14}" y1="${Y+40}" x2="${R+6}" y2="${Y-30}" stroke="${c.c[1]}" stroke-width="4" stroke-dasharray="4 5" opacity=".7"/>`;
-      if(g==="mint") s+=leaf(L+10,Y-10,-25,"#3fae4a")+leaf(L+20,Y-16,5,"#4cc357")+leaf(L+29,Y-9,30,"#36a043");
-      if(g==="basil") s+=leaf(mid-6,Y-8,-20,"#2f8f3a")+leaf(mid+6,Y-9,22,"#3aa346");
-      if(g==="celery") s+=`<rect x="${R-20}" y="${Y-34}" width="7" height="70" rx="3" fill="#8fcf5a"/>`+leaf(R-17,Y-38,-15,"#6dbb44")+leaf(R-12,Y-40,20,"#7ccc4c");
-      if(g==="umbrella") s+=`<line x1="${L+12}" y1="${Y+10}" x2="${L+4}" y2="${Y-30}" stroke="#d9c8a0" stroke-width="2"/><path d="M${L-14} ${Y-26} Q${L+4} ${Y-50} ${L+22} ${Y-34} Z" fill="#ff5f7e"/><path d="M${L-14} ${Y-26} Q${L+4} ${Y-40} ${L+22} ${Y-34}" fill="none" stroke="#fff" stroke-width="1" opacity=".6"/>`;
-    } else {
-      if(g==="lime") s+=wheel(R-2,Y-2,12,"#4c9a2a","#b7e07a");
-      if(g==="lemon") s+=wheel(R-2,Y-2,12,"#e7c021","#fff09a");
-      if(g==="orange") s+=wheel(R-2,Y-2,13,"#e9771b","#ffc46b");
-      if(g==="grapefruit") s+=wheel(R-2,Y-2,13,"#e8693f","#ff9f8a");
-      if(g==="cucumber") s+=wheel(L+8,Y+18,10,"#2f7d38","#d6f0c0");
-      if(g==="twist-o"||g==="twist-l") s+=`<path d="M${R-26} ${Y+4} q6 -10 12 0 t12 0 t10 -6" fill="none" stroke="${g==="twist-o"?"#f08a24":"#f2d23a"}" stroke-width="4" stroke-linecap="round"/>`;
-      if(g==="cherry") s+=`<path d="M${mid+4} ${gl.top+8} q4 -18 14 -22" fill="none" stroke="#5a3a1a" stroke-width="1.6"/><circle cx="${mid+3}" cy="${gl.top+10}" r="6.5" fill="#b3122b"/><circle cx="${mid+1}" cy="${gl.top+8}" r="2" fill="#fff" opacity=".5"/>`;
-      if(g==="olive") s+=`<line x1="${mid-14}" y1="${gl.top-14}" x2="${mid+10}" y2="${gl.top+22}" stroke="#d9c8a0" stroke-width="2"/><ellipse cx="${mid}" cy="${gl.top+8}" rx="6" ry="8" fill="#7a8f2a"/><circle cx="${mid}" cy="${gl.top+5}" r="2.3" fill="#c0392b"/>`;
-      if(g==="pineapple") s+=`<path d="M${R-6} ${Y+6} L${R+16} ${Y+6} L${R+5} ${Y-16} Z" fill="#ffd34d"/><path d="M${R+5} ${Y-16} l-6 -14 M${R+5} ${Y-16} l2 -16 M${R+5} ${Y-16} l8 -12" stroke="#3a9a3a" stroke-width="3" stroke-linecap="round"/>`;
-      if(g==="coffee") for(let i=-1;i<=1;i++) s+=`<ellipse cx="${mid+i*9}" cy="${gl.top+2}" rx="3.6" ry="2.4" fill="#3a1d0c"/><line x1="${mid+i*9-2.5}" y1="${gl.top+2}" x2="${mid+i*9+2.5}" y2="${gl.top+2}" stroke="#8a5a3a" stroke-width=".7"/>`;
-      if(g==="berry") for(let i=0;i<3;i++) s+=`<circle cx="${R-12+i*7}" cy="${Y-4-(i%2)*5}" r="5" fill="#3d0f33"/><circle cx="${R-13+i*7}" cy="${Y-6-(i%2)*5}" r="1.5" fill="#fff" opacity=".4"/>`;
-      if(g==="raspberry") for(let i=0;i<2;i++) s+=`<circle cx="${R-10+i*8}" cy="${Y-4-i*3}" r="5" fill="#e0284f"/>`;
-      if(g==="strawberry") s+=`<path d="M${R-10} ${Y-10} q10 -4 20 0 q-2 14 -10 20 q-8 -6 -10 -20 Z" fill="#e5293d"/><path d="M${R-10} ${Y-10} l5 -5 l5 4 l5 -4 l5 5" fill="#3a9a3a"/>`;
-      if(g==="passion") s+=`<ellipse cx="${mid}" cy="${gl.top+2}" rx="11" ry="5" fill="#f2b81e" stroke="#7b2d6b" stroke-width="2"/><circle cx="${mid-3}" cy="${gl.top+2}" r="1.2" fill="#222"/><circle cx="${mid+3}" cy="${gl.top+1}" r="1.2" fill="#222"/>`;
-      if(g==="ginger") s+=`<rect x="${R-14}" y="${Y-8}" width="12" height="9" rx="3" fill="#e9c27a" transform="rotate(-12 ${R-8} ${Y-4})"/>`;
-      if(g==="jalapeno") s+=wheel(R-4,Y-2,9,"#2f8a2f","#b8e08a");
-      if(g==="choco") for(let i=0;i<9;i++) s+=`<rect x="${mid-16+(i*7)%32}" y="${gl.top+((i*5)%4)}" width="3" height="2" fill="#3a1d0c"/>`;
-    }
-  }
-  return s;
-}
+/* ---------- Photos téléchargées dans /images ---------- */
+const IMG = {"slugs":{"Old Fashioned":"old-fashioned","Whiskey Sour":"whiskey-sour","Manhattan":"manhattan","Boulevardier":"boulevardier","Penicillin":"penicillin","Mint Julep":"mint-julep","Irish Coffee":"irish-coffee","Whisky Highball":"whisky-highball","Mojito":"mojito","Daiquiri":"daiquiri","Daiquiri fraise":"daiquiri-fraise","Piña Colada":"pina-colada","Mai Tai":"mai-tai","Dark 'n' Stormy":"dark-n-stormy","Caïpirinha":"caipirinha","Moscow Mule":"moscow-mule","Cosmopolitan":"cosmopolitan","Espresso Martini":"espresso-martini","Pornstar Martini":"pornstar-martini","Sex on the Beach":"sex-on-the-beach","Bloody Mary":"bloody-mary","Blue Lagoon":"blue-lagoon","Lemon Drop":"lemon-drop","White Russian":"white-russian","Gin Tonic":"gin-tonic","Negroni":"negroni","Tom Collins":"tom-collins","Bramble":"bramble","Gin Basil Smash":"gin-basil-smash","French 75":"french-75","Aviation":"aviation","Clover Club":"clover-club","Dry Martini":"dry-martini","Margarita":"margarita","Margarita mangue glacée":"margarita-mangue-glacee","Paloma":"paloma","Tequila Sunrise":"tequila-sunrise","Margarita épicée":"margarita-epicee","Aperol Spritz":"aperol-spritz","Hugo Spritz":"hugo-spritz","Kir Royal":"kir-royal","Bellini":"bellini","Grasshopper":"grasshopper","Blue Hawaiian":"blue-hawaiian","B-52":"b-52","Baby Guinness":"baby-guinness","Foléré Fizz":"folere-fizz","Virgin Mojito":"virgin-mojito","Shirley Temple":"shirley-temple","Virgin Piña Colada":"virgin-pina-colada","Sunset sans alcool":"sunset-sans-alcool","Limonade framboise-basilic":"limonade-framboise-basilic"},"credits":[{"for":"Old Fashioned","title":"Old Fashioned","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/11001"},{"for":"Whiskey Sour","title":"Whiskey Sour","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/11004"},{"for":"Manhattan","title":"Manhattan","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/11008"},{"for":"Boulevardier","title":"Boulevardier","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/17251"},{"for":"Penicillin","title":"Penicillin","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/17829"},{"for":"Mint Julep","title":"Mint Julep","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/17206"},{"for":"Irish Coffee","title":"Irish Coffee","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/13971"},{"for":"Whisky Highball","title":"Bermuda Highball","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/11084"},{"for":"Mojito","title":"Mojito","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/11000"},{"for":"Daiquiri","title":"Daiquiri","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/11006"},{"for":"Daiquiri fraise","title":"Strawberry Daiquiri","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/12316"},{"for":"Piña Colada","title":"Pina Colada","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/17207"},{"for":"Mai Tai","title":"Mai Tai","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/11690"},{"for":"Dark 'n' Stormy","title":"Dark and Stormy","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/17211"},{"for":"Caïpirinha","title":"Caipirinha","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/11202"},{"for":"Moscow Mule","title":"Moscow Mule","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/11009"},{"for":"Cosmopolitan","title":"Cosmopolitan","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/17196"},{"for":"Espresso Martini","title":"Espresso Martini","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/17212"},{"for":"Pornstar Martini","title":"Pornstar Martini","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/178357"},{"for":"Sex on the Beach","title":"Sex on the Beach","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/12754"},{"for":"Bloody Mary","title":"Bloody Mary","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/11113"},{"for":"Blue Lagoon","title":"Blue Lagoon","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/11117"},{"for":"Lemon Drop","title":"Lemon Drop","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/14366"},{"for":"White Russian","title":"White Russian","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/12528"},{"for":"Gin Tonic","title":"Gin And Tonic","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/11403"},{"for":"Negroni","title":"Negroni","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/11003"},{"for":"Tom Collins","title":"Tom Collins","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/12402"},{"for":"Bramble","title":"Bramble","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/17210"},{"for":"Gin Basil Smash","title":"Gin Basil Smash","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/178314"},{"for":"French 75","title":"French 75","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/17197"},{"for":"Aviation","title":"Aviation","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/17180"},{"for":"Clover Club","title":"Clover Club","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/17186"},{"for":"Dry Martini","title":"Dry Martini","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/11005"},{"for":"Margarita","title":"Margarita","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/11007"},{"for":"Margarita mangue glacée","title":"Mango Tango, Hard Rock Cafe Paris.jpg","artist":"Flavio Ensiki","lic":"CC BY 2.0","url":"https://commons.wikimedia.org/wiki/File:Mango_Tango,_Hard_Rock_Cafe_Paris.jpg","src":"Wikimedia Commons"},{"for":"Paloma","title":"Paloma","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/17253"},{"for":"Tequila Sunrise","title":"Tequila Sunrise","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/13621"},{"for":"Margarita épicée","title":"MargaritaReal.jpg","artist":"Akke Monasso","lic":"CC BY-SA 3.0","url":"https://commons.wikimedia.org/wiki/File:MargaritaReal.jpg","src":"Wikimedia Commons"},{"for":"Aperol Spritz","title":"Aperol Spritz","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/178325"},{"for":"Hugo Spritz","title":"15-09-26-RalfR-WLC-0059.jpg","artist":"Ralf Roletschek","lic":"CC BY-SA 3.0","url":"https://commons.wikimedia.org/wiki/File:15-09-26-RalfR-WLC-0059.jpg","src":"Wikimedia Commons"},{"for":"Kir Royal","title":"Kir Royale","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/13837"},{"for":"Bellini","title":"Bellini","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/17195"},{"for":"Grasshopper","title":"Grasshopper","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/17200"},{"for":"Blue Hawaiian","title":"Koh Lipe & Blue Hawaii 💚💙.jpg","artist":"Sharon Hahn Darlin","lic":"CC BY 2.0","url":"https://commons.wikimedia.org/wiki/File:Koh_Lipe_%26_Blue_Hawaii_%F0%9F%92%9A%F0%9F%92%99.jpg","src":"Wikimedia Commons"},{"for":"B-52","title":"B-52","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/15853"},{"for":"Baby Guinness","title":"Baby Guinness","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/17079"},{"for":"Foléré Fizz","title":"Sparkling Hibiscus Iced Tea with Raspberry & Tarragon - GAIL's 2025-07-14.jpg","artist":"Andy Li","lic":"CC0","url":"https://commons.wikimedia.org/wiki/File:Sparkling_Hibiscus_Iced_Tea_with_Raspberry_%26_Tarragon_-_GAIL%27s_2025-07-14.jpg","src":"Wikimedia Commons"},{"for":"Virgin Mojito","title":"Limeade","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/12704"},{"for":"Shirley Temple","title":"Shirley Temple (16426317324).jpg","artist":"Marie from Malang, East Java, Indonesia","lic":"CC BY-SA 2.0","url":"https://commons.wikimedia.org/wiki/File:Shirley_Temple_(16426317324).jpg","src":"Wikimedia Commons"},{"for":"Virgin Piña Colada","title":"Pina Colada at Aruba.jpg","artist":"DDJJ","lic":"CC BY-SA 4.0","url":"https://commons.wikimedia.org/wiki/File:Pina_Colada_at_Aruba.jpg","src":"Wikimedia Commons"},{"for":"Sunset sans alcool","title":"Amaretto Sunrise","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/14578"},{"for":"Limonade framboise-basilic","title":"Raspberry Cooler","src":"TheCocktailDB","url":"https://www.thecocktaildb.com/drink/17167"},{"for":"Accueil","title":"Casa Classic Cocktail Bar & Jazz Club by Roland Barrera.jpg","artist":"Roland Barrera","lic":"CC BY-SA 4.0","url":"https://commons.wikimedia.org/wiki/File:Casa_Classic_Cocktail_Bar_%26_Jazz_Club_by_Roland_Barrera.jpg","src":"Wikimedia Commons"},{"for":"Ingrédient : framboises","title":"Raspberries (40971).jpg","artist":"Rhododendrites","lic":"CC BY-SA 4.0","url":"https://commons.wikimedia.org/wiki/File:Raspberries_(40971).jpg","src":"Wikimedia Commons"},{"for":"Ingrédient : jalapeno","title":"Liat Portal for Foodie Disorder - Jalapeño Peppers.jpg","artist":"HaJunkiyada","lic":"CC BY-SA 4.0","url":"https://commons.wikimedia.org/wiki/File:Liat_Portal_for_Foodie_Disorder_-_Jalape%C3%B1o_Peppers.jpg","src":"Wikimedia Commons"},{"for":"Ingrédient : hibiscus","title":"Zobo leaf seller.jpg","artist":"Major Lyte","lic":"CC BY-SA 4.0","url":"https://commons.wikimedia.org/wiki/File:Zobo_leaf_seller.jpg","src":"Wikimedia Commons"}],"ing":{"Angostura bitters":"angostura-bitters","Angostura sur la mousse":"angostura-bitters","Aperol":"aperol","Basilic":"basil","Basilic frais":"basil","Blanc d'œuf":"egg-white","Blanc d'œuf (optionnel)":"egg-white","Bourbon":"bourbon","Cachaça":"cachaca","Café filtre chaud":"coffee","Campari":"campari","Cerise":"maraschino-cherry","Cerise à cocktail":"maraschino-cherry","Cerise à cocktail (optionnel)":"maraschino-cherry","Champagne ou mousseux":"champagne","Cointreau":"cointreau","Crème 10 % ou 15 %":"heavy-cream","Crème 35 %":"heavy-cream","Crème 35 % légèrement fouettée":"heavy-cream","Crème de cacao blanche":"creme-de-cacao","Crème de cassis":"creme-de-cassis","Crème de coco":"cream-of-coconut","Crème de coco (Coco López)":"cream-of-coconut","Crème de menthe verte":"green-creme-de-menthe","Crème de mûre":"creme-de-mure","Crème de violette":"creme-de-violette","Crème irlandaise (Baileys)":"baileys-irish-cream","Curaçao bleu":"blue-curacao","Curaçao orange (ou Cointreau)":"orange-curacao","Espresso frais":"espresso","Fraises fraîches":"strawberries","Gin":"gin","Ginger ale":"gin","Ginger beer":"gin","Glace":"ice","Grains de café":"coffee","Grand Marnier":"grand-marnier","Grenadine":"grenadine","Jus d'ananas":"pineapple-juice","Jus d'orange":"orange-juice","Jus de canneberge":"cranberry-juice","Jus de citron":"lemon-juice","Jus de citron frais":"lemon-juice","Jus de lime":"lime-juice","Jus de lime (optionnel)":"lime-juice","Jus de lime frais":"lime-juice","Jus de tomate":"tomato-juice","Lime coupée en quartiers":"lime","Limonade (ou Sprite)":"lemonade","Liqueur de café":"kahlua","Liqueur de café (Kahlúa)":"kahlua","Liqueur de marasquin":"maraschino-liqueur","Liqueur de passion (Passoa)":"passoa","Liqueur de sureau (St-Germain)":"st-germain","Mangue congelée":"mango","Menthe":"mint","Menthe fraîche":"mint","Menthe pour décorer":"mint","Olive ou zeste de citron":"olive","Orange bitters (optionnel)":"orange-bitters","Prosecco":"prosecco","Prosecco (à côté)":"prosecco","Purée de fruit de la passion":"passion-fruit-juice","Purée de pêche blanche":"peach-nectar","Rhum agricole ou ambré":"gold-rum","Rhum ambré jamaïcain":"gold-rum","Rhum blanc":"light-rum","Rhum blanc ou ambré":"light-rum","Rhum brun (Gosling's)":"dark-rum","Rondelle de lime ou concombre":"cucumber","Sauce Worcestershire":"worcestershire-sauce","Schnapps à la pêche":"peach-schnapps","Scotch blended":"blended-scotch","Scotch tourbé (Laphroaig, Ardbeg)":"islay-single-malt-scotch","Sel":"salt","Sel de céleri et poivre":"celery-salt","Sel pour le bord":"salt","Sirop d'agave":"agave-syrup","Sirop d'agave (optionnel)":"agave-syrup","Sirop d'orgeat (amande)":"orgeat-syrup","Sirop de cassonade":"brown-sugar","Sirop de gingembre (ou simple)":"ginger-syrup","Sirop de vanille":"vanilla-syrup","Sirop miel-gingembre":"honey-syrup","Sirop simple":"sugar-syrup","Sirop simple (optionnel)":"sugar-syrup","Sirop simple (ou 1 cube de sucre)":"sugar-syrup","Soda":"soda-water","Soda (eau gazeuse)":"soda-water","Soda (eau gazeuse) bien froid":"soda-water","Soda ou Sprite":"sprite","Soda pamplemousse (Jarritos, Fresca)":"grapefruit-juice","Sucre":"sugar","Sucre pour le bord":"sugar","Tabasco":"tabasco-sauce","Tequila":"tequila","Tequila 100 % agave":"tequila","Tonic bien froid":"tonic-water","Tranche ou zeste d'orange":"orange-peel","Triple sec":"triple-sec","Vermouth dry":"dry-vermouth","Vermouth rouge":"sweet-vermouth","Version alcoolisée : gin ou rhum (optionnel)":"gin","Vodka":"vodka","Vodka citron":"citrus-vodka","Vodka vanille":"vanilla-vodka","Whiskey irlandais (Jameson)":"irish-whiskey","Whisky (bourbon ou canadien)":"blended-whiskey","Whisky rye (ou bourbon)":"rye-whiskey","Zeste d'orange":"orange-peel","Zeste de citron":"lemon-peel","Framboises":"framboises","Framboises fraîches":"framboises","Jalapeño":"jalapeno","Infusion de foléré froide":"hibiscus"}};
 
-/* ---------- Filtres & rendu ---------- */
-const CATS=[["tous","Tous"],["fav","★ Favoris"],["whisky","Whisky"],["rhum","Rhum"],["vodka","Vodka"],["gin","Gin"],["tequila","Tequila"],["bulles","Bulles & spritz"],["creme","Crémeux"],["shot","Shots"],["sans","Sans alcool"]];
+/* ---------- Profils : 2 mots, goût [sucré, acide, amer, force] sur 5, anecdote ---------- */
+const X = {
+"Old Fashioned":{k:"Bourbon · Zeste",p:[2,0,2,5],a:"En 1806, un journal de New York définit le « cocktail » comme un mélange de spiritueux, de sucre, d'eau et d'amers. L'Old Fashioned, c'est cette recette d'origine, servie « à l'ancienne »."},
+"Whiskey Sour":{k:"Bourbon · Citron",p:[3,4,1,3]},
+"Manhattan":{k:"Rye · Vermouth",p:[2,0,2,5],a:"Né à New York à la fin du XIXe siècle, il porte le nom de l'arrondissement où il est apparu."},
+"Boulevardier":{k:"Bourbon · Campari",p:[2,0,4,5],a:"Il apparaît en 1927 dans le livre de Harry MacElhone, du Harry's New York Bar à Paris. Son nom vient du magazine parisien de l'écrivain Erskine Gwynne."},
+"Penicillin":{k:"Scotch · Gingembre",p:[3,3,1,4],a:"Créé en 2005 par Sam Ross au bar Milk & Honey, à New York. C'est déjà un classique moderne."},
+"Mint Julep":{k:"Bourbon · Menthe",p:[2,0,0,5],a:"C'est la boisson officielle du Kentucky Derby, la grande course hippique américaine, depuis 1938."},
+"Irish Coffee":{k:"Whiskey · Café",p:[3,0,2,2],a:"Inventé dans les années 1940 par Joe Sheridan, chef à l'aéroport de Foynes en Irlande, pour réchauffer des voyageurs transatlantiques."},
+"Whisky Highball":{k:"Whisky · Bulles",p:[0,0,0,2]},
+"Mojito":{k:"Rhum · Menthe",p:[3,3,0,2],a:"Un classique de Cuba, servi depuis des décennies dans les bars de La Havane."},
+"Daiquiri":{k:"Rhum · Lime",p:[2,4,0,3],a:"Il doit son nom à une plage et à une mine de fer près de Santiago de Cuba, vers 1900."},
+"Daiquiri fraise":{k:"Rhum · Fraise",p:[3,3,0,3]},
+"Piña Colada":{k:"Rhum · Coco",p:[5,1,0,2],a:"C'est la boisson nationale de Porto Rico depuis 1978."},
+"Mai Tai":{k:"Rhum · Amande",p:[3,3,1,4],a:"Revendiqué par Trader Vic à Oakland en 1944. « Maita'i » veut dire « excellent » en tahitien."},
+"Dark 'n' Stormy":{k:"Rhum · Gingembre",p:[3,1,0,3],a:"Né aux Bermudes, avec le rhum Gosling's : la marque en a même déposé le nom."},
+"Caïpirinha":{k:"Cachaça · Lime",p:[3,4,0,4],a:"Le cocktail national du Brésil. La cachaça est une eau-de-vie de jus de canne à sucre."},
+"Moscow Mule":{k:"Vodka · Gingembre",p:[2,2,0,2],a:"Créé aux États-Unis au début des années 1940 pour faire connaître la vodka Smirnoff et une ginger beer qui se vendaient mal."},
+"Cosmopolitan":{k:"Vodka · Canneberge",p:[3,3,1,3]},
+"Espresso Martini":{k:"Vodka · Café",p:[3,0,3,3],a:"Créé à Londres à la fin des années 1980 par Dick Bradsell, pour une cliente qui voulait un verre qui la « réveille »."},
+"Pornstar Martini":{k:"Vanille · Passion",p:[4,3,0,3],a:"Créé en 2002 à Londres par le barman Douglas Ankrah."},
+"Sex on the Beach":{k:"Vodka · Pêche",p:[4,2,0,2]},
+"Bloody Mary":{k:"Vodka · Tomate",p:[0,2,1,2],a:"Le barman Fernand Petiot affirmait l'avoir créé au Harry's New York Bar, à Paris, dans les années 1920."},
+"Blue Lagoon":{k:"Vodka · Curaçao",p:[4,2,0,2]},
+"Lemon Drop":{k:"Vodka · Citron",p:[4,4,0,3]},
+"White Russian":{k:"Vodka · Crème",p:[4,0,1,3],a:"Rendu culte en 1998 par le film The Big Lebowski, où c'est la boisson du « Dude »."},
+"Gin Tonic":{k:"Gin · Tonic",p:[1,1,2,2]},
+"Negroni":{k:"Gin · Campari",p:[2,0,5,5],a:"Né à Florence vers 1919 : le comte Camillo Negroni aurait demandé de remplacer l'eau gazeuse de son Americano par du gin."},
+"Tom Collins":{k:"Gin · Citron",p:[3,3,0,2]},
+"Bramble":{k:"Gin · Mûre",p:[3,3,0,3],a:"Créé en 1984 à Londres par Dick Bradsell, le même barman que l'Espresso Martini."},
+"Gin Basil Smash":{k:"Gin · Basilic",p:[3,3,1,3],a:"Créé en 2008 par Jörg Meyer au bar Le Lion, à Hambourg."},
+"French 75":{k:"Gin · Champagne",p:[2,3,0,3],a:"Son nom vient du canon de 75 mm de l'armée française de la Première Guerre mondiale : il « frappe » aussi fort."},
+"Aviation":{k:"Gin · Violette",p:[2,3,1,4],a:"Publié en 1916 par Hugo Ensslin, barman à New York. La crème de violette lui donne sa couleur de ciel."},
+"Clover Club":{k:"Gin · Framboise",p:[3,3,0,3],a:"Il doit son nom à un club de Philadelphie, à la fin du XIXe siècle."},
+"Dry Martini":{k:"Gin · Vermouth",p:[0,0,1,5]},
+"Margarita":{k:"Tequila · Lime",p:[2,4,0,4]},
+"Margarita mangue glacée":{k:"Tequila · Mangue",p:[4,3,0,3]},
+"Paloma":{k:"Tequila · Pamplemousse",p:[2,3,1,2]},
+"Tequila Sunrise":{k:"Tequila · Orange",p:[4,1,0,2]},
+"Margarita épicée":{k:"Tequila · Jalapeño",p:[2,4,0,4]},
+"Aperol Spritz":{k:"Aperol · Prosecco",p:[2,1,3,1],a:"L'Aperol est né à Padoue, en Italie, en 1919."},
+"Hugo Spritz":{k:"Sureau · Menthe",p:[3,1,0,1],a:"Créé en 2005 dans le Haut-Adige, au nord de l'Italie, par le barman Roland Gruber."},
+"Kir Royal":{k:"Cassis · Champagne",p:[3,1,0,2],a:"Le Kir doit son nom au chanoine Félix Kir, maire de Dijon, qui servait du vin blanc au cassis lors des réceptions."},
+"Bellini":{k:"Pêche · Prosecco",p:[3,1,0,1],a:"Créé au Harry's Bar de Venise par Giuseppe Cipriani. Sa couleur lui rappelait un tableau du peintre Giovanni Bellini."},
+"Grasshopper":{k:"Menthe · Cacao",p:[5,0,0,2],a:"On l'attribue à Philibert Guichet, du restaurant Tujague's à La Nouvelle-Orléans."},
+"Blue Hawaiian":{k:"Rhum · Coco",p:[5,1,0,2]},
+"B-52":{k:"Café · Orange",p:[5,0,1,4]},
+"Baby Guinness":{k:"Café · Crème",p:[5,0,1,3]},
+"Foléré Fizz":{k:"Hibiscus · Gingembre",p:[3,3,1,0],a:"Le foléré, qu'on appelle aussi bissap, est une boisson d'hibiscus très populaire au Cameroun et en Afrique de l'Ouest."},
+"Virgin Mojito":{k:"Lime · Menthe",p:[3,3,0,0]},
+"Shirley Temple":{k:"Grenadine · Gingembre",p:[4,1,0,0],a:"Il porte le nom de Shirley Temple, l'enfant-star d'Hollywood des années 1930."},
+"Virgin Piña Colada":{k:"Ananas · Coco",p:[5,1,0,0]},
+"Sunset sans alcool":{k:"Orange · Grenadine",p:[4,1,0,0]},
+"Limonade framboise-basilic":{k:"Framboise · Basilic",p:[3,3,0,0]}
+};
+
+const MOODS = [
+ {id:"fruite",t:"Fruité & coloré",ex:["Cosmopolitan","Daiquiri fraise"],c:"#e0457b",img:"Cosmopolitan",f:c=>c.tags.includes("fruité")||c.tags.includes("coloré")},
+ {id:"frais",t:"Frais & mentholé",ex:["Mojito","Hugo Spritz"],c:"#2fa36b",img:"Mojito",f:c=>c.tags.includes("menthe")||c.tags.includes("herbes")},
+ {id:"fort",t:"Fort & classique",ex:["Old Fashioned","Negroni"],c:"#c4842a",img:"Old Fashioned",f:c=>c.tags.includes("fort")||c.tags.includes("classique")||c.tags.includes("amer")},
+ {id:"tropical",t:"Tropical",ex:["Piña Colada","Mai Tai"],c:"#e1b52c",img:"Piña Colada",f:c=>c.tags.includes("tropical")},
+ {id:"petillant",t:"Pétillant",ex:["Aperol Spritz","French 75"],c:"#ee6e22",img:"Aperol Spritz",f:c=>c.tags.includes("pétillant")},
+ {id:"sans",t:"Sans alcool",ex:["Foléré Fizz","Virgin Mojito"],c:"#2f7fd6",img:"Foléré Fizz",f:c=>c.b==="sans"}
+];
+const CATS=[["tous","Tous"],["whisky","Whisky"],["rhum","Rhum"],["vodka","Vodka"],["gin","Gin"],["tequila","Tequila"],["bulles","Bulles"],["sans","Sans alcool"],["fav","★ Favoris"]];
+const STYLES=["fruité","menthe","coloré","tropical","acidulé","pétillant","crémeux","épicé","fort","facile","événement","café"];
 const BASE={whisky:"Whisky",rhum:"Rhum",vodka:"Vodka",gin:"Gin",tequila:"Tequila",bulles:"Bulles",creme:"Crémeux",shot:"Shot",sans:"Sans alcool"};
 const GLASS={rocks:"Verre rocks",highball:"Verre highball",coupe:"Coupe",martini:"Verre à martini",flute:"Flûte",wine:"Verre ballon",hurricane:"Verre hurricane",irish:"Verre à irish coffee",shot:"Verre à shot",mug:"Tasse en cuivre",julep:"Timbale à julep"};
 const ICE={none:"Sans glace",cube:"Glaçons",gros:"1 gros glaçon",pilee:"Glace pilée"};
-const TAGS=["fruité","menthe","coloré","tropical","acidulé","pétillant","crémeux","épicé","fort","facile","événement","café"];
-let cat="tous", tag=null, q="", favs=new Set();
-try{favs=new Set(JSON.parse(localStorage.getItem("cocktail-favs")||"[]"));}catch(e){}
-function saveFavs(){try{localStorage.setItem("cocktail-favs",JSON.stringify([...favs]));}catch(e){}}
-const norm=s=>s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+const LEVEL=["Facile","Moyen","Avancé"];
 
+/* ---------- Outils ---------- */
 const $=id=>document.getElementById(id);
-$("count").textContent=C.length;
-$("cats").innerHTML=CATS.map(([k,l])=>`<button class="chip" data-cat="${k}" aria-pressed="${k===cat}">${l}</button>`).join("");
-$("tags").innerHTML=TAGS.map(t=>`<button class="chip" data-tag="${t}" aria-pressed="false">${t[0].toUpperCase()+t.slice(1)}</button>`).join("");
-$("cats").onclick=e=>{const b=e.target.closest("[data-cat]");if(!b)return;cat=b.dataset.cat;[...$("cats").children].forEach(x=>x.setAttribute("aria-pressed",x===b));render();};
-$("tags").onclick=e=>{const b=e.target.closest("[data-tag]");if(!b)return;tag=tag===b.dataset.tag?null:b.dataset.tag;[...$("tags").children].forEach(x=>x.setAttribute("aria-pressed",x.dataset.tag===tag));render();};
-$("q").oninput=e=>{q=norm(e.target.value.trim());render();};
+const esc=s=>String(s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
+const norm=s=>s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+const slug=c=>IMG.slugs[c.n];
+const byName=n=>C.findIndex(c=>c.n===n);
+const reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+let favs=new Set(store.get("cocktail-favs",[]));
+const saveFavs=()=>store.set("cocktail-favs",[...favs]);
+function toast(msg){const t=$("toast");t.textContent=msg;t.classList.add("on");clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove("on"),2400);}
+function force(c){return X[c.n].p[3];}
+function alcLabel(c){const f=force(c);return f===0?"Sans alcool":f<=2?"Léger":f===3?"Moyen":"Fort";}
+document.querySelectorAll(".js-count").forEach(e=>e.textContent=C.length);
 
+/* ---------- Navigation ---------- */
+function go(id){
+  closeDrawer();
+  if(id==="favoris"){setCat("fav");id="carte";}
+  const behavior=reduced?"auto":"smooth";
+  if(id==="accueil"){window.scrollTo({top:0,behavior});return;}
+  $(id).scrollIntoView({behavior,block:"start"});
+}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(b){e.preventDefault();go(b.dataset.go);}});
+const hdr=$("top");
+const onScroll=()=>hdr.classList.toggle("solid",scrollY>40);
+addEventListener("scroll",onScroll,{passive:true});onScroll();
+function openDrawer(){$("drawer").classList.add("open");$("menuBtn").setAttribute("aria-expanded","true");document.body.classList.add("lock");$("menuClose").focus();}
+function closeDrawer(){if(!$("drawer").classList.contains("open"))return;$("drawer").classList.remove("open");$("menuBtn").setAttribute("aria-expanded","false");if(!$("sheet").classList.contains("open"))document.body.classList.remove("lock");}
+$("menuBtn").onclick=openDrawer;$("menuClose").onclick=closeDrawer;
+
+/* ---------- Apparition au défilement ---------- */
+const io=("IntersectionObserver" in window)?new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");e.target.querySelectorAll(".bar i[data-w]").forEach(b=>b.style.width=b.dataset.w);io.unobserve(e.target);}}),{rootMargin:"0px 0px -8% 0px"}):null;
+function observe(root){(root||document).querySelectorAll(".reveal:not(.in)").forEach(el=>io?io.observe(el):el.classList.add("in"));}
+
+/* ---------- Barres de goût ---------- */
+function tasteHTML(c,animate){
+  const L=["Sucré","Acide","Amer","Force"];
+  return `<div class="taste">${X[c.n].p.map((v,i)=>`<div class="row"><span>${L[i]}</span><span class="bar" role="img" aria-label="${L[i]} : ${v} sur 5"><i ${animate?`data-w="${v*20}%"`:`style="width:${v*20}%"`}></i></span></div>`).join("")}</div>`;
+}
+
+/* ---------- b) Humeurs ---------- */
+$("moods").innerHTML=MOODS.map(m=>`<button class="mood reveal" style="--c:${m.c}" data-mood="${m.id}"><img src="images/${IMG.slugs[m.img]}-sm.webp" alt="" loading="lazy" decoding="async" width="420" height="420"><span class="dot" aria-hidden="true">→</span><b>${m.t}</b><small>${m.ex.join(", ")}</small></button>`).join("");
+$("moods").onclick=e=>{const b=e.target.closest("[data-mood]");if(!b)return;setMood(b.dataset.mood);go("carte");};
+
+/* ---------- c) Cocktail du jour ---------- */
+(function(){
+  const d=new Date(); const day=Math.floor((d.getTime()-d.getTimezoneOffset()*6e4)/864e5);
+  const i=((day*7)%C.length+C.length)%C.length; const c=C[i]; const sig=c.tags.includes("signature");
+  $("todayDate").textContent=d.toLocaleDateString("fr-CA",{weekday:"long",day:"numeric",month:"long"});
+  $("today").innerHTML=`<div class="ph"><img src="images/${slug(c)}.webp" alt="${esc(c.n)}" loading="lazy" decoding="async" width="900" height="900">${sig?'<span class="badge sig">★ Signature</span>':""}</div>
+  <div class="tx"><h3>${esc(c.n)}</h3><p>${esc(c.desc)}</p>
+  <div class="tags"><span class="tag"><b>Méthode</b> ${c.m}</span><span class="tag"><b>Niveau</b> ${LEVEL[c.d-1]}</span><span class="tag"><b>Temps</b> ${c.t} min</span><span class="tag"><b>Alcool</b> ${alcLabel(c)}</span></div>
+  ${tasteHTML(c,true)}
+  <div><button class="pill" data-open="${i}">Voir la recette</button></div></div>`;
+})();
+
+/* ---------- d) Machine à sous ---------- */
+const ROW=72; let spinning=false, reelOrder=[], reelPos=0;
+function buildReel(){
+  reelOrder=C.map((c,i)=>i).sort(()=>Math.random()-.5);
+  const loops=6; const items=[];for(let l=0;l<loops;l++)reelOrder.forEach(i=>items.push(i));
+  $("reelList").innerHTML=items.map(i=>`<li>${esc(C[i].n)}</li>`).join("");
+  reelPos=reelOrder.length; setReel(reelPos,false);
+}
+function setReel(pos,anim,dur){const ul=$("reelList");ul.style.transition=anim?`transform ${dur}ms cubic-bezier(.12,.75,.12,1)`:"none";ul.style.transform=`translateY(${(1-pos)*ROW}px)`;[...ul.children].forEach((li,k)=>li.classList.toggle("hit",k===pos));}
+function spin(){
+  if(spinning)return; spinning=true; $("spin").disabled=true;
+  const target=Math.floor(Math.random()*C.length); const n=reelOrder.length;
+  const ti=reelOrder.indexOf(target); const final=(reduced?2:4)*n+ti; const dur=reduced?200:3400;
+  [...$("reelList").children].forEach(li=>li.classList.remove("hit"));
+  requestAnimationFrame(()=>setReel(final,true,dur));
+  setTimeout(()=>{reelPos=n+ti;setReel(reelPos,false);spinning=false;$("spin").disabled=false;if(navigator.vibrate)navigator.vibrate(30);setTimeout(()=>openSheet(target),reduced?50:650);},dur+60);
+}
+buildReel();
+$("spin").onclick=spin;
+$("surprise").onclick=()=>{go("machine");setTimeout(spin,reduced?50:800);};
+
+/* ---------- e) Carte : filtres ---------- */
+let cat="tous", style=null, mood=null, q="";
+$("cats").innerHTML=CATS.map(([k,l])=>`<button class="chip" data-cat="${k}" aria-pressed="${k===cat}">${l}</button>`).join("");
+$("styles").innerHTML=STYLES.map(t=>`<button class="chip sm" data-style="${t}" aria-pressed="false">${t[0].toUpperCase()+t.slice(1)}</button>`).join("");
+function setCat(k){cat=k;[...$("cats").children].forEach(x=>x.setAttribute("aria-pressed",x.dataset.cat===k));render();}
+function setMood(id){mood=id;const m=MOODS.find(x=>x.id===id);$("activeMood").className="active-mood"+(m?" on":"");$("activeMood").innerHTML=m?`<button class="chip" aria-pressed="true" id="clearMood">Humeur : ${m.t} ✕</button>`:"";if(m){cat="tous";[...$("cats").children].forEach(x=>x.setAttribute("aria-pressed",x.dataset.cat==="tous"));}render();}
+$("cats").onclick=e=>{const b=e.target.closest("[data-cat]");if(b)setCat(b.dataset.cat);};
+$("styles").onclick=e=>{const b=e.target.closest("[data-style]");if(!b)return;style=style===b.dataset.style?null:b.dataset.style;[...$("styles").children].forEach(x=>x.setAttribute("aria-pressed",x.dataset.style===style));render();};
+$("activeMood").onclick=e=>{if(e.target.closest("#clearMood"))setMood(null);};
+$("q").oninput=e=>{q=norm(e.target.value.trim());render();};
+function cardHTML(c,i){
+  return `<button class="card reveal" data-open="${i}" aria-label="${esc(c.n)} : ouvrir la recette"><img src="images/${slug(c)}-sm.webp" alt="" loading="lazy" decoding="async" width="420" height="420">${c.tags.includes("signature")?'<span class="badge sig">Signature</span>':""}${favs.has(c.n)?'<span class="fav" aria-label="Favori">★</span>':""}<span class="t"><span class="n">${esc(c.n)}</span><span class="k">${esc(X[c.n].k)}</span></span></button>`;
+}
 function render(){
-  const list=C.map((c,i)=>({c,i})).filter(({c,i})=>{
+  const m=MOODS.find(x=>x.id===mood);
+  const list=C.map((c,i)=>({c,i})).filter(({c})=>{
     if(cat==="fav"&&!favs.has(c.n))return false;
     if(cat!=="tous"&&cat!=="fav"&&c.b!==cat)return false;
-    if(tag&&!c.tags.includes(tag))return false;
-    if(q){const hay=norm(c.n+" "+c.desc+" "+c.ing.map(x=>x[2]).join(" ")+" "+c.tags.join(" "));if(!hay.includes(q))return false;}
+    if(style&&!c.tags.includes(style))return false;
+    if(m&&!m.f(c))return false;
+    if(q){const hay=norm(c.n+" "+c.desc+" "+c.ing.map(x=>x[2]).join(" ")+" "+c.tags.join(" ")+" "+X[c.n].k);if(!hay.includes(q))return false;}
     return true;});
-  $("grid").innerHTML=list.map(({c,i})=>`<button class="card" data-i="${i}" aria-label="Ouvrir la recette ${c.n}"><div class="art">${art(c)}</div><div class="info"><div class="name">${favs.has(c.n)?'<span class="fav-on">★</span> ':""}${c.n}</div><div class="meta">${BASE[c.b]} · ${c.m} · <span class="dots" title="Difficulté">${"●".repeat(c.d)}${"○".repeat(3-c.d)}</span></div></div></button>`).join("");
+  $("grid").innerHTML=list.map(({c,i})=>cardHTML(c,i)).join("");
   $("empty").hidden=list.length>0;
+  $("empty").textContent=cat==="fav"&&!favs.size?"Aucun favori pour l'instant : ouvre une fiche et touche l'étoile.":"Aucun cocktail ne correspond. Essaie un autre mot ou retire un filtre.";
+  $("countLine").textContent=list.length&&list.length<C.length?`${list.length} cocktail${list.length>1?"s":""} sur ${C.length}`:"";
+  observe($("grid"));
 }
-$("grid").onclick=e=>{const b=e.target.closest(".card");if(b)open(+b.dataset.i);};
+document.addEventListener("click",e=>{const b=e.target.closest("[data-open]");if(b){e.preventDefault();openSheet(+b.dataset.open);}});
 
-let cur=null, portions=1, done=new Set();
+/* ---------- Fiche ---------- */
+let cur=null, portions=1, done=new Set(), lastFocus=null, pushed=false;
 function fmt(n){const r=Math.round(n*2)/2;return (r%1===0?r:r.toFixed(1)).toString().replace(".",",");}
-function qty(x){
-  const [v,u,name]=x; if(v==null) return "";
-  const t=v*portions;
-  if(u==="ml") return `${fmt(t)} ml <span class="oz">(${(t/29.57).toFixed(1).replace(".",",")} oz)</span>`;
+function qty(x,short){
+  const [v,u]=x; if(v==null) return ""; const t=v*portions;
+  if(u==="ml") return short?`${fmt(t)} ml`:`${fmt(t)} ml <span class="oz">(${(t/29.57).toFixed(1).replace(".",",")} oz)</span>`;
   if(u==="") return fmt(t);
   return `${fmt(t)} ${u}`;
 }
-function open(i){cur=C[i];portions=1;done=new Set();drawSheet();$("sheetBg").classList.add("open");document.body.style.overflow="hidden";}
-function close(){$("sheetBg").classList.remove("open");document.body.style.overflow="";}
-function drawSheet(){
-  const c=cur; const fav=favs.has(c.n);
-  $("sheet").innerHTML=`
-  <div class="sheet-top"><div>${art(c)}</div><div>
-    <h2 id="sTitle">${c.n}</h2><p class="desc">${c.desc}</p>
-    <div class="facts"><span class="fact"><b>Méthode</b> ${c.m}</span><span class="fact"><b>Verre</b> ${GLASS[c.g]}</span><span class="fact"><b>Glace</b> ${ICE[c.ice]}</span><span class="fact"><b>Temps</b> ${c.t} min</span><span class="fact"><b>Niveau</b> ${["Facile","Moyen","Avancé"][c.d-1]}</span></div>
-  </div></div>
-  <div class="sec"><h3>Ingrédients</h3>
-    <div class="portions">Verres :${[1,2,4,10,20].map(p=>`<button class="chip" data-p="${p}" aria-pressed="${p===portions}">${p}</button>`).join("")}</div>
-    <ul class="ing" style="margin-top:10px">${c.ing.map(x=>`<li><span class="q">${qty(x)}</span><span>${x[2]}</span></li>`).join("")}</ul></div>
-  <div class="sec"><h3>Étapes (touche pour cocher)</h3>
-    <ol class="steps">${c.st.map((s,k)=>`<li class="${done.has(k)?"done":""}"><button data-k="${k}"><span class="n">${k+1}</span><span>${s}</span></button></li>`).join("")}</ol></div>
-  <div class="sec"><h3>Astuce de pro</h3><div class="tip">${c.tip}</div></div>
-  <div class="sheet-actions"><button class="btn" id="favBtn">${fav?"★ Retirer des favoris":"☆ Ajouter aux favoris"}</button><button class="btn primary" id="closeBtn">Fermer</button></div>`;
-  $("closeBtn").onclick=close; $("closeBtn").focus({preventScroll:true});
-  $("favBtn").onclick=()=>{fav?favs.delete(c.n):favs.add(c.n);saveFavs();drawSheet();render();};
-  $("sheet").querySelector(".portions").onclick=e=>{const b=e.target.closest("[data-p]");if(!b)return;portions=+b.dataset.p;drawSheet();};
-  $("sheet").querySelector(".steps").onclick=e=>{const b=e.target.closest("[data-k]");if(!b)return;const k=+b.dataset.k;done.has(k)?done.delete(k):done.add(k);b.parentElement.classList.toggle("done");};
+function ingName(s){return s.replace(/\s*\(.*?\)\s*/g," ").replace(/\s+/g," ").trim();}
+function ingThumb(label){
+  const f=IMG.ing[label]; const photo=["framboises","jalapeno","hibiscus"].includes(f);
+  if(f) return `<span class="ph${photo?" photo":""}"><img src="images/ingredients/${f}.webp" alt="" loading="lazy" decoding="async" width="160" height="160"></span>`;
+  return `<span class="ph ini" aria-hidden="true">${esc(ingName(label)[0])}</span>`;
 }
-$("sheetBg").onclick=e=>{if(e.target.id==="sheetBg")close();};
-document.addEventListener("keydown",e=>{if(e.key==="Escape")close();});
-render();
+function favIcon(on){return `<svg viewBox="0 0 24 24" fill="${on?"currentColor":"none"}" stroke="currentColor" stroke-width="1.6" style="color:var(--gold)"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>`;}
+function drawSheet(){
+  const c=cur, x=X[c.n], f=force(c), lv=f===0?0:f<=2?1:f===3?2:3;
+  $("shFav").innerHTML=favIcon(favs.has(c.n));$("shFav").setAttribute("aria-pressed",favs.has(c.n));$("shFav").setAttribute("aria-label",favs.has(c.n)?"Retirer des favoris":"Ajouter aux favoris");
+  $("shBody").innerHTML=`
+  <div class="eyebrow">${BASE[c.b]}${c.tags.includes("signature")?' · <span class="g">Signature de la maison</span>':""}</div>
+  <h2 id="shName">${esc(c.n)}</h2>
+  <p class="desc">${esc(c.desc)}</p>
+  <div class="tags"><span class="tag"><b>Méthode</b> ${c.m}</span><span class="tag"><b>Verre</b> ${GLASS[c.g]}</span><span class="tag"><b>Glace</b> ${ICE[c.ice]}</span><span class="tag"><b>Temps</b> ${c.t} min</span><span class="tag"><b>Niveau</b> ${LEVEL[c.d-1]}</span></div>
+  <div class="sec"><h3>Profil</h3>
+    <p class="alc" style="margin:0 0 14px"><span class="lv" aria-hidden="true">${[1,2,3].map(k=>`<i class="${k<=lv?"on":""}"></i>`).join("")}</span><span><b style="color:var(--gold)">Alcool :</b> ${alcLabel(c)}</span></p>
+    ${tasteHTML(c,false)}
+  </div>
+  ${x.a?`<div class="sec"><h3>L'histoire</h3><p class="anec">${esc(x.a)}</p></div>`:""}
+  <div class="sec"><h3>Ingrédients</h3>
+    <div class="portions">Verres : ${[1,2,4,10,20].map(p=>`<button class="chip" data-p="${p}" aria-pressed="${p===portions}">${p}</button>`).join("")}</div>
+    <div class="ings" role="list">${c.ing.map(i=>`<div class="ing" role="listitem">${ingThumb(i[2])}<span class="q">${qty(i,true)}</span><span class="nm">${esc(ingName(i[2]))}</span></div>`).join("")}</div>
+    <ul class="dose" style="margin-top:14px">${c.ing.map(i=>`<li><span class="q">${qty(i)}</span><span>${esc(i[2])}</span></li>`).join("")}</ul>
+  </div>
+  <div class="sec"><h3>Étapes · touche pour cocher</h3>
+    <ol class="steps">${c.st.map((s,k)=>`<li class="${done.has(k)?"done":""}"><button data-k="${k}" aria-pressed="${done.has(k)}"><span class="n">${k+1}</span><span>${esc(s)}</span></button></li>`).join("")}</ol>
+  </div>
+  <div class="sec"><h3>Astuce de pro</h3><div class="tip">${esc(c.tip)}</div></div>`;
+  $("shBody").querySelector(".portions").onclick=e=>{const b=e.target.closest("[data-p]");if(!b)return;portions=+b.dataset.p;const y=$("shScroll").scrollTop;drawSheet();$("shScroll").scrollTop=y;};
+  $("shBody").querySelector(".steps").onclick=e=>{const b=e.target.closest("[data-k]");if(!b)return;const k=+b.dataset.k;done.has(k)?done.delete(k):done.add(k);b.parentElement.classList.toggle("done",done.has(k));b.setAttribute("aria-pressed",done.has(k));};
+}
+function openSheet(i,fromHash){
+  cur=C[i];portions=1;done=new Set();lastFocus=document.activeElement;
+  const img=$("shImg"); img.src=`images/${slug(cur)}-sm.webp`; img.alt=cur.n;
+  const full=new Image(); full.onload=()=>{if(cur===C[i])img.src=full.src;}; full.src=`images/${slug(cur)}.webp`;
+  drawSheet(); $("shScroll").scrollTop=0;
+  const sh=$("sheet"); sh.setAttribute("aria-hidden","false"); document.body.classList.add("lock");
+  requestAnimationFrame(()=>requestAnimationFrame(()=>sh.classList.add("open")));
+  setTimeout(()=>$("shClose").focus({preventScroll:true}),400);
+  const h="#"+slug(cur);
+  if(!fromHash&&location.hash!==h){history.pushState({sheet:1},"",h);pushed=true;}
+}
+function closeSheet(fromPop){
+  const sh=$("sheet"); if(!sh.classList.contains("open"))return;
+  sh.classList.remove("open"); sh.setAttribute("aria-hidden","true"); document.body.classList.remove("lock");
+  if(!fromPop){ if(pushed){pushed=false;history.back();} else history.replaceState(null,"",location.pathname+location.search); }
+  else pushed=false;
+  if(lastFocus&&lastFocus.focus)lastFocus.focus({preventScroll:true});
+}
+$("shClose").onclick=()=>closeSheet();
+$("shFav").onclick=()=>{const n=cur.n;favs.has(n)?(favs.delete(n),toast("Retiré des favoris")):(favs.add(n),toast("★ Ajouté aux favoris"));saveFavs();$("shFav").innerHTML=favIcon(favs.has(n));$("shFav").setAttribute("aria-pressed",favs.has(n));render();};
+$("shShare").onclick=async()=>{
+  const url=location.origin+location.pathname+"#"+slug(cur);
+  const data={title:`${cur.n} · Le Bar de Yann`,text:`${cur.n} : ${cur.desc}`,url};
+  if(navigator.share){try{await navigator.share(data);}catch(e){} return;}
+  try{await navigator.clipboard.writeText(url);toast("Lien copié : "+url);}catch(e){prompt("Copie ce lien :",url);}
+};
+function fromHash(){
+  const h=decodeURIComponent(location.hash.slice(1)); const i=C.findIndex(c=>slug(c)===h);
+  if(i>=0){ if(!$("sheet").classList.contains("open")||cur!==C[i]) openSheet(i,true); }
+  else closeSheet(true);
+}
+addEventListener("popstate",fromHash);
+addEventListener("hashchange",fromHash);
+document.addEventListener("keydown",e=>{if(e.key!=="Escape")return; if($("barmode").classList.contains("open"))closeBar(); else if($("menuCard").classList.contains("open"))closeMenuCard(); else if($("sheet").classList.contains("open"))closeSheet(); else closeDrawer();});
+
+/* ---------- Mode bar ---------- */
+let bmStep=0, wakeLock=null;
+async function keepAwake(){try{if("wakeLock" in navigator){wakeLock=await navigator.wakeLock.request("screen");$("bmWake").textContent="L'écran reste allumé pendant le mode bar.";}else $("bmWake").textContent="";}catch(e){$("bmWake").textContent="";}}
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&$("barmode").classList.contains("open"))keepAwake();});
+function drawBar(){
+  const c=cur, total=c.st.length+1;
+  $("bmName").textContent=c.n;
+  $("bmProg").innerHTML=Array.from({length:total},(_,k)=>`<i class="${k<=bmStep?"on":""}"></i>`).join("");
+  $("bmStage").innerHTML=bmStep===0
+    ?`<div class="lbl">Préparer · ${portions} verre${portions>1?"s":""}</div><div class="big"><ul>${c.ing.map(i=>`<li><b>${qty(i,true)}</b> ${esc(ingName(i[2]))}</li>`).join("")}</ul></div>`
+    :`<div class="lbl">Étape ${bmStep} sur ${c.st.length}</div><div class="big">${esc(c.st[bmStep-1])}</div>`;
+  $("bmPrev").disabled=bmStep===0; $("bmNext").textContent=bmStep===total-1?"Terminé ✓":"Suivant";
+}
+function openBar(){bmStep=0;$("barmode").classList.add("open");drawBar();keepAwake();$("bmNext").focus();}
+function closeBar(){$("barmode").classList.remove("open");if(wakeLock){wakeLock.release().catch(()=>{});wakeLock=null;}$("shBar").focus();}
+$("shBar").onclick=openBar;$("bmClose").onclick=closeBar;
+$("bmPrev").onclick=()=>{if(bmStep>0){bmStep--;drawBar();}};
+$("bmNext").onclick=()=>{if(bmStep<cur.st.length){bmStep++;drawBar();}else{closeBar();toast("Santé ! 🥂");}};
+
+/* ---------- f) Préparer une soirée ---------- */
+/* Règles de courses : [début du libellé, nom affiché, rayon, conversion] */
+const SHOP=[
+ ["Version alcoolisée",null],
+ ["Angostura","Angostura bitters","epi",["one","flacon"]],["Orange bitters","Orange bitters","epi",["one","flacon"]],
+ ["Aperol","Aperol","alc",["vol",700]],["Bourbon","Bourbon","alc",["vol",750]],["Cachaça","Cachaça","alc",["vol",750]],["Campari","Campari","alc",["vol",750]],
+ ["Champagne","Champagne ou mousseux","alc",["vol",750]],["Prosecco","Prosecco","alc",["vol",750]],["Cointreau","Cointreau","alc",["vol",700]],
+ ["Crème de cacao","Crème de cacao blanche","alc",["vol",750]],["Crème de cassis","Crème de cassis","alc",["vol",700]],["Crème de menthe","Crème de menthe verte","alc",["vol",750]],
+ ["Crème de mûre","Crème de mûre","alc",["vol",700]],["Crème de violette","Crème de violette","alc",["vol",750]],["Crème irlandaise","Crème irlandaise (Baileys)","alc",["vol",750]],
+ ["Curaçao bleu","Curaçao bleu","alc",["vol",750]],["Curaçao orange","Curaçao orange","alc",["vol",750]],["Gin","Gin","alc",["vol",750]],["Grand Marnier","Grand Marnier","alc",["vol",750]],
+ ["Liqueur de café","Liqueur de café (Kahlúa)","alc",["vol",750]],["Liqueur de marasquin","Liqueur de marasquin","alc",["vol",750]],["Liqueur de passion","Liqueur de passion (Passoa)","alc",["vol",700]],
+ ["Liqueur de sureau","Liqueur de sureau (St-Germain)","alc",["vol",750]],["Rhum agricole","Rhum agricole ou ambré","alc",["vol",750]],["Rhum ambré","Rhum ambré jamaïcain","alc",["vol",750]],
+ ["Rhum blanc","Rhum blanc","alc",["vol",750]],["Rhum brun","Rhum brun","alc",["vol",750]],["Schnapps","Schnapps à la pêche","alc",["vol",750]],["Scotch tourbé","Scotch tourbé","alc",["vol",750]],
+ ["Scotch","Scotch blended","alc",["vol",750]],["Tequila","Tequila 100 % agave","alc",["vol",750]],["Triple sec","Triple sec","alc",["vol",750]],["Vermouth dry","Vermouth dry","alc",["vol",750]],
+ ["Vermouth rouge","Vermouth rouge","alc",["vol",750]],["Vodka citron","Vodka citron","alc",["vol",750]],["Vodka vanille","Vodka vanille","alc",["vol",750]],["Vodka","Vodka","alc",["vol",750]],
+ ["Whiskey irlandais","Whiskey irlandais","alc",["vol",750]],["Whisky rye","Whisky rye","alc",["vol",750]],["Whisky","Whisky","alc",["vol",750]],
+ ["Café filtre","Café filtre","jus",["L"]],["Espresso","Espressos","jus",["per",30,""]],["Crème 35","Crème 35 %","jus",["L"]],["Crème 10","Crème 10 % ou 15 %","jus",["L"]],
+ ["Crème de coco","Crème de coco (Coco López)","jus",["per",425,"boîte(s) de 425 ml"]],["Ginger ale","Ginger ale","jus",["L"]],["Ginger beer","Ginger beer","jus",["L"]],
+ ["Jus d'ananas","Jus d'ananas","jus",["L"]],["Jus d'orange","Jus d'orange","jus",["L"]],["Jus de canneberge","Jus de canneberge","jus",["L"]],["Jus de tomate","Jus de tomate","jus",["L"]],
+ ["Limonade","Limonade (ou Sprite)","jus",["L"]],["Soda pamplemousse","Soda pamplemousse","jus",["L"]],["Soda","Eau gazeuse (soda)","jus",["L"]],["Tonic","Tonic","jus",["L"]],
+ ["Infusion de foléré","Fleurs de foléré séchées","fruit",["g",0.03]],
+ ["Jus de lime","Limes","fruit",["per",30,""]],["Lime coupée","Limes","fruit",["cnt"]],["Rondelle de lime","Limes","fruit",["per",8,""]],
+ ["Jus de citron","Citrons","fruit",["per",40,""]],["Zeste de citron","Citrons","fruit",["per",4,""]],["Olive","Olives","fruit",["cnt"]],
+ ["Tranche ou zeste d'orange","Oranges","fruit",["per",6,""]],["Zeste d'orange","Oranges","fruit",["per",4,""]],
+ ["Fraises","Fraises","fruit",["cnt"]],["Framboises","Framboises","fruit",["cnt"]],["Mangue","Mangue congelée","fruit",["g",1]],["Jalapeño","Jalapeños","fruit",["per",8,""]],
+ ["Purée de fruit de la passion","Fruits de la passion","fruit",["per",15,""]],["Purée de pêche","Pêches blanches (en purée)","fruit",["per",80,""]],
+ ["Menthe pour décorer","Menthe fraîche","fruit",["leaf",1]],["Menthe","Menthe fraîche","fruit",["leaf",0]],["Basilic","Basilic frais","fruit",["leaf",0]],
+ ["Cerise","Cerises à cocktail","fruit",["cnt"]],["Blanc d'œuf","Œufs","epi",["cnt"]],["Grains de café","Grains de café","epi",["one","petit sachet"]],
+ ["Grenadine","Grenadine","epi",["vol",750]],["Sirop d'agave","Sirop d'agave","epi",["vol",350]],["Sirop d'orgeat","Sirop d'orgeat","epi",["vol",750]],["Sirop de vanille","Sirop de vanille","epi",["vol",750]],
+ ["Sirop simple","Sirop simple (maison)","epi",["make"]],["Sirop de cassonade","Sirop de cassonade (maison)","epi",["make"]],["Sirop de gingembre","Sirop de gingembre (maison)","epi",["make"]],["Sirop miel","Sirop miel-gingembre (maison)","epi",["make"]],
+ ["Sauce Worcestershire","Sauce Worcestershire","epi",["one","bouteille"]],["Tabasco","Tabasco","epi",["one","bouteille"]],["Sel de céleri","Sel de céleri et poivre","epi",["one","pot"]],
+ ["Sel","Sel (bords de verre)","epi",["one","boîte"]],["Sucre","Sucre","epi",["one","sac"]],["Glace",null]
+];
+const GROUPS={alc:"Alcools & bulles",jus:"Jus, sodas & crème",fruit:"Fruits, herbes & garnitures",epi:"Sirops & épicerie",ice:"Glace"};
+const ICEKG={none:.15,cube:.3,gros:.3,pilee:.4};
+let partySel=new Set(store.get("party-sel",[]).filter(n=>byName(n)>=0));
+function drawPicks(){
+  const f=norm($("pq").value.trim());
+  $("picks").innerHTML=C.filter(c=>!f||norm(c.n).includes(f)).map(c=>`<button class="pick" data-pick="${esc(c.n)}" aria-pressed="${partySel.has(c.n)}"><img src="images/${slug(c)}-sm.webp" alt="" loading="lazy" width="56" height="56">${esc(c.n)}</button>`).join("");
+}
+function plural(n,w){return n>1?w.replace(/\(s\)/g,"s"):w.replace(/\(s\)/g,"");}
+function shopCalc(){
+  const guests=Math.max(1,+$("guests").value||1), per=Math.max(1,+$("per").value||1);
+  const sel=C.filter(c=>partySel.has(c.n));
+  if(!sel.length) return null;
+  const total=guests*per, each=Math.ceil(total/sel.length);
+  const acc=new Map(); let ice=0;
+  const add=(name,grp,kind,val,extra)=>{const k=name;const o=acc.get(k)||{name,grp,kind,val:0,extra};o.val+=val;acc.set(k,o);};
+  sel.forEach(c=>{
+    ice+=ICEKG[c.ice]*each;
+    c.ing.forEach(([v,u,label])=>{
+      const r=SHOP.find(s=>label.startsWith(s[0])); if(!r||!r[1]){ if(label==="Glace")ice+=.15*v*each; return; }
+      const [ ,name,grp,conv]=r, amt=v*each;
+      if(u==="traits"||u==="gouttes"||u==="trait"||u==="pincée"||conv[0]==="one") return add(name,grp,"one",1,conv[1]||"flacon");
+      if(conv[0]==="vol") return add(name,grp,"vol",amt,conv[1]);
+      if(conv[0]==="L") return add(name,grp,"L",amt);
+      if(conv[0]==="per") return add(name,grp,"cnt",amt/conv[1],conv[2]);
+      if(conv[0]==="cnt") return add(name,grp,"cnt",amt);
+      if(conv[0]==="leaf") return add(name,grp,"leaf",conv[1]?amt*30:amt);
+      if(conv[0]==="g") return add(name,grp,"g",amt*conv[1]);
+      if(conv[0]==="make") return add(name,grp,"make",amt);
+    });
+  });
+  const lines={};
+  acc.forEach(o=>{
+    let txt;
+    if(o.kind==="vol"){const b=Math.ceil(o.val/o.extra);txt=`${b} bouteille${b>1?"s":""} <span style="color:var(--muted);font-weight:500">(${Math.round(o.val)} ml)</span>`;}
+    else if(o.kind==="L"){const l=Math.ceil(o.val/500)/2;txt=`${String(l).replace(".",",")} L`;}
+    else if(o.kind==="cnt"){const n=Math.ceil(o.val-1e-9);txt=o.extra?`${n} ${plural(n,o.extra)}`:`${n}`;}
+    else if(o.kind==="leaf"){const b=Math.ceil(o.val/30);txt=`${b} bouquet${b>1?"s":""}`;}
+    else if(o.kind==="g"){txt=o.val>=1000?`${(Math.ceil(o.val/100)/10).toString().replace(".",",")} kg`:`${Math.ceil(o.val/10)*10} g`;}
+    else if(o.kind==="make"){const ml=Math.ceil(o.val/50)*50;txt=`${ml} ml à préparer`;}
+    else txt=`1 ${o.extra}`;
+    (lines[o.grp]=lines[o.grp]||[]).push([o.name,txt]);
+  });
+  const kg=Math.ceil(ice); lines.ice=[["Glaçons et glace pilée",`${kg} kg <span style="color:var(--muted);font-weight:500">(≈ ${Math.ceil(kg/2)} sac${Math.ceil(kg/2)>1?"s":""} de 2 kg)</span>`]];
+  return {guests,per,total,each,sel,lines};
+}
+function drawShop(){
+  const r=shopCalc();
+  if(!r){$("shop").innerHTML=`<h3>2. La liste de courses</h3><p class="lead" style="font-size:.95rem">Coche au moins un cocktail à gauche (ou au-dessus sur téléphone) : la liste se calcule toute seule.</p>`;return;}
+  $("shop").innerHTML=`<h3>2. La liste de courses</h3>
+  <p class="serv">${r.guests} invité${r.guests>1?"s":""} × ${r.per} verre${r.per>1?"s":""} = <b style="color:var(--gold-2)">${r.total} verres</b>, soit environ <b style="color:var(--gold-2)">${r.each}</b> de chaque cocktail (${r.sel.length} au menu).</p>
+  ${Object.keys(GROUPS).filter(g=>r.lines[g]).map(g=>`<h4>${GROUPS[g]}</h4><ul>${r.lines[g].sort((a,b)=>a[0].localeCompare(b[0],"fr")).map(([n,t])=>`<li><span>${esc(n)}</span><span>${t}</span></li>`).join("")}</ul>`).join("")}
+  <p class="note">Quantités arrondies vers le haut. Prévois un peu plus de glace par temps chaud.</p>
+  <div class="row-btns"><button class="pill" id="showMenu">Carte pour mes invités</button><button class="pill ghost" id="copyShop">Copier la liste</button></div>`;
+}
+function shopText(){
+  const r=shopCalc(); if(!r)return "";
+  const strip=s=>s.replace(/<[^>]+>/g,"");
+  return `Soirée cocktails · Le Bar de Yann\n${r.guests} invités × ${r.per} verres = ${r.total} verres\nMenu : ${r.sel.map(c=>c.n).join(", ")}\n\n`+Object.keys(GROUPS).filter(g=>r.lines[g]).map(g=>`${GROUPS[g].toUpperCase()}\n`+r.lines[g].map(([n,t])=>`- ${n} : ${strip(t)}`).join("\n")).join("\n\n");
+}
+function partyChanged(){store.set("party-sel",[...partySel]);store.set("party-n",[+$("guests").value,+$("per").value]);drawShop();}
+(function(){const n=store.get("party-n",null);if(n){$("guests").value=n[0]||20;$("per").value=n[1]||3;}})();
+$("picks").onclick=e=>{const b=e.target.closest("[data-pick]");if(!b)return;const n=b.dataset.pick;partySel.has(n)?partySel.delete(n):partySel.add(n);b.setAttribute("aria-pressed",partySel.has(n));partyChanged();};
+$("pq").oninput=drawPicks;
+document.querySelectorAll("[data-step]").forEach(b=>b.onclick=()=>{const i=$(b.dataset.step);const v=Math.min(+i.max,Math.max(+i.min,(+i.value||0)+ +b.dataset.d*(b.dataset.step==="guests"&&+i.value>=20?5:1)));i.value=v;partyChanged();});
+["guests","per"].forEach(id=>$(id).addEventListener("input",partyChanged));
+$("shop").onclick=async e=>{
+  if(e.target.closest("#showMenu"))openMenuCard();
+  if(e.target.closest("#copyShop")){const t=shopText();try{await navigator.clipboard.writeText(t);toast("Liste copiée ✓");}catch(err){if(navigator.share)navigator.share({text:t}).catch(()=>{});}}
+};
+function openMenuCard(){
+  const sel=C.filter(c=>partySel.has(c.n));
+  $("menuPaper").innerHTML=`<div class="orn">✦ ✦ ✦</div><h2>La <em class="g">carte</em></h2><p class="sub">Le Bar de Yann · Cocktails d'exception</p>
+  ${sel.map(c=>`<div class="it"><img src="images/${slug(c)}-sm.webp" alt=""><div>${c.b==="sans"?'<span class="sa">Sans alcool</span>':""}<h3>${esc(c.n)}</h3><p>${esc(c.desc)}</p></div></div>`).join("")}
+  <div class="orn" style="margin-top:30px">✦</div><p class="sub" style="margin-top:8px">À consommer avec modération</p>`;
+  $("menuCard").classList.add("open");document.body.classList.add("lock");$("menuCard").scrollTop=0;$("mcClose").focus();
+}
+function closeMenuCard(){$("menuCard").classList.remove("open");if(!$("sheet").classList.contains("open"))document.body.classList.remove("lock");}
+$("mcClose").onclick=closeMenuCard;$("mcPrint").onclick=()=>print();
+$("mcShare").onclick=async()=>{const sel=C.filter(c=>partySel.has(c.n));const t=`La carte · Le Bar de Yann\n\n`+sel.map(c=>`• ${c.n}${c.b==="sans"?" (sans alcool)":""} : ${c.desc}`).join("\n")+`\n\n${location.origin+location.pathname}`;if(navigator.share){try{await navigator.share({title:"La carte · Le Bar de Yann",text:t});}catch(e){}}else{try{await navigator.clipboard.writeText(t);toast("Carte copiée ✓");}catch(e){}}};
+drawPicks();drawShop();
+
+/* ---------- g) Contact ---------- */
+(function(){
+  const ph=PHONE.trim(), em=EMAIL.trim();
+  $("phoneTxt").textContent=ph; $("mailTxt").textContent=em;
+  const real=s=>s&&!s.startsWith("[");
+  $("callBtn").href=real(ph)?"tel:"+ph.replace(/[^\d+]/g,""):"#";
+  $("mailBtn").href=real(em)?"mailto:"+em+"?subject="+encodeURIComponent("Bar à cocktails pour mon événement"):"#";
+  [$("callBtn"),$("mailBtn")].forEach(a=>a.addEventListener("click",e=>{if(a.getAttribute("href")==="#"){e.preventDefault();toast("Coordonnées bientôt disponibles");}}));
+})();
+
+/* ---------- h) Crédits ---------- */
+$("credits").innerHTML=IMG.credits.filter(c=>c.src!=="TheCocktailDB").map(c=>`<li>${esc(c.for)} : « ${esc(c.title)} », ${esc(c.artist||"auteur inconnu")}, <a href="${esc(c.url)}" rel="noopener">${esc(c.lic)}</a></li>`).join("")
+;
+
+/* ---------- Badge Netlify : laisser la place en bas de l'écran ---------- */
+function fitBadge(){const f=document.getElementById("nl-badge-frame");let h=0;if(f){const r=f.getBoundingClientRect();if(r.height&&getComputedStyle(f).display!=="none")h=Math.max(0,Math.round(innerHeight-r.top)+6);}document.documentElement.style.setProperty("--badge",h+"px");}
+new MutationObserver(()=>{clearTimeout(fitBadge.t);fitBadge.t=setTimeout(fitBadge,120);}).observe(document.body,{childList:true,subtree:false,attributes:false});
+addEventListener("resize",fitBadge);setTimeout(fitBadge,1500);
+
+/* ---------- Démarrage ---------- */
+render(); observe();
+if(location.hash) fromHash();
+if("serviceWorker" in navigator && location.protocol==="https:") addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
 </script>
 </body>
 </html>
