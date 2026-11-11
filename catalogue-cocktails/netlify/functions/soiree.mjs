@@ -14,6 +14,7 @@ export default async () => {
       active: !!state.active,
       selection: (state.selection || []).filter((n) => known.has(n)),
       updatedAt: state.updatedAt || null,
+      version: state.version || 0,
     };
     return Response.json(body, { headers: { "Cache-Control": "no-store" } });
   } catch (err) {

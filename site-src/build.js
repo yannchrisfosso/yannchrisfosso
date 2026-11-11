@@ -5,7 +5,10 @@ const OUT=path.join(__dirname,"..","catalogue-cocktails"), SITE=path.join(OUT,"s
 const h=fs.readFileSync(path.join(__dirname,"recipes-source.html"),"utf8");
 const a=h.indexOf("const C = [")+10, b=h.indexOf("];",a)+1, rec=h.slice(a,b), C=eval(rec);
 const m=JSON.parse(fs.readFileSync(path.join(__dirname,"imgmeta.json"),"utf8"));
-const page=fs.readFileSync(path.join(__dirname,"template.html"),"utf8").replace("__RECIPES__",()=>rec).replace("__IMG__",()=>JSON.stringify(m)).replace(/__COUNT__/g,String(C.length));
+const V=JSON.parse(fs.readFileSync(path.join(__dirname,"version.json"),"utf8"));
+const MOIS=["janv.","févr.","mars","avr.","mai","juin","juil.","août","sept.","oct.","nov.","déc."];
+const vd=new Date(V.date+"T12:00:00Z"), VLABEL=`v${V.version} · ${vd.getUTCDate()} ${MOIS[vd.getUTCMonth()]}`;
+const page=fs.readFileSync(path.join(__dirname,"template.html"),"utf8").replace("__VERSION__",()=>VLABEL).replace("__RECIPES__",()=>rec).replace("__IMG__",()=>JSON.stringify(m)).replace(/__COUNT__/g,String(C.length));
 fs.writeFileSync(path.join(SITE,"index.html"),page);
 const items=C.map(c=>[c.n,c.b,m.slugs[c.n]]);
 fs.writeFileSync(path.join(SITE,"bar.html"),fs.readFileSync(path.join(__dirname,"bar-template.html"),"utf8").replace("__ITEMS__",()=>JSON.stringify(items)));
@@ -33,4 +36,5 @@ self.addEventListener("fetch",e=>{
   e.respondWith(caches.match(r,{ignoreSearch:true}).then(hit=>hit||fetch(r).then(res=>{if(res.ok){const cp=res.clone();caches.open(VERSION).then(c=>c.put(r,cp));}return res;})));
 });
 `);
-console.log("recipes",C.length,"index",page.length,"sw",ver);
+fs.writeFileSync(path.join(SITE,"version.json"),JSON.stringify({version:V.version,date:V.date,label:VLABEL,sw:ver})+"\n");
+console.log("version",VLABEL,"recipes",C.length,"index",page.length,"sw",ver);

@@ -33,9 +33,9 @@
 @font-face{font-family:"Cormorant Garamond";font-style:italic;font-weight:600;font-display:swap;src:url(fonts/cormorant-garamond-latin-600-italic.woff2) format("woff2")}
 @font-face{font-family:"Manrope";font-style:normal;font-weight:200 800;font-display:swap;src:url(fonts/manrope-latin-wght-normal.woff2) format("woff2")}
 :root{
-  --bg:#0b0e12; --bg-2:#10141a; --card:#151a21; --card-2:#1b212a;
-  --gold:#d9a65b; --gold-2:#f0cb8e; --gold-soft:rgba(217,166,91,.14); --line:rgba(217,166,91,.2); --line-2:rgba(255,255,255,.08);
-  --ink:#f4efe6; --ink-2:#d8d1c5; --muted:#9a948a;
+  --bg:#0b0e12; --bg-2:#10141a; --card:#141a20; --card-2:#1b212a;
+  --gold:#d9a65b; --gold-2:#f0c784; --gold-soft:rgba(217,166,91,.14); --line:rgba(217,166,91,.2); --line-2:#232b33;
+  --ink:#f3efe8; --ink-2:#d8d1c5; --muted:#a9a39a;
   --serif:"Cormorant Garamond", "Iowan Old Style", Georgia, serif;
   --sans:"Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
   --r:20px; --r-lg:24px; --r-sm:14px;
@@ -70,6 +70,9 @@ section.block{padding:clamp(72px,12vw,120px) 0 0;scroll-margin-top:-20px}
 .pill.small{padding:10px 16px;font-size:.86rem}
 .chip{flex:none;border:1px solid var(--line-2);background:var(--card);padding:9px 16px;border-radius:999px;font-size:.88rem;font-weight:600;white-space:nowrap;transition:all .2s}
 .chip[aria-pressed="true"]{background:var(--gold);border-color:var(--gold);color:#1a1206}
+.chip{min-height:44px}
+.pill{min-height:48px}
+.portions .chip{min-width:44px}
 .chip.sm{padding:6px 12px;font-size:.8rem;font-weight:600;color:var(--ink-2);background:transparent;border-color:var(--line)}
 .chip.sm[aria-pressed="true"]{color:#1a1206;background:var(--gold)}
 .badge{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 11px;font-size:.74rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
@@ -201,7 +204,7 @@ section.block{padding:clamp(72px,12vw,120px) 0 0;scroll-margin-top:-20px}
 .stepper{background:var(--bg-2);border:1px solid var(--line-2);border-radius:var(--r-sm);padding:10px 12px}
 .stepper label{display:block;font-size:.74rem;color:var(--muted);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
 .stepper div{display:flex;align-items:center;justify-content:space-between;gap:6px}
-.stepper button{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:none;font-size:1.2rem;line-height:1;color:var(--gold)}
+.stepper button{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:none;font-size:1.2rem;line-height:1;color:var(--gold)}
 .stepper input{width:56px;min-width:0;text-align:center;background:none;border:0;font-family:var(--serif);font-size:1.7rem;font-weight:600;color:var(--ink);-moz-appearance:textfield}
 .stepper input::-webkit-outer-spin-button,.stepper input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 .shop h4{margin:18px 0 6px;font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
@@ -375,6 +378,7 @@ footer li{margin:0 0 6px;break-inside:avoid}
     <button data-go="favoris">Mes <i>favoris</i></button>
     <button data-go="soiree">Préparer <i>une soirée</i></button>
     <button data-go="evenements">Un barman <i>pour vous</i></button>
+    <button data-go="barman" style="font-size:1.15rem;margin-top:18px;color:var(--muted)">Espace barman</button>
   </nav>
   <p class="foot">Cocktails d'exception · Québec — À consommer avec modération.</p>
 </div>
@@ -396,6 +400,7 @@ footer li{margin:0 0 6px;break-inside:avoid}
       <button class="pill ghost" id="surprise">Surprends-moi</button>
     </div>
     <div class="scroll-hint h-anim d4">Défile pour découvrir</div>
+    <p class="h-anim d4" style="margin:14px 0 0;font-size:.78rem;color:var(--muted)">À consommer avec modération.</p>
   </div>
 </section>
 
@@ -495,6 +500,7 @@ footer li{margin:0 0 6px;break-inside:avoid}
     <span class="logo">Le Bar <i>de Yann</i></span>
     <p style="margin:0">Cocktails d'exception · Québec</p>
     <p class="moderation">L'abus d'alcool est dangereux pour la santé. À consommer avec modération.</p>
+    <p style="margin:8px 0 0">Version v1.5 · 11 nov.</p>
     <details>
       <summary>Crédits photos</summary>
       <p>Photos de cocktails et d'ingrédients : <a href="https://www.thecocktaildb.com" rel="noopener">TheCocktailDB</a>, sauf mention ci-dessous (Wikimedia Commons, licences libres) :</p>
@@ -911,6 +917,7 @@ document.querySelectorAll(".js-count").forEach(e=>e.textContent=C.length);
 /* ---------- Navigation ---------- */
 function go(id){
   closeDrawer();
+  if(id==="barman"){location.href="/bar";return;}
   if(id==="favoris"){setCat("fav");id="carte";}
   const behavior=reduced?"auto":"smooth";
   if(id==="accueil"){window.scrollTo({top:0,behavior});return;}
@@ -952,9 +959,9 @@ $("moods").onclick=e=>{const b=e.target.closest("[data-mood]");if(!b)return;setM
 
 /* ---------- c) Cocktail du jour ---------- */
 function drawToday(){
-  const d=new Date(); const day=Math.floor((d.getTime()-d.getTimezoneOffset()*6e4)/864e5);
+  const d=new Date(); const ymd=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto"}).format(d); const day=Math.floor(Date.parse(ymd+"T00:00:00Z")/864e5);
   const P=pool(); const i=P[((day*7)%P.length+P.length)%P.length]; const c=C[i]; const sig=c.tags.includes("signature");
-  $("todayDate").textContent=d.toLocaleDateString("fr-CA",{weekday:"long",day:"numeric",month:"long"});
+  $("todayDate").textContent=d.toLocaleDateString("fr-CA",{weekday:"long",day:"numeric",month:"long",timeZone:"America/Toronto"});
   $("today").innerHTML=`<div class="ph"><img src="images/${slug(c)}.webp" alt="${esc(c.n)}" loading="lazy" decoding="async" width="900" height="900">${sig?'<span class="badge sig">★ Signature</span>':""}</div>
   <div class="tx"><h3>${esc(c.n)}</h3><p>${esc(c.desc)}</p>
   <div class="tags"><span class="tag"><b>Méthode</b> ${c.m}</span><span class="tag"><b>Niveau</b> ${LEVEL[c.d-1]}</span><span class="tag"><b>Temps</b> ${c.t} min</span><span class="tag"><b>Alcool</b> ${alcLabel(c)}</span></div>
@@ -978,10 +985,10 @@ function setReel(pos,anim,dur){const ul=$("reelList");ul.style.transition=anim?`
 function spin(){
   if(spinning)return; spinning=true; $("spin").disabled=true;
   const n=reelOrder.length; const target=reelOrder[Math.floor(Math.random()*n)];
-  const ti=reelOrder.indexOf(target); const final=(reduced?2:4)*n+ti; const dur=reduced?200:3400;
+  const ti=reelOrder.indexOf(target); const final=(reduced?2:4)*n+ti; const dur=reduced?200:2300;
   [...$("reelList").children].forEach(li=>li.classList.remove("hit"));
   requestAnimationFrame(()=>setReel(final,true,dur));
-  setTimeout(()=>{reelPos=n+ti;setReel(reelPos,false);spinning=false;$("spin").disabled=false;if(navigator.vibrate)navigator.vibrate(30);setTimeout(()=>openSheet(target),reduced?50:650);},dur+60);
+  setTimeout(()=>{reelPos=n+ti;setReel(reelPos,false);spinning=false;$("spin").disabled=false;if(navigator.vibrate)navigator.vibrate(30);setTimeout(()=>openSheet(target),reduced?50:150);},dur+60);
 }
 buildReel();
 $("spin").onclick=spin;
@@ -1223,15 +1230,15 @@ $("shop").onclick=async e=>{
   if(e.target.closest("#useTonight"))useAsTonight();
   if(e.target.closest("#copyShop")){const t=shopText();try{await navigator.clipboard.writeText(t);toast("Liste copiée ✓");}catch(err){if(navigator.share)navigator.share({text:t}).catch(()=>{});}}
 };
-function adminPin(){try{return sessionStorage.getItem("bar-pin")||localStorage.getItem("bar-pin")||"";}catch(e){return "";}}
+function adminPin(){try{const t=JSON.parse(localStorage.getItem("bar-token")||"null");return t&&new Date(t.exp)>new Date()?t.token:"";}catch(e){return "";}}
 async function useAsTonight(){
   const sel=C.filter(c=>partySel.has(c.n)).map(c=>c.n);
   if(!sel.length)return;
   if(!confirm(`Remplacer la carte de ce soir par ces ${sel.length} cocktail${sel.length>1?"s":""} et activer le mode soirée ?`))return;
   try{
-    const r=await fetch("/api/soiree-admin",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({pin:adminPin(),action:"save",active:true,selection:sel}),cache:"no-store"});
+    const r=await fetch("/api/soiree-admin",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+adminPin()},body:JSON.stringify({action:"save",active:true,selection:sel}),cache:"no-store"});
     const d=await r.json().catch(()=>({}));
-    if(r.status===401){try{sessionStorage.removeItem("bar-pin");localStorage.removeItem("bar-pin");}catch(e){}drawShop();toast("Code PIN expiré : reconnecte-toi sur /bar");return;}
+    if(r.status===401){try{localStorage.removeItem("bar-token");}catch(e){}drawShop();toast("Session expirée : reconnecte-toi dans l'Espace barman");return;}
     if(!r.ok||!d.ok)throw 0;
     applySoiree(d.state.active,d.state.selection,true); toast(`✦ Carte de ce soir : ${sel.length} cocktail${sel.length>1?"s":""}`);
   }catch(e){toast("Échec de l'envoi. Réessaie dans un instant.");}
@@ -1293,8 +1300,8 @@ async function loadSoiree(){
     if(!r.ok)throw new Error("http "+r.status);
     const d=await r.json(); lastOk=Date.now(); applySoiree(!!d.active,Array.isArray(d.selection)?d.selection:[]);
   }catch(e){
-    // Stockage indisponible : on affiche tout normalement (après 5 min sans réponse si on avait un état).
-    if(!lastOk||Date.now()-lastOk>5*60e3)applySoiree(false,[]);
+    // S-07 / N-04 : serveur injoignable ou pas de réseau = soirée HORS LIGNE, site complet.
+    applySoiree(false,[]);
   }
 }
 setInterval(loadSoiree,60000);
@@ -1311,7 +1318,16 @@ loadSoiree();
 /* ---------- Démarrage ---------- */
 render(); observe();
 if(location.hash) fromHash();
-if("serviceWorker" in navigator && location.protocol==="https:") addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+if("serviceWorker" in navigator && location.protocol==="https:"){
+  // N-02 : quand une nouvelle version prend la main, la page se recharge une seule fois.
+  let hadController=!!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener("controllerchange",()=>{
+    if(!hadController){hadController=true;return;}
+    try{if(sessionStorage.getItem("sw-reload"))return;sessionStorage.setItem("sw-reload","1");}catch(e){}
+    location.reload();
+  });
+  addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+}
 </script>
 </body>
 </html>

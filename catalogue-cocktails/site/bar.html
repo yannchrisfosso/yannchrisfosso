@@ -6,14 +6,14 @@
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#0b0e12">
-<title>Le Bar · Espace propriétaire</title>
+<title>Le Bar · Espace barman</title>
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <style>
 @font-face{font-family:"Cormorant Garamond";font-style:normal;font-weight:600;font-display:swap;src:url(fonts/cormorant-garamond-latin-600-normal.woff2) format("woff2")}
 @font-face{font-family:"Cormorant Garamond";font-style:italic;font-weight:500;font-display:swap;src:url(fonts/cormorant-garamond-latin-500-italic.woff2) format("woff2")}
 @font-face{font-family:"Manrope";font-style:normal;font-weight:200 800;font-display:swap;src:url(fonts/manrope-latin-wght-normal.woff2) format("woff2")}
-:root{--bg:#0b0e12;--bg-2:#10141a;--card:#151a21;--gold:#d9a65b;--gold-2:#f0cb8e;--gold-soft:rgba(217,166,91,.14);--line:rgba(217,166,91,.22);--line-2:rgba(255,255,255,.08);--ink:#f4efe6;--ink-2:#d8d1c5;--muted:#9a948a;--ok:#5fc38f;--bad:#e06a5a;--serif:"Cormorant Garamond",Georgia,serif;--sans:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;--g:clamp(16px,4vw,32px);color-scheme:dark}
+:root{--bg:#0b0e12;--bg-2:#10141a;--card:#141a20;--gold:#d9a65b;--gold-2:#f0c784;--gold-soft:rgba(217,166,91,.14);--line:rgba(217,166,91,.22);--line-2:#232b33;--ink:#f3efe8;--ink-2:#d8d1c5;--muted:#a9a39a;--ok:#5fc38f;--bad:#e06a5a;--serif:"Cormorant Garamond",Georgia,serif;--sans:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;--g:clamp(16px,4vw,32px);color-scheme:dark}
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.5}
 button,input{font:inherit;color:inherit}
@@ -55,7 +55,7 @@ header.top nav{display:flex;gap:6px}
 .mode b{display:block;font-size:1.1rem}
 .mode small{display:block;color:var(--ink-2);font-size:.84rem;margin-top:2px}
 .warn{background:rgba(224,106,90,.12);border:1px solid rgba(224,106,90,.35);color:#f3c2b9;border-radius:14px;padding:10px 14px;font-size:.86rem;margin:6px 0 0}
-.tools{position:sticky;top:64px;z-index:10;background:linear-gradient(180deg,var(--bg) 85%,rgba(11,14,18,0));padding:14px 0 10px}
+.tools{position:sticky;top:122px;z-index:10;background:linear-gradient(180deg,var(--bg) 85%,rgba(11,14,18,0));padding:14px 0 10px}
 .search{width:100%;padding:13px 18px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-size:1rem}
 .search:focus{outline:none;border-color:var(--gold)}
 .chips{display:flex;gap:6px;overflow-x:auto;padding:10px 0 2px;scrollbar-width:none}
@@ -96,6 +96,19 @@ section.box h2{font-family:var(--serif);font-weight:600;font-size:1.7rem;margin:
 .big-qr .code{background:#fff;border-radius:24px;padding:18px;width:min(80vw,62svh);aspect-ratio:1}
 .big-qr .code svg{width:100%;height:100%;display:block}
 .big-qr h2{font-family:var(--serif);font-weight:600;font-size:clamp(2rem,8vw,3rem);margin:0;line-height:1.05}
+.state{display:flex;align-items:center;gap:10px;padding:10px 14px;margin:0 0 10px;border-radius:14px;font-size:.88rem;font-weight:700;border:1px solid var(--line-2);background:var(--card)}
+.state .dot{width:10px;height:10px;border-radius:50%;background:var(--muted);flex:none}
+.state b{letter-spacing:.08em}
+.state.on{border-color:var(--gold);background:linear-gradient(135deg,rgba(217,166,91,.22),rgba(217,166,91,.06))}
+.state.on .dot{background:var(--gold);box-shadow:0 0 0 4px rgba(217,166,91,.25)}
+.state.on b{color:var(--gold-2)}
+.pub{display:grid;grid-template-columns:1fr;gap:8px;margin:14px 0 6px}
+@media(min-width:560px){.pub{grid-template-columns:1.4fr 1fr}}
+.pub .pill{min-height:52px;font-size:1rem}
+.note{background:var(--gold-soft);border:1px solid var(--line);color:var(--ink);border-radius:14px;padding:10px 14px;font-size:.88rem;margin:8px 0 0;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.pill{min-height:48px}
+.pill.sm{min-height:44px}
+.chip{min-height:44px}
 footer{padding:40px 0 calc(40px + env(safe-area-inset-bottom) + var(--badge,0px));color:var(--muted);font-size:.82rem;text-align:center}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom) + var(--badge,0px));transform:translate(-50%,20px);z-index:60;background:var(--ink);color:#111;padding:12px 18px;border-radius:999px;font-weight:700;font-size:.9rem;opacity:0;transition:all .3s;pointer-events:none;max-width:calc(100% - 32px);text-align:center}
 .toast.on{opacity:1;transform:translate(-50%,0)}
@@ -107,8 +120,8 @@ footer{padding:40px 0 calc(40px + env(safe-area-inset-bottom) + var(--badge,0px)
 <div class="login" id="login">
   <form id="loginForm" autocomplete="off">
     <span class="logo">Le Bar <i>de Yann</i></span>
-    <h1>Espace <span class="g">propriétaire</span></h1>
-    <p class="muted" style="margin:0">Entre ton code PIN pour gérer les cocktails disponibles ce soir.</p>
+    <h1>Espace <span class="g">barman</span></h1>
+    <p class="muted" style="margin:0">Entre ton code PIN pour publier la carte de ce soir.</p>
     <input class="pin" id="pin" type="password" inputmode="numeric" autocomplete="current-password" maxlength="12" aria-label="Code PIN" required>
     <label class="remember"><input type="checkbox" id="remember" checked> Rester connecté sur cet appareil</label>
     <button class="pill" style="width:100%" id="loginBtn">Entrer</button>
@@ -120,18 +133,18 @@ footer{padding:40px 0 calc(40px + env(safe-area-inset-bottom) + var(--badge,0px)
 <div id="app" hidden>
   <header class="top"><div class="wrap">
     <a class="logo" href="./">Le Bar <i>de Yann</i></a>
-    <nav><a class="pill ghost sm" href="./" target="_blank" rel="noopener">Voir le site</a><button class="pill ghost sm" id="logout">Déconnexion</button></nav>
-  </div></header>
+    <nav><a class="pill ghost sm" href="./" target="_blank" rel="noopener">Voir le site comme un invité</a><button class="pill ghost sm" id="logout">Déconnexion</button></nav>
+  </div>
+  <div class="wrap"><div class="state" id="state" role="status" aria-live="polite"><span class="dot" aria-hidden="true"></span><span><b id="stTitle">HORS LIGNE</b> · <span id="stSub">les invités voient toute la carte</span></span></div></div>
+  </header>
 
   <main class="wrap">
     <p class="count" id="count" aria-live="polite"></p>
     <p class="status" id="status" aria-live="polite"></p>
 
-    <button class="mode" id="mode" role="switch" aria-checked="false">
-      <span class="sw" aria-hidden="true"></span>
-      <span><b id="modeTitle">Mode soirée : désactivé</b><small id="modeSub">Le site affiche tous les cocktails normalement.</small></span>
-    </button>
-    <p class="warn" id="warn" hidden>Mode soirée activé mais aucun cocktail sélectionné : les invités voient tout le monde normalement.</p>
+    <div class="pub"><button class="pill" id="publish">Publier la carte de ce soir</button><button class="pill ghost" id="stop">Arrêter la soirée</button></div>
+    <p class="warn" id="warn" role="alert" hidden></p>
+    <div class="note" id="pending" hidden><span id="pendingTxt">Sélection modifiée, pas encore visible par les invités.</span><button class="pill sm" id="publishNow">Publier maintenant</button></div>
 
     <div class="tools">
       <input class="search" id="q" type="search" placeholder="Chercher un cocktail" aria-label="Chercher un cocktail" autocomplete="off">
@@ -143,9 +156,9 @@ footer{padding:40px 0 calc(40px + env(safe-area-inset-bottom) + var(--badge,0px)
 
     <section class="box">
       <div class="eyebrow">Bonus</div>
-      <h2>Mes sélections</h2>
-      <p class="muted" style="margin:0">Enregistre la sélection actuelle pour la réutiliser (Anniversaire, Mariage…).</p>
-      <div class="save-row"><input id="presetName" maxlength="40" placeholder="Nom de la sélection" aria-label="Nom de la sélection"><button class="pill sm" id="presetSave">Enregistrer</button></div>
+      <h2>Modèles</h2>
+      <p class="muted" style="margin:0">Garde la sélection actuelle pour plus tard (Anniversaire, Mariage…). Un modèle ne publie jamais rien tout seul.</p>
+      <div class="save-row"><input id="presetName" maxlength="40" placeholder="Nom du modèle" aria-label="Nom du modèle"><button class="pill sm" id="presetSave">Enregistrer</button></div>
       <div class="presets" id="presets"></div>
     </section>
 
@@ -183,61 +196,80 @@ const SITE_URL=location.origin+"/";
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
 const norm=s=>s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
-function toast(m){const t=$("toast");t.textContent=m;t.classList.add("on");clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove("on"),2600);}
-const PINKEY="bar-pin";
-const getPin=()=>{try{return sessionStorage.getItem(PINKEY)||localStorage.getItem(PINKEY)||"";}catch(e){return "";}};
-const setPin=(p,remember)=>{try{sessionStorage.setItem(PINKEY,p);if(remember)localStorage.setItem(PINKEY,p);else localStorage.removeItem(PINKEY);}catch(e){}};
-const clearPin=()=>{try{sessionStorage.removeItem(PINKEY);localStorage.removeItem(PINKEY);}catch(e){}};
+function toast(m){const t=$("toast");t.textContent=m;t.classList.add("on");clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove("on"),2800);}
 
-let pin="", active=false, sel=new Set(), presets={}, cat="tous", q="", saveTimer=null, saving=false, pending=false;
+/* ---------- Session : jeton signé (30 jours), jamais le PIN (B-03) ---------- */
+const TOKKEY="bar-token", DRAFT="bar-draft";
+const store={get(k){try{return JSON.parse(localStorage.getItem(k)||"null");}catch(e){return null;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}},del(k){try{localStorage.removeItem(k);}catch(e){}}};
+try{localStorage.removeItem("bar-pin");sessionStorage.removeItem("bar-pin");}catch(e){} // ancienne version : on efface le PIN gardé
+const getToken=()=>{const t=store.get(TOKKEY);return t&&t.exp&&new Date(t.exp)>new Date()?t.token:"";};
 
-async function api(action,extra={},pinOverride){
-  const r=await fetch("/api/soiree-admin",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({pin:pinOverride||pin,action,...extra}),cache:"no-store"});
+let server={active:false,selection:[],version:0}, sel=new Set(), presets={}, cat="tous", q="", pubTimer=null, busy=false, hold=false;
+
+async function api(action,extra={}){
+  let r;
+  try{
+    r=await fetch("/api/soiree-admin",{method:"POST",cache:"no-store",headers:{"Content-Type":"application/json",...(action!=="login"?{"Authorization":"Bearer "+getToken()}:{})},body:JSON.stringify({action,...extra})});
+  }catch(e){const err=new Error("network");throw err;}
   let d={}; try{d=await r.json();}catch(e){}
-  if(r.status===401){ d.error="bad_pin"; }
-  if(!r.ok||!d.ok){const e=new Error(d.error||"network");e.data=d;e.status=r.status;throw e;}
+  if(!r.ok||!d.ok){const e=new Error(d.error||("http_"+r.status));e.data=d;e.status=r.status;throw e;}
   return d;
 }
 function errText(e){
-  if(e.message==="bad_pin") return e.data&&e.data.left!=null?`Code incorrect. Encore ${e.data.left} essai${e.data.left>1?"s":""}.`:"Code incorrect.";
-  if(e.message==="locked") return `Trop d'essais. Réessaie dans ${e.data.retryIn||15} min.`;
-  if(e.message==="pin_not_configured") return "Le code PIN n'est pas configuré sur Netlify (variable ADMIN_PIN).";
-  if(e.message==="storage_unavailable") return "Le stockage ne répond pas. Réessaie dans un instant.";
-  return "Connexion impossible. Vérifie ta connexion internet.";
+  const d=e.data||{};
+  switch(e.message){
+    case "bad_pin": return `Code incorrect. Encore ${d.left} essai${d.left>1?"s":""} avant blocage.`;
+    case "locked": return `Trop d'essais : accès bloqué ${d.retryIn||5} min.`;
+    case "session_expired": return "Session expirée : entre ton PIN.";
+    case "not_configured": return "Le site n'est pas configuré (variables ADMIN_PIN ou SESSION_SECRET manquantes sur Netlify).";
+    case "storage_unavailable": return "Le serveur de stockage ne répond pas. Rien n'a été modifié, réessaie.";
+    case "empty_publish": return "Impossible de publier une carte vide : coche au moins un cocktail.";
+    case "stale_version": return "La carte a été modifiée depuis un autre écran : affichage mis à jour, vérifie puis recommence.";
+    case "unknown_cocktail": return "Un cocktail inconnu a été refusé par le serveur.";
+    case "network": return "Pas de connexion au serveur. Rien n'a été modifié.";
+    default: return "Erreur du serveur ("+e.message+"). Rien n'a été modifié.";
+  }
 }
+function handleAuth(e){ if(e.message==="session_expired"){store.del(TOKKEY);showLogin(errText(e));return true;} return false; }
 
 /* ---------- Connexion ---------- */
 $("loginForm").onsubmit=async ev=>{
   ev.preventDefault(); const p=$("pin").value.trim(); if(!p)return;
   $("loginBtn").disabled=true; $("loginErr").textContent="";
-  try{const d=await api("verify",{},p); pin=p; setPin(p,$("remember").checked); start(d.state);}
+  try{const d=await api("login",{pin:p}); $("pin").value=""; if($("remember").checked)store.set(TOKKEY,{token:d.token,exp:d.expiresAt}); else {store.set(TOKKEY,{token:d.token,exp:new Date(Date.now()+12*3600e3).toISOString()});} start(d.state);}
   catch(e){$("loginErr").textContent=errText(e); $("pin").select();}
   finally{$("loginBtn").disabled=false;}
 };
-$("logout").onclick=()=>{clearPin();location.reload();};
-
+$("logout").onclick=()=>{store.del(TOKKEY);location.reload();};
 async function boot(){
-  const p=getPin(); if(!p){showLogin();return;}
-  try{const d=await api("verify",{},p); pin=p; start(d.state);}
-  catch(e){ if(e.message==="bad_pin"||e.message==="locked")clearPin(); showLogin(); $("loginErr").textContent=e.message==="bad_pin"?"":errText(e);}
+  if(!getToken()){showLogin();return;}
+  try{const d=await api("verify"); start(d.state);}
+  catch(e){ if(!handleAuth(e)) showLogin(errText(e)); }
 }
-function showLogin(){$("login").hidden=false;$("app").hidden=true;setTimeout(()=>$("pin").focus(),50);}
+function showLogin(msg){$("login").hidden=false;$("app").hidden=true;$("loginErr").textContent=msg||"";setTimeout(()=>$("pin").focus(),50);}
 function start(state){
-  active=!!state.active; sel=new Set(state.selection||[]);
+  server=state; const draft=store.get(DRAFT);
+  sel=new Set(server.active?server.selection:(Array.isArray(draft)?draft:server.selection));
   $("login").hidden=true; $("app").hidden=false;
   drawCats(); drawAll(); loadPresets(); drawQR();
-  setStatus(state.updatedAt?"Dernière mise à jour : "+new Date(state.updatedAt).toLocaleString("fr-CA",{dateStyle:"medium",timeStyle:"short"}):"Aucune sélection enregistrée pour l'instant.");
+  setStatus(server.updatedAt?"Dernière publication : "+new Date(server.updatedAt).toLocaleString("fr-CA",{dateStyle:"medium",timeStyle:"short"}):"");
 }
 
 /* ---------- Affichage ---------- */
 function setStatus(t,cls){const s=$("status");s.textContent=t;s.className="status"+(cls?" "+cls:"");}
+function warn(t){$("warn").textContent=t||"";$("warn").hidden=!t;}
+const same=()=>server.selection.length===sel.size&&server.selection.every(n=>sel.has(n));
 function drawHead(){
-  const n=sel.size;
-  $("count").innerHTML=`<b>${n}</b> cocktail${n>1?"s":""} disponible${n>1?"s":""} ce soir`;
-  $("mode").setAttribute("aria-checked",active);
-  $("modeTitle").textContent="Mode soirée : "+(active?"activé":"désactivé");
-  $("modeSub").textContent=active?"Les invités voient ta sélection en priorité, sur leur téléphone.":"Le site affiche tous les cocktails normalement.";
-  $("warn").hidden=!(active&&n===0);
+  const n=sel.size, on=server.active, pub=server.selection.length;
+  $("state").className="state"+(on?" on":"");
+  $("stTitle").textContent=on?"EN LIGNE":"HORS LIGNE";
+  $("stSub").textContent=on?`les invités voient ${pub} cocktail${pub>1?"s":""}`:"les invités voient toute la carte";
+  $("count").innerHTML=`<b>${n}</b> cocktail${n>1?"s":""} sélectionné${n>1?"s":""}`;
+  $("publish").textContent=on?"Publier la sélection actuelle":"Publier la carte de ce soir";
+  $("stop").disabled=!on;
+  const pending=(on&&!same())||(!on&&n>0&&hold);
+  $("pending").hidden=!pending;
+  $("pendingTxt").textContent=on?"Sélection modifiée, pas encore visible par les invités.":"Modèle chargé : rien n'est encore publié.";
 }
 function drawCats(){$("cats").innerHTML=BASES.map(([k,l])=>`<button class="chip" data-cat="${k}" aria-pressed="${k===cat}">${l}</button>`).join("");}
 function visible(){return ITEMS.filter(([n,b])=>(cat==="tous"||(cat==="sel"?sel.has(n):b===cat))&&(!q||norm(n).includes(q)));}
@@ -250,41 +282,54 @@ function drawList(){
 }
 function drawAll(){drawHead();drawList();}
 
-/* ---------- Enregistrement automatique ---------- */
-function queueSave(){
-  drawHead(); setStatus("Enregistrement…");
-  clearTimeout(saveTimer); saveTimer=setTimeout(doSave,450);
+/* ---------- Écriture serveur (B-05, B-06, B-10) ---------- */
+async function write(active,msgOk){
+  if(busy){clearTimeout(pubTimer);pubTimer=setTimeout(()=>write(active,msgOk),300);return;}
+  busy=true; setStatus("Envoi au serveur…");
+  try{
+    const d=await api("save",{active,selection:[...sel],version:server.version});
+    server=d.state; hold=false; if(!active)store.set(DRAFT,[...sel]);
+    setStatus(msgOk+" · "+new Date().toLocaleTimeString("fr-CA",{hour:"2-digit",minute:"2-digit"}),"ok"); warn("");
+  }catch(e){
+    if(handleAuth(e)){busy=false;return;}
+    setStatus(errText(e),"bad");
+    if(e.message==="stale_version"&&e.data.state){server=e.data.state; if(server.active)sel=new Set(server.selection); drawList();}
+    if(e.message==="empty_publish")warn(errText(e));
+  }finally{busy=false;drawHead();}
 }
-async function doSave(){
-  if(saving){pending=true;return;}
-  saving=true;
-  try{const d=await api("save",{active,selection:[...sel]}); setStatus("Enregistré ✓ · visible par les invités au prochain rechargement (60 s maximum)","ok");}
-  catch(e){ if(e.message==="bad_pin"){clearPin();location.reload();return;} setStatus("Échec de l'enregistrement : "+errText(e),"bad"); }
-  finally{saving=false; if(pending){pending=false;doSave();}}
+function changed(){
+  store.set(DRAFT,[...sel]); drawHead();
+  if(server.active){
+    if(sel.size===0){clearTimeout(pubTimer);warn("Plus aucun cocktail coché : touche « Arrêter la soirée » pour que les invités revoient toute la carte, ou coche au moins un cocktail.");setStatus("");return;}
+    warn(""); setStatus("Mise à jour pour les invités…"); clearTimeout(pubTimer); pubTimer=setTimeout(()=>write(true,"Mis à jour pour les invités ✓"),450);
+  } else { setStatus("Sélection gardée sur cet appareil : pas encore visible par les invités."); }
 }
+$("publish").onclick=()=>{ if(!sel.size){warn("Impossible de publier une carte vide : coche au moins un cocktail.");setStatus("");return;} clearTimeout(pubTimer); write(true,"Carte publiée : les invités la voient ✓"); };
+$("publishNow").onclick=()=>$("publish").click();
+$("stop").onclick=()=>{ if(!confirm("Arrêter la soirée ? Les invités reverront toute la carte."))return; clearTimeout(pubTimer); write(false,"Soirée arrêtée : les invités voient toute la carte ✓"); };
 
-$("list").addEventListener("change",e=>{const i=e.target.closest("input[data-n]");if(!i)return;const n=i.dataset.n;i.checked?sel.add(n):sel.delete(n);i.closest(".row").classList.toggle("on",i.checked);if(cat==="sel"&&!i.checked)drawList();queueSave();});
-$("mode").onclick=()=>{active=!active;queueSave();toast(active?"Mode soirée activé ✦":"Mode soirée désactivé");};
+$("list").addEventListener("change",e=>{const i=e.target.closest("input[data-n]");if(!i)return;const n=i.dataset.n;i.checked?sel.add(n):sel.delete(n);i.closest(".row").classList.toggle("on",i.checked);if(cat==="sel"&&!i.checked)drawList();changed();});
 $("cats").onclick=e=>{const b=e.target.closest("[data-cat]");if(!b)return;cat=b.dataset.cat;drawCats();drawList();};
 $("q").oninput=e=>{q=norm(e.target.value.trim());drawList();};
-$("all").onclick=()=>{visible().forEach(([n])=>sel.add(n));drawList();queueSave();};
-$("none").onclick=()=>{const v=visible();if(v.length>8&&!confirm(`Retirer ${v.length} cocktails de la sélection ?`))return;v.forEach(([n])=>sel.delete(n));drawList();queueSave();};
+$("all").onclick=()=>{visible().forEach(([n])=>sel.add(n));drawList();changed();};
+$("none").onclick=()=>{const v=visible();if(v.length>8&&!confirm(`Retirer ${v.length} cocktails de la sélection ?`))return;v.forEach(([n])=>sel.delete(n));drawList();changed();};
 
-/* ---------- Sélections enregistrées ---------- */
-async function loadPresets(){try{presets=(await api("presets")).presets||{};}catch(e){presets={};}drawPresets();}
+/* ---------- Modèles (B-08) ---------- */
+async function loadPresets(){try{presets=(await api("presets")).presets||{};drawPresets();}catch(e){if(!handleAuth(e))$("presets").innerHTML=`<p class="status bad" style="margin:0">${esc(errText(e))}</p>`;}}
 function drawPresets(){
   const ks=Object.keys(presets).sort((a,b)=>a.localeCompare(b,"fr"));
-  $("presets").innerHTML=ks.length?ks.map(k=>`<div class="preset"><span>${esc(k)} <em>· ${presets[k].length} cocktail${presets[k].length>1?"s":""}</em></span><button class="pill sm" data-load="${esc(k)}">Charger</button><button class="pill ghost sm" data-del="${esc(k)}" aria-label="Supprimer ${esc(k)}">✕</button></div>`).join(""):`<p class="muted" style="margin:0">Aucune sélection enregistrée.</p>`;
+  $("presets").innerHTML=ks.length?ks.map(k=>`<div class="preset"><span>${esc(k)} <em>· ${presets[k].length} cocktail${presets[k].length>1?"s":""}</em></span><button class="pill sm" data-load="${esc(k)}">Utiliser ce modèle</button><button class="pill ghost sm" data-del="${esc(k)}" aria-label="Supprimer le modèle ${esc(k)}">✕</button></div>`).join(""):`<p class="muted" style="margin:0">Aucun modèle enregistré.</p>`;
 }
 $("presetSave").onclick=async()=>{
   const name=$("presetName").value.trim(); if(!name){$("presetName").focus();return;}
-  if(presets[name]&&!confirm(`Remplacer la sélection « ${name} » ?`))return;
-  try{presets=(await api("preset-save",{name,selection:[...sel]})).presets;drawPresets();$("presetName").value="";toast(`« ${name} » enregistrée ✓`);}catch(e){toast(errText(e));}
+  if(!sel.size){toast("Coche au moins un cocktail avant d'enregistrer un modèle.");return;}
+  if(presets[name]&&!confirm(`Remplacer le modèle « ${name} » ?`))return;
+  try{presets=(await api("preset-save",{name,selection:[...sel]})).presets;drawPresets();$("presetName").value="";toast(`Modèle « ${name} » enregistré ✓`);}catch(e){if(!handleAuth(e))toast(errText(e));}
 };
 $("presets").onclick=async e=>{
   const l=e.target.closest("[data-load]"), d=e.target.closest("[data-del]");
-  if(l){const k=l.dataset.load;sel=new Set(presets[k]||[]);drawAll();queueSave();toast(`« ${k} » chargée : ${sel.size} cocktails`);}
-  if(d){const k=d.dataset.del;if(!confirm(`Supprimer la sélection « ${k} » ?`))return;try{presets=(await api("preset-delete",{name:k})).presets;drawPresets();}catch(err){toast(errText(err));}}
+  if(l){const k=l.dataset.load;clearTimeout(pubTimer);sel=new Set(presets[k]||[]);hold=true;store.set(DRAFT,[...sel]);drawAll();warn("");setStatus(`Modèle « ${k} » chargé (${sel.size} cocktails) : rien n'est publié tant que tu ne touches pas « Publier maintenant ».`);scrollTo({top:0,behavior:"smooth"});}
+  if(d){const k=d.dataset.del;if(!confirm(`Supprimer le modèle « ${k} » ?`))return;try{presets=(await api("preset-delete",{name:k})).presets;drawPresets();toast("Modèle supprimé ✓");}catch(err){if(!handleAuth(err))toast(errText(err));}}
 };
 
 /* ---------- QR code ---------- */

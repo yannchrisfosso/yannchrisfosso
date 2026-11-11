@@ -1,0 +1,12 @@
+{
+  "name": "le-bar-de-yann-tests",
+  "private": true,
+  "description": "Tests de bout en bout du PRD (section 10), lancés contre la production.",
+  "scripts": {
+    "build": "node site-src/build.js",
+    "test:prod": "playwright test --trace off"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0"
+  }
+}
