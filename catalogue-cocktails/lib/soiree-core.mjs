@@ -1,7 +1,7 @@
 // Logique commune de « Disponibles ce soir » (PRD § 6 et § 7), identique sur Netlify et sur Vercel.
 // Les fonctions de chaque hébergeur ne font que lire les variables d'environnement et appeler ces deux handlers.
 //
-// GET  /api/soiree        -> { active, selection, updatedAt, version }
+// GET  /api/soiree        -> { active, selection, updatedAt, version, etapesPubliques }
 // POST /api/soiree-admin  { action, ... }
 //   "login"          { pin }                                -> { ok, token, expiresAt, state }   (401 PIN faux, 429 bloqué)
 //   "verify"         (jeton)                                -> { ok, state }
@@ -9,10 +9,13 @@
 //   "presets"        (jeton)                                -> { ok, presets }
 //   "preset-save"    (jeton) { name, selection }            -> { ok, presets }
 //   "preset-delete"  (jeton) { name }                       -> { ok, presets }
+//   "set-etapes-publiques" (jeton) { value: booléen }     -> { ok, settings }
+// Tous les POST doivent venir du site lui-même (en-tête Origin), sinon 403.
 // Le jeton est envoyé dans « Authorization: Bearer … ». Le PIN n'est jamais stocké ni renvoyé.
 import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 import { getBarStore } from "./store.mjs";
 import { NAMES } from "../netlify/shared/names.mjs";
+import { STEPS } from "./steps-data.mjs";
 
 const KNOWN = new Set(NAMES);
 const MAX_FAILS = 5;                      // N-06 : 5 échecs…
@@ -47,6 +50,37 @@ function checkSel(sel) {
   return out.every((n) => typeof n === "string" && KNOWN.has(n)) ? out : null;
 }
 
+// Vérification d'origine : un POST de l'espace barman doit venir du site lui-même (protection contre les requêtes croisées).
+function sameOrigin(req) {
+  const origin = req.headers.get("origin");
+  if (!origin) return false;
+  let o; try { o = new URL(origin).host; } catch { return false; }
+  const hosts = [new URL(req.url).host, req.headers.get("x-forwarded-host"), req.headers.get("host")].filter(Boolean);
+  return hosts.some((h) => h.split(",")[0].trim() === o);
+}
+const SETTINGS_KEY = "etapes-publiques"; // Upstash : « yanniel:etapes-publiques »
+async function readSettings(store) {
+  try { const v = await store.getJSON(SETTINGS_KEY); return { etapesPubliques: !!(v && v.public) }; } catch { return { etapesPubliques: false }; }
+}
+const privateJson = (body, status = 200) => Response.json(body, { status, headers: { "Cache-Control": "private, no-store" } });
+
+/* ---------- Étapes de préparation (privées par défaut) ----------
+   GET /api/etapes?id=<slug> -> 200 { id, steps } si « Afficher les étapes aux visiteurs » est activé
+   OU si la session barman est valide ; sinon 401. Jamais mis en cache. */
+export async function handleSteps(req, env) {
+  const id = new URL(req.url).searchParams.get("id") || "";
+  const steps = Object.prototype.hasOwnProperty.call(STEPS, id) ? STEPS[id] : null;
+  if (!steps) return privateJson({ ok: false, error: "unknown_cocktail" }, 404);
+  let isPublic = false;
+  try { isPublic = (await readSettings(await getBarStore(env))).etapesPubliques; } catch {}
+  if (!isPublic) {
+    const pinEnv = env("ADMIN_PIN"), secret = env("SESSION_SECRET");
+    const auth = (req.headers.get("authorization") || "").replace(/^Bearer\s+/i, "");
+    if (!pinEnv || !secret || !checkToken(auth, signingKey(secret, pinEnv))) return privateJson({ ok: false, error: "private" }, 401);
+  }
+  return privateJson({ ok: true, id, steps });
+}
+
 /* ---------- Lecture publique ---------- */
 export async function handleSoiree(env) {
   try {
@@ -57,6 +91,7 @@ export async function handleSoiree(env) {
       selection: (state.selection || []).filter((n) => KNOWN.has(n)),
       updatedAt: state.updatedAt || null,
       version: state.version || 0,
+      etapesPubliques: (await readSettings(store)).etapesPubliques, // le réglage, jamais les étapes
     });
   } catch (err) {
     console.error("soiree read failed", err);
@@ -69,6 +104,7 @@ export async function handleAdmin(req, env) {
   const pinEnv = env("ADMIN_PIN");
   const secret = env("SESSION_SECRET");
   if (!pinEnv || !secret) return json({ ok: false, error: "not_configured" }, 503);
+  if (!sameOrigin(req)) return json({ ok: false, error: "bad_origin" }, 403);
   const key = signingKey(secret, pinEnv);
 
   let body;
@@ -112,7 +148,7 @@ export async function handleAdmin(req, env) {
     } catch (err) { console.error("lockout reset failed", err); }
     let state = EMPTY;
     try { state = (await store.getJSON("soiree")) || EMPTY; } catch {}
-    return json({ ok: true, token: makeToken(key), expiresAt: new Date(Date.now() + SESSION_MS).toISOString(), state: { ...EMPTY, ...state } });
+    return json({ ok: true, token: makeToken(key), expiresAt: new Date(Date.now() + SESSION_MS).toISOString(), state: { ...EMPTY, ...state }, settings: await readSettings(store) });
   }
 
   /* Toutes les autres actions : jeton obligatoire */
@@ -124,7 +160,12 @@ export async function handleAdmin(req, env) {
     const presets = (await store.getJSON("presets")) || {};
     switch (body.action) {
       case "verify":
-        return json({ ok: true, state });
+        return json({ ok: true, state, settings: await readSettings(store) });
+      case "set-etapes-publiques": {
+        if (typeof body.value !== "boolean") return json({ ok: false, error: "bad_request" }, 400);
+        await store.setJSON(SETTINGS_KEY, { public: body.value, updatedAt: new Date().toISOString() });
+        return json({ ok: true, settings: { etapesPubliques: body.value } });
+      }
       case "save": {
         const sel = body.selection === undefined ? state.selection : checkSel(body.selection);
         if (sel === null) return json({ ok: false, error: "unknown_cocktail" }, 400);

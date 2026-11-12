@@ -154,6 +154,17 @@ footer{padding:40px 0 calc(40px + env(safe-area-inset-bottom) + var(--badge,0px)
 
     <ul class="list" id="list"></ul>
 
+    <section class="box" id="visibility">
+      <div class="eyebrow">Réglage</div>
+      <h2>Visibilité des recettes</h2>
+      <p class="muted" style="margin:0 0 12px">Par défaut, seules les personnes connectées ici voient les étapes de préparation et le Mode bar. Les ingrédients, les doses et l'astuce restent visibles par tous.</p>
+      <button class="mode" id="stepsSwitch" role="switch" aria-checked="false" style="margin:0">
+        <span class="sw" aria-hidden="true"></span>
+        <span><b>Afficher les étapes aux visiteurs</b><small id="stepsState">Étapes réservées au barman</small></span>
+      </button>
+      <p class="status" id="stepsStatus" aria-live="polite"></p>
+    </section>
+
     <section class="box">
       <div class="eyebrow">Bonus</div>
       <h2>Modèles</h2>
@@ -229,6 +240,7 @@ function errText(e){
     case "stale_version": return "La carte a été modifiée depuis un autre écran : affichage mis à jour, vérifie puis recommence.";
     case "unknown_cocktail": return "Un cocktail inconnu a été refusé par le serveur.";
     case "network": return "Pas de connexion au serveur. Rien n'a été modifié.";
+    case "bad_origin": return "Requête refusée (origine inconnue). Recharge la page.";
     default: return "Erreur du serveur ("+e.message+"). Rien n'a été modifié.";
   }
 }
@@ -238,19 +250,19 @@ function handleAuth(e){ if(e.message==="session_expired"){store.del(TOKKEY);show
 $("loginForm").onsubmit=async ev=>{
   ev.preventDefault(); const p=$("pin").value.trim(); if(!p)return;
   $("loginBtn").disabled=true; $("loginErr").textContent="";
-  try{const d=await api("login",{pin:p}); $("pin").value=""; if($("remember").checked)store.set(TOKKEY,{token:d.token,exp:d.expiresAt}); else {store.set(TOKKEY,{token:d.token,exp:new Date(Date.now()+12*3600e3).toISOString()});} start(d.state);}
+  try{const d=await api("login",{pin:p}); $("pin").value=""; if($("remember").checked)store.set(TOKKEY,{token:d.token,exp:d.expiresAt}); else {store.set(TOKKEY,{token:d.token,exp:new Date(Date.now()+12*3600e3).toISOString()});} start(d.state,d.settings);}
   catch(e){$("loginErr").textContent=errText(e); $("pin").select();}
   finally{$("loginBtn").disabled=false;}
 };
 $("logout").onclick=()=>{store.del(TOKKEY);location.reload();};
 async function boot(){
   if(!getToken()){showLogin();return;}
-  try{const d=await api("verify"); start(d.state);}
+  try{const d=await api("verify"); start(d.state,d.settings);}
   catch(e){ if(!handleAuth(e)) showLogin(errText(e)); }
 }
 function showLogin(msg){$("login").hidden=false;$("app").hidden=true;$("loginErr").textContent=msg||"";setTimeout(()=>$("pin").focus(),50);}
-function start(state){
-  server=state; const draft=store.get(DRAFT);
+function start(state,settings){
+  server=state; const draft=store.get(DRAFT); drawSteps(!!(settings&&settings.etapesPubliques));
   sel=new Set(server.active?server.selection:(Array.isArray(draft)?draft:server.selection));
   $("login").hidden=true; $("app").hidden=false;
   drawCats(); drawAll(); loadPresets(); drawQR();
@@ -315,6 +327,21 @@ $("cats").onclick=e=>{const b=e.target.closest("[data-cat]");if(!b)return;cat=b.
 $("q").oninput=e=>{q=norm(e.target.value.trim());drawList();};
 $("all").onclick=()=>{visible().forEach(([n])=>sel.add(n));drawList();changed();};
 $("none").onclick=()=>{const v=visible();if(v.length>8&&!confirm(`Retirer ${v.length} cocktails de la sélection ?`))return;v.forEach(([n])=>sel.delete(n));drawList();changed();};
+
+/* ---------- Visibilité des étapes de préparation ---------- */
+let stepsPublic=false;
+function drawSteps(on){
+  stepsPublic=on;
+  $("stepsSwitch").setAttribute("aria-checked",String(on));
+  $("stepsState").textContent=on?"Étapes visibles par tous":"Étapes réservées au barman";
+}
+$("stepsSwitch").onclick=async()=>{
+  const next=!stepsPublic; $("stepsSwitch").disabled=true; $("stepsStatus").textContent="Enregistrement…"; $("stepsStatus").className="status";
+  try{ const d=await api("set-etapes-publiques",{value:next}); drawSteps(d.settings.etapesPubliques);
+    $("stepsStatus").textContent=(d.settings.etapesPubliques?"Les visiteurs voient maintenant les étapes":"Les étapes sont de nouveau réservées au barman")+" ✓"; $("stepsStatus").className="status ok"; }
+  catch(e){ if(!handleAuth(e)){ $("stepsStatus").textContent=errText(e); $("stepsStatus").className="status bad"; } }
+  finally{ $("stepsSwitch").disabled=false; }
+};
 
 /* ---------- Modèles (B-08) ---------- */
 async function loadPresets(){try{presets=(await api("presets")).presets||{};drawPresets();}catch(e){if(!handleAuth(e))$("presets").innerHTML=`<p class="status bad" style="margin:0">${esc(errText(e))}</p>`;}}

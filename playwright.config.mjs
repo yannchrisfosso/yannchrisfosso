@@ -11,7 +11,7 @@ export default defineConfig({
   reporter: [["list"]],
   use: { baseURL: process.env.BASE_URL || "https://bar-yanniel.vercel.app", screenshot: "off", trace: "off" },
   projects: [
-    { name: "webkit-iphone", use: { ...devices["iPhone 13"] } },
-    { name: "chromium", use: { ...devices["Pixel 7"] } },
+    { name: "webkit-iphone", use: { ...devices["iPhone 13"], viewport: { width: 390, height: 844 } } },
+    { name: "chromium", use: { ...devices["Pixel 7"], viewport: { width: 390, height: 844 }, ...(process.env.CHROMIUM_PATH ? { launchOptions: { executablePath: process.env.CHROMIUM_PATH } } : {}) } },
   ],
 });

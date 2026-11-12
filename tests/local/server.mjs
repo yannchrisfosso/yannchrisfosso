@@ -14,6 +14,7 @@ globalThis.Netlify = { env: { get: (k) => process.env[k] } };
 const fns = {
   "/api/soiree": (await import(pathToFileURL(path.join(ROOT, "netlify/functions/soiree.mjs")).href)).default,
   "/api/soiree-admin": (await import(pathToFileURL(path.join(ROOT, "netlify/functions/soiree-admin.mjs")).href)).default,
+  "/api/etapes": (await import(pathToFileURL(path.join(ROOT, "netlify/functions/etapes.mjs")).href)).default,
 };
 const TYPES = { ".html": "text/html; charset=utf-8", ".js": "application/javascript", ".json": "application/json", ".webp": "image/webp", ".png": "image/png", ".jpg": "image/jpeg", ".woff2": "font/woff2", ".webmanifest": "application/manifest+json", ".svg": "image/svg+xml", ".mp4": "video/mp4" };
 let failApi = false; // POST /__test/api-down {on:true} simule un serveur injoignable

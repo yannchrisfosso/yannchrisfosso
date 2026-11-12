@@ -186,6 +186,22 @@ de Claude Code.
   F-12         Pied de page : logo, crédits photos, « À consommer         Must
                avec modération », numéro de version
 
+Règle du 12 nov. 2026 (v1.10) : étapes de préparation privées par défaut.
+
+  F-13         Les étapes de préparation et le bouton « Mode bar »        Must
+               ne sont visibles que par le barman connecté (même
+               session que /bar), sauf si l'interrupteur « Afficher
+               les étapes aux visiteurs » est activé dans /bar.
+               Restent publics : nom, photo, description, humeur,
+               ingrédients avec doses, astuce, favoris, partage,
+               « Disponibles ce soir ». Pour un visiteur, encart
+               discret « Étapes réservées au barman », sans lien vers
+               /bar. Les étapes n'apparaissent dans aucun fichier
+               public (HTML, JS, JSON, cache du service worker,
+               balises meta) : elles vivent côté serveur et sont
+               servies par GET /api/etapes?id=… (401 sinon,
+               Cache-Control: private, no-store).
+
 Quand la soirée est EN LIGNE (publiée depuis l'espace barman) :
 
   ID           Comportement                                               Priorité
@@ -270,6 +286,15 @@ Vocabulaire imposé dans l'interface.
   B-11         Bouton « Voir le site comme un invité » et «      Must
                Déconnexion »
 
+  B-12         Carte « Visibilité des recettes » : interrupteur          Must
+               « Afficher les étapes aux visiteurs » (désactivé par
+               défaut), état « Étapes visibles par tous » ou « Étapes
+               réservées au barman » ; enregistré côté serveur (clé
+               « etapes-publiques », Upstash « yanniel:etapes-
+               publiques »), effet immédiat sans redéploiement ; POST
+               protégé par la session et par la vérification
+               d'origine (403 si l'en-tête Origin n'est pas le site).
+
 Changer le PIN. Netlify → Project configuration → Environment variables → ADMIN_PIN →
 nouvelle valeur (6 chiffres minimum) → Trigger deploy. Le PIN n'apparaît jamais dans le
 code, les réponses de l'API ni les messages de Claude Code.
@@ -333,6 +358,11 @@ Modèles (Blob soiree/modeles ) : liste de { "id", "nom", "cocktails": [], "cree
 
   GET/POST/DELETE                  Jeton    Gérer les modèles          200 + liste
   /api/soiree-admin/modeles
+
+  GET /api/etapes?id=<slug>        Public si    Étapes d'un cocktail      200 + étapes ; 401 si
+                                   interrup-    (privées par défaut)      privées et sans session ;
+                                   teur, sinon                            404 si id inconnu ;
+                                   jeton                                  private, no-store
 
 Règles. Chaque écriture vérifie le jeton côté serveur ; les identifiants de cocktails
 inconnus sont refusés ; le champ version empêche qu'un vieil onglet écrase une
@@ -564,6 +594,9 @@ Décisions prises.
 
   Foléré Fizz rouge à l'hibiscus, cocktail         Recette d'origine
   signature
+
+  Étapes de préparation privées par défaut,       Protéger le savoir-faire du barman ;
+  interrupteur dans /bar (12 nov. 2026)           Yann décide quand les montrer
 
 Questions ouvertes.
 

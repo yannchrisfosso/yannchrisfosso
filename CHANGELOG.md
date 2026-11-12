@@ -2,6 +2,16 @@
 
 Le numéro affiché dans le pied de page et dans `/version.json` vient de `site-src/version.json`.
 
+## v1.10 · 12 nov. 2026 — Étapes de préparation privées par défaut
+- Les étapes et le bouton « Mode bar » ne sont visibles que par le barman connecté, sauf si l'interrupteur
+  « Afficher les étapes aux visiteurs » est activé dans /bar (carte « Visibilité des recettes »). Effet immédiat,
+  sans redéploiement (clé « etapes-publiques » ; Upstash « yanniel:etapes-publiques »).
+- Pour un visiteur : encart « Étapes réservées au barman » ; ingrédients, doses et astuce restent publics.
+- Sécurité : les étapes ne sont plus dans aucun fichier public (vérifié : `node tests/etapes/grep-steps.mjs`) ;
+  elles sont générées dans `lib/steps-data.mjs` (serveur) et servies par `GET /api/etapes?id=…`
+  (401 sans droit, `Cache-Control: private, no-store`). Tous les POST de /bar vérifient l'origine (403 sinon).
+- Tests : `tests/e2e/etapes.spec.mjs` (E-01 à E-04, WebKit et Chromium, 390×844).
+
 ## v1.9 · 12 nov. 2026 — Son de la vidéo d'ambiance actif par défaut
 - La vidéo tente de démarrer avec le son (volume 0,6, fondu d'entrée d'environ 1 s).
 - Si le navigateur refuse le son (refus explicite, ou pause imposée par Chrome), la vidéo joue en muet et le son

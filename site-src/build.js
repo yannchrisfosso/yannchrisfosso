@@ -8,7 +8,11 @@ const m=JSON.parse(fs.readFileSync(path.join(__dirname,"imgmeta.json"),"utf8"));
 const V=JSON.parse(fs.readFileSync(path.join(__dirname,"version.json"),"utf8"));
 const MOIS=["janv.","févr.","mars","avr.","mai","juin","juil.","août","sept.","oct.","nov.","déc."];
 const vd=new Date(V.date+"T12:00:00Z"), VLABEL=`v${V.version} · ${vd.getUTCDate()} ${MOIS[vd.getUTCMonth()]}`;
-const page=fs.readFileSync(path.join(__dirname,"template.html"),"utf8").replace("__VERSION__",()=>VLABEL).replace("__RECIPES__",()=>rec).replace("__IMG__",()=>JSON.stringify(m)).replace(/__COUNT__/g,String(C.length));
+// Étapes de préparation : privées par défaut. Elles ne vont JAMAIS dans site/ : seulement dans lib/steps-data.mjs (serveur).
+const STEPS=Object.fromEntries(C.map(c=>[m.slugs[c.n],c.st]));
+fs.writeFileSync(path.join(OUT,"lib","steps-data.mjs"),"// Généré par site-src/build.js : étapes de préparation, servies seulement par /api/etapes. Ne jamais copier dans site/.\nexport const STEPS = "+JSON.stringify(STEPS)+";\n");
+const PUBLIC_C=C.map(({st,...rest})=>rest); // données publiques : tout sauf les étapes
+const page=fs.readFileSync(path.join(__dirname,"template.html"),"utf8").replace("__VERSION__",()=>VLABEL).replace("__RECIPES__",()=>JSON.stringify(PUBLIC_C)).replace("__IMG__",()=>JSON.stringify(m)).replace(/__COUNT__/g,String(C.length));
 fs.writeFileSync(path.join(SITE,"index.html"),page);
 const items=C.map(c=>[c.n,c.b,m.slugs[c.n]]);
 fs.writeFileSync(path.join(SITE,"bar.html"),fs.readFileSync(path.join(__dirname,"bar-template.html"),"utf8").replace("__ITEMS__",()=>JSON.stringify(items)));

@@ -39,6 +39,7 @@ process.env.KV_REST_API_TOKEN = "local-upstash-token";
 const api = {
   "/api/soiree": await import(pathToFileURL(path.join(ROOT, "api/soiree.mjs")).href),
   "/api/soiree-admin": await import(pathToFileURL(path.join(ROOT, "api/soiree-admin.mjs")).href),
+  "/api/etapes": await import(pathToFileURL(path.join(ROOT, "api/etapes.mjs")).href),
 };
 
 /* ---------- Règles de vercel.json ---------- */

@@ -874,18 +874,51 @@ function drawSheet(){
     <div class="ings" role="list">${c.ing.map(i=>`<div class="ing" role="listitem">${ingThumb(i[2])}<span class="q">${qty(i,true)}</span><span class="nm">${esc(ingName(i[2]))}</span></div>`).join("")}</div>
     <ul class="dose" style="margin-top:14px">${c.ing.map(i=>`<li><span class="q">${qty(i)}</span><span>${esc(i[2])}</span></li>`).join("")}</ul>
   </div>
-  <div class="sec"><h3>Étapes · touche pour cocher</h3>
-    <ol class="steps">${c.st.map((s,k)=>`<li class="${done.has(k)?"done":""}"><button data-k="${k}" aria-pressed="${done.has(k)}"><span class="n">${k+1}</span><span>${esc(s)}</span></button></li>`).join("")}</ol>
-  </div>
+  <div class="sec" id="shSteps"><h3>Étapes · touche pour cocher</h3><div id="shStepsBody">${stepsHTML(c)}</div></div>
   <div class="sec"><h3>Astuce de pro</h3><div class="tip">${esc(c.tip)}</div></div>`;
   $("shBody").querySelector(".portions").onclick=e=>{const b=e.target.closest("[data-p]");if(!b)return;portions=+b.dataset.p;const y=$("shScroll").scrollTop;drawSheet();$("shScroll").scrollTop=y;};
-  $("shBody").querySelector(".steps").onclick=e=>{const b=e.target.closest("[data-k]");if(!b)return;const k=+b.dataset.k;done.has(k)?done.delete(k):done.add(k);b.parentElement.classList.toggle("done",done.has(k));b.setAttribute("aria-pressed",done.has(k));};
+  $("shBody").querySelector("#shStepsBody").onclick=e=>{const b=e.target.closest("[data-k]");if(!b)return;const k=+b.dataset.k;done.has(k)?done.delete(k):done.add(k);b.parentElement.classList.toggle("done",done.has(k));b.setAttribute("aria-pressed",done.has(k));};
+}
+/* ---------- Étapes de préparation : privées par défaut, chargées depuis /api/etapes ----------
+   Le serveur ne les renvoie que si « Afficher les étapes aux visiteurs » est activé dans /bar, ou à un barman connecté. */
+const STEPS_CACHE={}; // en mémoire seulement (jamais dans le stockage ni le cache du service worker)
+function stepsHTML(c){
+  const st=STEPS_CACHE[slug(c)];
+  if(st===undefined) return `<p class="tn-no">Chargement…</p>`;
+  if(st===null) return `<p class="tn-no">Étapes réservées au barman</p>`;
+  if(st==="error") return `<p class="tn-no">Étapes indisponibles pour le moment</p>`;
+  return `<ol class="steps">${st.map((s,k)=>`<li class="${done.has(k)?"done":""}"><button data-k="${k}" aria-pressed="${done.has(k)}"><span class="n">${k+1}</span><span>${esc(s)}</span></button></li>`).join("")}</ol>`;
+}
+function showBarButton(){ const ok=cur&&Array.isArray(STEPS_CACHE[slug(cur)]); $("shBar").hidden=!ok; $("shBar").style.display=ok?"":"none"; }
+async function loadSteps(c){
+  const id=slug(c);
+  if(Array.isArray(STEPS_CACHE[id])&&adminPin()){ c.st=STEPS_CACHE[id]; showBarButton(); return; } // visiteur : réglage revérifié à chaque ouverture
+  delete STEPS_CACHE[id]; showBarButton();
+  let res;
+  try{
+    const tok=adminPin();
+    let allowed=!!tok;
+    if(!allowed){ // visiteur : on relit le réglage (toujours à jour) avant de demander les étapes, pour éviter un 401 inutile
+      const r0=await fetch(API+"/soiree",{cache:"no-store"});
+      allowed=r0.ok&&!!(await r0.json()).etapesPubliques;
+    }
+    if(!allowed) res=null;
+    else{
+      const r=await fetch(API+"/etapes?id="+encodeURIComponent(id),{cache:"no-store",headers:tok?{"Authorization":"Bearer "+tok}:{}});
+      res=r.ok?(await r.json()).steps:(r.status===401?null:"error");
+    }
+  }catch(e){ res="error"; }
+  STEPS_CACHE[id]=res;
+  if(cur!==c)return;
+  if(Array.isArray(res)) c.st=res;
+  const box=$("shStepsBody"); if(box) box.innerHTML=stepsHTML(c);
+  showBarButton();
 }
 function openSheet(i,fromHash){
   cur=C[i];portions=1;done=new Set();lastFocus=document.activeElement;
   const img=$("shImg"); img.src=`images/${slug(cur)}-sm.webp`; img.alt=cur.n;
   const full=new Image(); full.onload=()=>{if(cur===C[i])img.src=full.src;}; full.src=`images/${slug(cur)}.webp`;
-  drawSheet(); $("shScroll").scrollTop=0;
+  drawSheet(); loadSteps(cur); $("shScroll").scrollTop=0;
   const sh=$("sheet"); sh.setAttribute("aria-hidden","false"); document.body.classList.add("lock");
   requestAnimationFrame(()=>requestAnimationFrame(()=>sh.classList.add("open")));
   setTimeout(()=>$("shClose").focus({preventScroll:true}),400);
@@ -929,7 +962,7 @@ function drawBar(){
     :`<div class="lbl">Étape ${bmStep} sur ${c.st.length}</div><div class="big">${esc(c.st[bmStep-1])}</div>`;
   $("bmPrev").disabled=bmStep===0; $("bmNext").textContent=bmStep===total-1?"Terminé ✓":"Suivant";
 }
-function openBar(){bmStep=0;$("barmode").classList.add("open");drawBar();keepAwake();$("bmNext").focus();}
+function openBar(){if(!Array.isArray(cur&&cur.st))return;bmStep=0;$("barmode").classList.add("open");drawBar();keepAwake();$("bmNext").focus();}
 function closeBar(){$("barmode").classList.remove("open");if(wakeLock){wakeLock.release().catch(()=>{});wakeLock=null;}$("shBar").focus();}
 $("shBar").onclick=openBar;$("bmClose").onclick=closeBar;
 $("bmPrev").onclick=()=>{if(bmStep>0){bmStep--;drawBar();}};
