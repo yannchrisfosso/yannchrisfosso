@@ -11,7 +11,7 @@ const headers = bypass ? { "x-vercel-protection-bypass": bypass, "x-vercel-set-b
     const ctx = await b.newContext({ ...devices["iPhone 13"], viewport: { width: 390, height: 844 }, extraHTTPHeaders: headers });
     const p = await ctx.newPage(); const errors = [];
     p.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); }); p.on("pageerror", (e) => errors.push(e.message));
-    await p.goto(new URL("/#mojito", url).href, { waitUntil: "load" }); await p.waitForTimeout(2500);
+    await p.goto(new URL("/#mojito", url).href, { waitUntil: "domcontentloaded" }); await p.waitForTimeout(4000);
     const s = await p.evaluate(() => ({
       encart: document.getElementById("shStepsBody").textContent.trim(), listes: document.querySelectorAll("#shStepsBody .steps").length,
       lien: document.querySelectorAll("#shStepsBody a").length, modeBar: getComputedStyle(document.getElementById("shBar")).display,

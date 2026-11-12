@@ -103,8 +103,8 @@ export async function handleSoiree(env) {
 export async function handleAdmin(req, env) {
   const pinEnv = env("ADMIN_PIN");
   const secret = env("SESSION_SECRET");
+  if (!sameOrigin(req)) return json({ ok: false, error: "bad_origin" }, 403); // d'abord : refuser les requêtes d'un autre site
   if (!pinEnv || !secret) return json({ ok: false, error: "not_configured" }, 503);
-  if (!sameOrigin(req)) return json({ ok: false, error: "bad_origin" }, 403);
   const key = signingKey(secret, pinEnv);
 
   let body;
