@@ -2,6 +2,11 @@
 
 Le numéro affiché dans le pied de page et dans `/version.json` vient de `site-src/version.json`.
 
+## v1.8.1 · 12 nov. 2026 — Correctif mobile
+- « Préparer une soirée » : sous 480 px, les compteurs « Invités » et « Verres / invité » passent l'un sous
+  l'autre (boutons de 44 px conservés). Supprime le débordement horizontal de 21 px à 390 px ; vérifié sans
+  défilement horizontal à 360, 390 et 430 px (accueil, fiche, /bar, page 404). Ordinateur inchangé.
+
 ## v1.8 · 12 nov. 2026 — Le Bar de Yanniel + vidéo d'ambiance
 - Renommage visible « Le Bar de Yann » → « Le Bar de Yanniel » (titres, logo, pied de page, <title>, Open Graph,
   manifeste PWA, /bar, page 404, messages, image de partage og.jpg, PRD et documentation). Identifiants
