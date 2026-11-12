@@ -114,9 +114,12 @@ jeton obtenu grâce au PIN.
                        recettes dans le code (décision du 11 nov. 2026 :
                        pas de fichier JSON séparé)
 
-  Hébergement          Netlify, projet catalogue-cocktails-yann,
-                       déploiement depuis la branche principale : à
-                       traiter plus tard (décision du 11 nov. 2026)
+  Hébergement          Vercel, projet bar-yanniel (bar-yanniel.vercel.app),
+                       hébergement temporaire depuis le 12 nov. 2026 :
+                       déploiement automatique depuis la branche main ;
+                       stockage Upstash Redis (clés « yanniel: »).
+                       Netlify (catalogue-cocktails-yann) reste en place
+                       en secours : retour décrit dans docs/VERCEL.md
 
   Élément                Choix
 
@@ -533,6 +536,15 @@ feuille de route · 4 phases, 2 portes de passage
 La phase 1 se termine quand les tests T-01 à T-10 passent à 100 % en production ; la phase
 2, quand Yann a utilisé la carte du soir lors d'un vrai événement.
 
+État au 12 nov. 2026 (v1.8.2).
+       Phase 1 : T-01 à T-10 (+ R-01) à 100 % en local (Chromium) ; en production, partie
+       invités et API vérifiées (WebKit + Chromium). Reste : la série complète en production,
+       qui demande le PIN dans la variable d'environnement locale E2E_PIN.
+       Phase 2 : contact réel fait (F-11) ; Lighthouse mobile 97 à 99 / 100 / 100, LCP 1,7 à
+       1,8 s (T-11, `npm run test:lighthouse`) ; aperçu WhatsApp et Messenger vérifié (N-10) ;
+       nouveau PIN saisi par Yann sur Vercel (6 chiffres minimum à confirmer). Porte : une
+       vraie soirée.
+
 13. Questions ouvertes et décisions
 Décisions prises.
 
@@ -540,6 +552,9 @@ Décisions prises.
 
   Hébergement sur Netlify avec Functions et        Déjà en place, gratuit, stockage partagé
   Blobs                                            entre téléphones
+
+  Hébergement temporaire sur Vercel                Crédits Netlify épuisés, paiement refusé ;
+  (12 nov. 2026), Netlify gardé en secours         même code sur les deux (STORAGE_BACKEND)
 
   Carte du soir publiée explicitement (bouton      Éviter la confusion entre « enregistrer » et «
   Publier), modèles séparés                        montrer aux invités »
@@ -552,12 +567,15 @@ Décisions prises.
 
 Questions ouvertes.
 
-       Garder le badge « Powered by Netlify » (gratuit) ou passer à l'offre payante (environ 9
-       $ par mois) pour le retirer, ou déménager sur Vercel (le stockage serait à adapter) ?
+       [Réglée le 12 nov. 2026 : site sur Vercel, sans badge] Garder le badge « Powered by
+       Netlify » (gratuit) ou passer à l'offre payante (environ 9 $ par mois) pour le retirer,
+       ou déménager sur Vercel (le stockage serait à adapter) ?
 
-       Intégrer le contact fourni par Yann : 438-435-7072, 367-321-3177, Yfosso4@gmail.com
-       (remplace [TÉLÉPHONE] et [EMAIL]).
-       Nouveau PIN à définir (l'actuel a été affiché en clair et doit être changé).
+       [Réglée en v1.4] Intégrer le contact fourni par Yann : 438-435-7072, 367-321-3177,
+       Yfosso4@gmail.com (remplace [TÉLÉPHONE] et [EMAIL]).
+       [En cours] Nouveau PIN à définir (l'actuel a été affiché en clair et doit être changé) :
+       saisi par Yann sur Vercel (Production) ; à confirmer : 6 chiffres minimum, et aussi en
+       Preview.
        Nom de domaine personnalisé (ex. lebardeyann.ca) ?
        Version anglaise pour les événements bilingues ?
 ```

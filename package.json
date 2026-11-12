@@ -8,7 +8,8 @@
     "test:local": "BASE_URL=http://localhost:8787 playwright test --trace off",
     "serve:local": "node tests/local/server.mjs",
     "serve:vercel-local": "node tests/local/vercel-dev.mjs",
-    "test:vercel-local": "BASE_URL=http://localhost:8788 playwright test --trace off"
+    "test:vercel-local": "BASE_URL=http://localhost:8788 playwright test --trace off",
+    "test:lighthouse": "node tests/lighthouse/t11.mjs"
   },
   "devDependencies": {
     "@playwright/test": "1.63.0"

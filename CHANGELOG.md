@@ -2,6 +2,13 @@
 
 Le numéro affiché dans le pied de page et dans `/version.json` vient de `site-src/version.json`.
 
+## Phase 2 — vérifications et outils · 12 nov. 2026 (site inchangé, toujours v1.8.2)
+- T-11 automatisé : `npm run test:lighthouse` (Lighthouse mobile ≥ 90 et LCP < 2,5 s). Mesures en production :
+  performance 97 à 99, accessibilité 100, bonnes pratiques 100, LCP 1,7 à 1,8 s.
+- N-10 vérifié : WhatsApp et Facebook/Messenger reçoivent titre, description et image 1200×630 (97 Ko).
+- Les tests de production visent désormais https://bar-yanniel.vercel.app.
+- PRD : hébergement Vercel (temporaire, Netlify en secours), questions ouvertes mises à jour, état des phases.
+
 ## v1.8.2 · 12 nov. 2026 — Vidéo d'ambiance sur iPhone
 - La vidéo joue aussi avec « Réduire les animations » (seule l'apparition au défilement est désactivée) ;
   le bouton son reste visible.

@@ -9,7 +9,7 @@ export default defineConfig({
   workers: 1,                 // l'état de la soirée est partagé : on enchaîne les scénarios
   retries: 0,
   reporter: [["list"]],
-  use: { baseURL: process.env.BASE_URL || "https://catalogue-cocktails-yann.netlify.app", screenshot: "off", trace: "off" },
+  use: { baseURL: process.env.BASE_URL || "https://bar-yanniel.vercel.app", screenshot: "off", trace: "off" },
   projects: [
     { name: "webkit-iphone", use: { ...devices["iPhone 13"] } },
     { name: "chromium", use: { ...devices["Pixel 7"] } },
