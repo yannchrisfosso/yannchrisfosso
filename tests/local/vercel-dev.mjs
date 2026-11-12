@@ -45,7 +45,7 @@ const api = {
 const toRe = (src) => new RegExp("^" + src.split("(.*)").map((x) => x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("(.*)") + "$");
 const headerRules = VERCEL.headers.map((h) => ({ re: toRe(h.source), headers: h.headers }));
 const headersFor = (p) => { const out = {}; for (const r of headerRules) if (r.re.test(p)) for (const h of r.headers) out[h.key] = h.value; return out; };
-const TYPES = { ".html": "text/html; charset=utf-8", ".js": "application/javascript", ".json": "application/json", ".webp": "image/webp", ".png": "image/png", ".jpg": "image/jpeg", ".woff2": "font/woff2", ".webmanifest": "application/manifest+json", ".svg": "image/svg+xml" };
+const TYPES = { ".html": "text/html; charset=utf-8", ".js": "application/javascript", ".json": "application/json", ".webp": "image/webp", ".png": "image/png", ".jpg": "image/jpeg", ".woff2": "font/woff2", ".webmanifest": "application/manifest+json", ".svg": "image/svg+xml", ".mp4": "video/mp4" };
 
 http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);

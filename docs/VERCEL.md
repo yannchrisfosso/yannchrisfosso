@@ -1,4 +1,4 @@
-# Hébergement temporaire sur Vercel — « Le Bar de Yann »
+# Hébergement temporaire sur Vercel — « Le Bar de Yanniel »
 
 Netlify reste en place (netlify.toml, netlify/functions, @netlify/blobs intacts). Le même code tourne sur les deux :
 

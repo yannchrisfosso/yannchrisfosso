@@ -1,4 +1,4 @@
-/* Le Bar de Yann : coordonnées affichées dans « Un barman pour votre événement ? » (PRD F-11).
+/* Le Bar de Yanniel : coordonnées affichées dans « Un barman pour votre événement ? » (PRD F-11).
    C'est le SEUL endroit à modifier pour changer les numéros ou le courriel. */
 window.BAR_CONFIG = {
   // Base d'URL des fonctions serveur : « /api » sur Netlify comme sur Vercel (mêmes routes).

@@ -1,6 +1,17 @@
-# Journal des versions — Le Bar de Yann
+# Journal des versions — Le Bar de Yanniel
 
 Le numéro affiché dans le pied de page et dans `/version.json` vient de `site-src/version.json`.
+
+## v1.8 · 12 nov. 2026 — Le Bar de Yanniel + vidéo d'ambiance
+- Renommage visible « Le Bar de Yann » → « Le Bar de Yanniel » (titres, logo, pied de page, <title>, Open Graph,
+  manifeste PWA, /bar, page 404, messages, image de partage og.jpg, PRD et documentation). Identifiants
+  techniques inchangés (store « bar-de-yann », clés, variables).
+- Accueil : la vidéo `ambiance-bar-amis-son.mp4` (avec poster) remplace l'image entre l'accueil et « CE SOIR » :
+  pleine largeur bord à bord, lecture muette automatique en boucle, pause hors écran, bouton son 🔇/🔊
+  (coupé automatiquement hors écran), apparition au défilement (fondu, +40 px, zoom 0,96 → 1 en 900 ms),
+  poster fixe si « réduire les animations » ou autoplay bloqué. Hauteur min(55vh, 72vw) sur mobile et
+  min(80vh, 72vw) sur ordinateur pour garder les trois visages entiers. Ancienne image conservée dans le dépôt.
+- CSP : `media-src 'self'` ; service worker : la vidéo n'est jamais mise en cache (lecture par plages).
 
 ## v1.7 · 12 nov. 2026 — Migration Vercel (temporaire)
 - Hébergement temporaire sur Vercel (`bar-yanniel.vercel.app`), Netlify conservé : logique commune

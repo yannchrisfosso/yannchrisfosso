@@ -19,7 +19,7 @@ const ls=d=>fs.readdirSync(path.join(SITE,d));
 const core=["./","index.html","config.js","manifest.webmanifest","favicon-32.png","icon-192.png","icon-512.png","apple-touch-icon.png","images/hero-md.webp",...ls("fonts").map(f=>"fonts/"+f)];
 const extra=[...ls("images").filter(f=>f.endsWith("-sm.webp")).map(f=>"images/"+f),...ls("images/ingredients").map(f=>"images/ingredients/"+f)].sort();
 const ver=crypto.createHash("sha1").update(page).update(fs.readFileSync(path.join(SITE,"config.js"))).digest("hex").slice(0,10);
-fs.writeFileSync(path.join(SITE,"sw.js"),`/* Le Bar de Yann : fonctionnement hors ligne */
+fs.writeFileSync(path.join(SITE,"sw.js"),`/* Le Bar de Yanniel : fonctionnement hors ligne */
 const VERSION="bar-${ver}";
 const CORE=${JSON.stringify(core)};
 const EXTRA=${JSON.stringify(extra)};
@@ -29,6 +29,7 @@ self.addEventListener("fetch",e=>{
   const r=e.request; if(r.method!=="GET")return;
   const u=new URL(r.url); if(u.origin!==location.origin)return;
   if(u.pathname.startsWith("/api/")||u.pathname==="/bar"||u.pathname==="/bar.html")return; // toujours en direct
+  if(r.headers.has("range")||u.pathname.endsWith(".mp4"))return; // vidéo : lecture par plages, sans cache
   if(r.mode==="navigate"){
     e.respondWith(fetch(r).then(res=>{const cp=res.clone();caches.open(VERSION).then(c=>c.put("index.html",cp));return res;}).catch(()=>caches.match("index.html")));
     return;

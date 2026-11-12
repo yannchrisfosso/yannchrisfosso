@@ -2,7 +2,7 @@
   "name": "le-bar-de-yann",
   "private": true,
   "type": "module",
-  "description": "Site Le Bar de Yann : pages statiques dans site/, fonctions dans netlify/functions/",
+  "description": "Site Le Bar de Yanniel : pages statiques dans site/, fonctions dans netlify/functions/",
   "dependencies": {
     "@netlify/blobs": "^11.0.0"
   }

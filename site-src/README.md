@@ -1,4 +1,4 @@
-# Sources du site « Le Bar de Yann »
+# Sources du site « Le Bar de Yanniel »
 
 - `template.html` : page invités (design + code). `bar-template.html` : espace propriétaire `/bar`.
 - `recipes-source.html` : l'ancienne page, d'où les recettes sont reprises **telles quelles**.

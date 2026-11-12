@@ -1,13 +1,13 @@
-# PRD – Le Bar de Yann
+# PRD – Le Bar de Yanniel
 
-> Source de vérité du projet (copie texte du PDF « PRD – Le Bar de Yann », 11 nov. 2026, 14 pages).
+> Source de vérité du projet (copie texte du PDF « PRD – Le Bar de Yanniel », 11 nov. 2026, 14 pages).
 > Les tableaux sont conservés tels quels, en texte à largeur fixe.
 
 ```text
 Nov 11, 2026        ·   @yann chris
 
 1. Vue d'ensemble
-« Le Bar de Yann » est un site vitrine mobile de 52 recettes de cocktails : il impressionne les
+« Le Bar de Yanniel » est un site vitrine mobile de 52 recettes de cocktails : il impressionne les
 invités, aide Yann à préparer ses soirées et lui permet de publier la carte des cocktails
 disponibles ce soir.
 
@@ -137,7 +137,7 @@ de Claude Code.
   ID           Exigence                                                  Priorité
 
   F-01         Accueil plein écran : photo d'ambiance, logo « Le         Must
-               Bar de Yann », titre « L'art du cocktail, verre après
+               Bar de Yanniel », titre « L'art du cocktail, verre après
                verre. », boutons « Choisis ton cocktail » et «
                Surprends-moi »
 
