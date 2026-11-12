@@ -64,5 +64,12 @@ http.createServer(async (req, res) => {
   let file = await tryFile(p.endsWith("/") ? p + "index.html" : p);
   if (!file) { const rw = VERCEL.rewrites.find((r) => toRe(r.source).test(p)); if (rw) file = await tryFile(rw.destination); }
   if (!file) return send(404, await readFile(path.join(SITE, "404.html")), { "Content-Type": TYPES[".html"] });
-  send(200, await readFile(file), { "Content-Type": TYPES[path.extname(file)] || "application/octet-stream" });
+  const data = await readFile(file), type = TYPES[path.extname(file)] || "application/octet-stream";
+  const m = /^bytes=(\d*)-(\d*)$/.exec(req.headers.range || "");
+  if (m) { // requêtes Range (indispensables à Safari pour la vidéo), comme sur Vercel
+    const start = m[1] === "" ? Math.max(0, data.length - Number(m[2])) : Number(m[1]);
+    const end = m[1] !== "" && m[2] !== "" ? Math.min(Number(m[2]), data.length - 1) : data.length - 1;
+    return send(206, data.subarray(start, end + 1), { "Content-Type": type, "Accept-Ranges": "bytes", "Content-Range": `bytes ${start}-${end}/${data.length}`, "Content-Length": String(end - start + 1) });
+  }
+  send(200, data, { "Content-Type": type, "Accept-Ranges": "bytes" });
 }).listen(PORT, () => console.log(`vercel-dev local : http://localhost:${PORT} (faux Upstash : ${REDIS_PORT})`));

@@ -134,8 +134,7 @@ section.block{padding:clamp(72px,12vw,120px) 0 0;scroll-margin-top:-20px}
 .ambiance.pre{opacity:0;transform:translateY(40px) scale(.96)}
 .ambiance.in{opacity:.9;transform:none;transition:opacity .9s var(--ease),transform .9s var(--ease)}
 @media (prefers-reduced-motion:reduce){
-  .ambiance.pre,.ambiance.in{opacity:.9;transform:none;transition:none}
-  .amb-sound{display:none}
+  .ambiance.pre,.ambiance.in{opacity:.9;transform:none;transition:none} /* seule l'apparition est désactivée ; la vidéo, douce, joue */
 }
 
 /* ---------- Humeurs ---------- */
@@ -525,7 +524,7 @@ footer li{margin:0 0 6px;break-inside:avoid}
     <span class="logo">Le Bar <i>de Yanniel</i></span>
     <p style="margin:0">Cocktails d'exception · Québec</p>
     <p class="moderation">L'abus d'alcool est dangereux pour la santé. À consommer avec modération.</p>
-    <p style="margin:8px 0 0">Version v1.8.1 · 12 nov.</p>
+    <p style="margin:8px 0 0">Version v1.8.2 · 12 nov.</p>
     <details>
       <summary>Crédits photos</summary>
       <p>Photos de cocktails et d'ingrédients : <a href="https://www.thecocktaildb.com" rel="noopener">TheCocktailDB</a>, sauf mention ci-dessous (Wikimedia Commons, licences libres) :</p>
@@ -961,20 +960,26 @@ $("menuBtn").onclick=openDrawer;$("menuClose").onclick=closeDrawer;
 const io=("IntersectionObserver" in window)?new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");e.target.querySelectorAll(".bar i[data-w]").forEach(b=>b.style.width=b.dataset.w);io.unobserve(e.target);}}),{rootMargin:"0px 0px -8% 0px"}):null;
 function observe(root){(root||document).querySelectorAll(".reveal:not(.in)").forEach(el=>io?io.observe(el):el.classList.add("in"));}
 
-/* ---------- Vidéo d'ambiance : apparition, lecture seulement à l'écran, bouton son ---------- */
+/* ---------- Vidéo d'ambiance : lecture à l'écran (même avec « réduire les animations »), bouton son ---------- */
 (function(){
   const box=$("ambiance"), v=$("ambianceVideo"), btn=$("ambianceSound"); if(!box||!v||!btn)return;
   const setBtn=()=>{btn.textContent=v.muted?"🔇":"🔊";btn.setAttribute("aria-label",v.muted?"Activer le son":"Couper le son");btn.setAttribute("aria-pressed",String(!v.muted));};
-  if(reduced){ v.autoplay=false; v.removeAttribute("autoplay"); v.pause(); return; } // poster fixe
-  v.muted=true; setBtn();
-  const tryPlay=()=>{const p=v.play(); if(p&&p.catch)p.catch(()=>{});}; // autoplay bloqué : le poster reste
-  btn.addEventListener("click",()=>{ v.muted=!v.muted; if(!v.muted)tryPlay(); setBtn(); });
-  if(!("IntersectionObserver" in window))return;
-  box.classList.add("pre");
-  const reveal=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){box.classList.add("in");box.classList.remove("pre");reveal.disconnect();}}),{rootMargin:"0px 0px -10% 0px"});
-  reveal.observe(box);
+  v.muted=true; v.defaultMuted=true; v.playsInline=true; setBtn();
+  let onScreen=true, blocked=false;
+  // Autoplay refusé (économie d'énergie, navigateur intégré d'une app) : on relance au premier toucher n'importe où.
+  const unlock=()=>{ if(!blocked)return; blocked=false; if(onScreen)tryPlay(); };
+  const tryPlay=()=>{ const p=v.play(); if(p&&p.catch)p.catch(()=>{ blocked=true;
+    ["pointerdown","touchstart","click","keydown"].forEach(ev=>document.addEventListener(ev,unlock,{once:true,passive:true,capture:true})); }); };
+  btn.addEventListener("click",()=>{ v.muted=!v.muted; tryPlay(); setBtn(); });
+  if(!("IntersectionObserver" in window)){ tryPlay(); return; }
+  if(!reduced){ // apparition au défilement, sauf « réduire les animations »
+    box.classList.add("pre");
+    const reveal=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){box.classList.add("in");box.classList.remove("pre");reveal.disconnect();}}),{rootMargin:"0px 0px -10% 0px"});
+    reveal.observe(box);
+  }
   const watch=new IntersectionObserver(es=>es.forEach(e=>{
-    if(e.isIntersecting) tryPlay();
+    onScreen=e.isIntersecting;
+    if(onScreen) tryPlay();
     else { v.pause(); if(!v.muted){v.muted=true;setBtn();} } // hors écran : pause et son coupé
   }),{threshold:0.15});
   watch.observe(box);
