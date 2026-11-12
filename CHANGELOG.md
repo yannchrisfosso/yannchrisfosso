@@ -6,6 +6,9 @@ Le numéro affiché dans le pied de page et dans `/version.json` vient de `site-
 - T-02 : blocage après 5 PIN faux, compteur unique toutes adresses confondues, en clés nouvelles
   (visibles immédiatement), pour que le 5e échec bloque vraiment (B-02, N-06).
 - Règle budget Netlify : les invités n'appellent /api/soiree que si la page est visible (test R-01).
+- Accueil : image d'ambiance « ambiance-bar-amis » (WebP + JPG de secours) entre l'accueil et
+  « Quelle est ton humeur ce soir ? », fondue dans le fond, apparition au défilement, zoom lent et
+  lueur dorée ; tout est figé si « réduire les animations » est actif, visible même sans JavaScript.
 - Serveur de test local `tests/local/` (`npm run serve:local` puis `npm run test:local`).
 - PRD : décisions Node 24, recettes dans le code, branche principale plus tard ; règle de budget.
 
