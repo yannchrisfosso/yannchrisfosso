@@ -15,3 +15,6 @@ Déploiement : le dossier `catalogue-cocktails/` (pages dans `site/`, fonctions 
 - Changer le PIN : Netlify > Project configuration > Environment variables > `ADMIN_PIN`, puis redéployer.
 
 Téléphone et courriel : modifier `PHONE` et `EMAIL` en haut du script dans `template.html`, puis rebuild.
+
+## Hébergement
+Netlify (`netlify.toml`) ou Vercel temporaire (`vercel.json`) : voir `docs/VERCEL.md`.

@@ -6,7 +6,9 @@
     "build": "node site-src/build.js",
     "test:prod": "playwright test --trace off",
     "test:local": "BASE_URL=http://localhost:8787 playwright test --trace off",
-    "serve:local": "node tests/local/server.mjs"
+    "serve:local": "node tests/local/server.mjs",
+    "serve:vercel-local": "node tests/local/vercel-dev.mjs",
+    "test:vercel-local": "BASE_URL=http://localhost:8788 playwright test --trace off"
   },
   "devDependencies": {
     "@playwright/test": "1.63.0"

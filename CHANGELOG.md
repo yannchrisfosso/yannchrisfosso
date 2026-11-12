@@ -2,7 +2,14 @@
 
 Le numéro affiché dans le pied de page et dans `/version.json` vient de `site-src/version.json`.
 
-## v1.6 · 11 nov. 2026 — Lot en attente (un seul déploiement)
+## v1.7 · 12 nov. 2026 — Migration Vercel (temporaire)
+- Hébergement temporaire sur Vercel (`bar-yanniel.vercel.app`), Netlify conservé : logique commune
+  `lib/soiree-core.mjs`, stockage interchangeable `lib/store.mjs` (Netlify Blobs ou Upstash Redis selon
+  `STORAGE_BACKEND`, clés `yanniel:…`, expiration native pour le blocage), fonctions `api/*.mjs`,
+  `vercel.json` (réécritures, redirections, tous les en-têtes), base d'URL des fonctions dans `config.js`.
+- Contient tout le lot v1.6 jamais publié. Détails et retour vers Netlify : `docs/VERCEL.md`.
+
+## v1.6 · 11 nov. 2026 — Lot jamais publié (inclus dans v1.7)
 - T-02 : blocage après 5 PIN faux, compteur unique toutes adresses confondues, en clés nouvelles
   (visibles immédiatement), pour que le 5e échec bloque vraiment (B-02, N-06).
 - Règle budget Netlify : les invités n'appellent /api/soiree que si la page est visible (test R-01).

@@ -187,8 +187,10 @@ footer{padding:40px 0 calc(40px + env(safe-area-inset-bottom) + var(--badge,0px)
 
 <div class="toast" id="toast" role="status"></div>
 
+<script src="config.js"></script>
 <script src="vendor/qrcode.js"></script>
 <script>
+const API=((window.BAR_CONFIG||{}).apiBase||"/api").replace(/\/$/,"");
 const ITEMS = [["Old Fashioned","whisky","old-fashioned"],["Whiskey Sour","whisky","whiskey-sour"],["Manhattan","whisky","manhattan"],["Boulevardier","whisky","boulevardier"],["Penicillin","whisky","penicillin"],["Mint Julep","whisky","mint-julep"],["Irish Coffee","whisky","irish-coffee"],["Whisky Highball","whisky","whisky-highball"],["Mojito","rhum","mojito"],["Daiquiri","rhum","daiquiri"],["Daiquiri fraise","rhum","daiquiri-fraise"],["Piña Colada","rhum","pina-colada"],["Mai Tai","rhum","mai-tai"],["Dark 'n' Stormy","rhum","dark-n-stormy"],["Caïpirinha","rhum","caipirinha"],["Moscow Mule","vodka","moscow-mule"],["Cosmopolitan","vodka","cosmopolitan"],["Espresso Martini","vodka","espresso-martini"],["Pornstar Martini","vodka","pornstar-martini"],["Sex on the Beach","vodka","sex-on-the-beach"],["Bloody Mary","vodka","bloody-mary"],["Blue Lagoon","vodka","blue-lagoon"],["Lemon Drop","vodka","lemon-drop"],["White Russian","vodka","white-russian"],["Gin Tonic","gin","gin-tonic"],["Negroni","gin","negroni"],["Tom Collins","gin","tom-collins"],["Bramble","gin","bramble"],["Gin Basil Smash","gin","gin-basil-smash"],["French 75","gin","french-75"],["Aviation","gin","aviation"],["Clover Club","gin","clover-club"],["Dry Martini","gin","dry-martini"],["Margarita","tequila","margarita"],["Margarita mangue glacée","tequila","margarita-mangue-glacee"],["Paloma","tequila","paloma"],["Tequila Sunrise","tequila","tequila-sunrise"],["Margarita épicée","tequila","margarita-epicee"],["Aperol Spritz","bulles","aperol-spritz"],["Hugo Spritz","bulles","hugo-spritz"],["Kir Royal","bulles","kir-royal"],["Bellini","bulles","bellini"],["Grasshopper","creme","grasshopper"],["Blue Hawaiian","creme","blue-hawaiian"],["B-52","shot","b-52"],["Baby Guinness","shot","baby-guinness"],["Foléré Fizz","sans","folere-fizz"],["Virgin Mojito","sans","virgin-mojito"],["Shirley Temple","sans","shirley-temple"],["Virgin Piña Colada","sans","virgin-pina-colada"],["Sunset sans alcool","sans","sunset-sans-alcool"],["Limonade framboise-basilic","sans","limonade-framboise-basilic"]]; // [nom, alcool de base, photo]
 const BASES=[["tous","Tous"],["sel","✓ Sélectionnés"],["whisky","Whisky"],["rhum","Rhum"],["vodka","Vodka"],["gin","Gin"],["tequila","Tequila"],["bulles","Bulles"],["creme","Crémeux"],["shot","Shots"],["sans","Sans alcool"]];
 const LABEL={whisky:"Whisky",rhum:"Rhum",vodka:"Vodka",gin:"Gin",tequila:"Tequila",bulles:"Bulles",creme:"Crémeux",shot:"Shot",sans:"Sans alcool"};
@@ -209,7 +211,7 @@ let server={active:false,selection:[],version:0}, sel=new Set(), presets={}, cat
 async function api(action,extra={}){
   let r;
   try{
-    r=await fetch("/api/soiree-admin",{method:"POST",cache:"no-store",headers:{"Content-Type":"application/json",...(action!=="login"?{"Authorization":"Bearer "+getToken()}:{})},body:JSON.stringify({action,...extra})});
+    r=await fetch(API+"/soiree-admin",{method:"POST",cache:"no-store",headers:{"Content-Type":"application/json",...(action!=="login"?{"Authorization":"Bearer "+getToken()}:{})},body:JSON.stringify({action,...extra})});
   }catch(e){const err=new Error("network");throw err;}
   let d={}; try{d=await r.json();}catch(e){}
   if(!r.ok||!d.ok){const e=new Error(d.error||("http_"+r.status));e.data=d;e.status=r.status;throw e;}
@@ -221,7 +223,7 @@ function errText(e){
     case "bad_pin": return `Code incorrect. Encore ${d.left} essai${d.left>1?"s":""} avant blocage.`;
     case "locked": return `Trop d'essais : accès bloqué ${d.retryIn||5} min.`;
     case "session_expired": return "Session expirée : entre ton PIN.";
-    case "not_configured": return "Le site n'est pas configuré (variables ADMIN_PIN ou SESSION_SECRET manquantes sur Netlify).";
+    case "not_configured": return "Le site n'est pas configuré (variables ADMIN_PIN ou SESSION_SECRET manquantes chez l'hébergeur).";
     case "storage_unavailable": return "Le serveur de stockage ne répond pas. Rien n'a été modifié, réessaie.";
     case "empty_publish": return "Impossible de publier une carte vide : coche au moins un cocktail.";
     case "stale_version": return "La carte a été modifiée depuis un autre écran : affichage mis à jour, vérifie puis recommence.";

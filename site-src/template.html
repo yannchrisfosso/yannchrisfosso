@@ -576,7 +576,8 @@ footer li{margin:0 0 6px;break-inside:avoid}
 
 <script src="config.js"></script>
 <script>
-/* Coordonnées : voir config.js (fichier de configuration unique). */
+/* Coordonnées et base d'URL des fonctions : voir config.js (fichier de configuration unique). */
+const API=((window.BAR_CONFIG||{}).apiBase||"/api").replace(/\/$/,"");
 
 /* ---------- Recettes (inchangées) ---------- */
 const C = __RECIPES__;
@@ -1005,7 +1006,7 @@ async function useAsTonight(){
   if(!sel.length)return;
   if(!confirm(`Remplacer la carte de ce soir par ces ${sel.length} cocktail${sel.length>1?"s":""} et activer le mode soirée ?`))return;
   try{
-    const r=await fetch("/api/soiree-admin",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+adminPin()},body:JSON.stringify({action:"save",active:true,selection:sel}),cache:"no-store"});
+    const r=await fetch(API+"/soiree-admin",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+adminPin()},body:JSON.stringify({action:"save",active:true,selection:sel}),cache:"no-store"});
     const d=await r.json().catch(()=>({}));
     if(r.status===401){try{localStorage.removeItem("bar-token");}catch(e){}drawShop();toast("Session expirée : reconnecte-toi dans l'Espace barman");return;}
     if(!r.ok||!d.ok)throw 0;
@@ -1065,7 +1066,7 @@ function applySoiree(active,selection,force){
 async function loadSoiree(){
   try{
     const ctl=new AbortController(); const t=setTimeout(()=>ctl.abort(),5000);
-    const r=await fetch("/api/soiree",{cache:"no-store",signal:ctl.signal}); clearTimeout(t);
+    const r=await fetch(API+"/soiree",{cache:"no-store",signal:ctl.signal}); clearTimeout(t);
     if(!r.ok)throw new Error("http "+r.status);
     const d=await r.json(); lastOk=Date.now(); applySoiree(!!d.active,Array.isArray(d.selection)?d.selection:[]);
   }catch(e){
