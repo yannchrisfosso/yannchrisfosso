@@ -15,6 +15,11 @@ Netlify reste en place (netlify.toml, netlify/functions, @netlify/blobs intacts)
 Clés Upstash : `yanniel:disponibles-ce-soir` (soirée), `yanniel:modeles` (modèles),
 `yanniel:login-fail/…` et `yanniel:login-ok/…` (expiration native 300 s = 5 min, comme le blocage Netlify).
 
+## État (12 nov. 2026)
+- Projet `bar-yanniel` relié au dépôt GitHub : chaque push sur `main` déploie automatiquement en production
+  (Root Directory `catalogue-cocktails`). Les autres branches donnent des déploiements de prévisualisation.
+- Upstash for Redis : base `upstash-kv-copper-field` reliée (Production + Preview).
+
 ## Réglages Vercel (à saisir une fois)
 1. vercel.com → Add New → Project → Import du dépôt GitHub `yannchrisfosso/yannchrisfosso`.
 2. Project Name : `bar-yanniel` (sinon `le-bar-yanniel`).
