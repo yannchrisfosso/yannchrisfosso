@@ -12,7 +12,7 @@ fs.mkdirSync(out, { recursive: true });
     const ctx = await browser.newContext({
       ...devices["iPhone 13"], viewport: { width: 390, height: 844 },
       reducedMotion: mode === "reduce" ? "reduce" : "no-preference",
-      extraHTTPHeaders: bypass ? { "x-vercel-protection-bypass": bypass, "x-vercel-set-bypass-cookie": "true" } : {},
+      extraHTTPHeaders: bypass ? { "x-vercel-protection-bypass": bypass, "x-vercel-set-bypass-cookie": "true", "x-vercel-skip-toolbar": "1" } : {},
     });
     const page = await ctx.newPage();
     const errors = [];

@@ -2,6 +2,15 @@
 
 Le numéro affiché dans le pied de page et dans `/version.json` vient de `site-src/version.json`.
 
+## v1.8.2 · 12 nov. 2026 — Vidéo d'ambiance sur iPhone
+- La vidéo joue aussi avec « Réduire les animations » (seule l'apparition au défilement est désactivée) ;
+  le bouton son reste visible.
+- Si la lecture automatique est refusée (économie d'énergie, navigateur intégré d'une app), la vidéo démarre
+  au premier toucher n'importe où sur la page.
+- Vérifiée avec WebKit (moteur de Safari) à 390×844, en local et sur la prévisualisation Vercel, avec et sans
+  « réduire les animations » : lecture, avancement, images différentes, bouton son, aucune erreur ;
+  `.mp4` servi en `video/mp4` avec réponses 206 aux requêtes Range. Script : `tests/video/check-video.cjs`.
+
 ## v1.8.1 · 12 nov. 2026 — Correctif mobile
 - « Préparer une soirée » : sous 480 px, les compteurs « Invités » et « Verres / invité » passent l'un sous
   l'autre (boutons de 44 px conservés). Supprime le débordement horizontal de 21 px à 390 px ; vérifié sans
