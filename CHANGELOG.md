@@ -2,6 +2,14 @@
 
 Le numéro affiché dans le pied de page et dans `/version.json` vient de `site-src/version.json`.
 
+## v1.9 · 12 nov. 2026 — Son de la vidéo d'ambiance actif par défaut
+- La vidéo tente de démarrer avec le son (volume 0,6, fondu d'entrée d'environ 1 s).
+- Si le navigateur refuse le son (refus explicite, ou pause imposée par Chrome), la vidéo joue en muet et le son
+  s'active au premier geste sur la page (toucher, clic, touche ; le défilement seul ne compte pas).
+- Bouton 🔇/🔊 fidèle à l'état réel ; « couper » est mémorisé (localStorage) et respecté aux visites suivantes.
+- Hors écran : pause et son coupé ; au retour, le son revient sauf si l'utilisateur l'a coupé.
+- Vérification : `tests/video/check-sound.cjs` (WebKit et Chromium, 390×844, 18 contrôles).
+
 ## Phase 2 — vérifications et outils · 12 nov. 2026 (site inchangé, toujours v1.8.2)
 - T-11 automatisé : `npm run test:lighthouse` (Lighthouse mobile ≥ 90 et LCP < 2,5 s). Mesures en production :
   performance 97 à 99, accessibilité 100, bonnes pratiques 100, LCP 1,7 à 1,8 s.

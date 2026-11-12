@@ -690,29 +690,58 @@ $("menuBtn").onclick=openDrawer;$("menuClose").onclick=closeDrawer;
 const io=("IntersectionObserver" in window)?new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");e.target.querySelectorAll(".bar i[data-w]").forEach(b=>b.style.width=b.dataset.w);io.unobserve(e.target);}}),{rootMargin:"0px 0px -8% 0px"}):null;
 function observe(root){(root||document).querySelectorAll(".reveal:not(.in)").forEach(el=>io?io.observe(el):el.classList.add("in"));}
 
-/* ---------- Vidéo d'ambiance : lecture à l'écran (même avec « réduire les animations »), bouton son ---------- */
+/* ---------- Vidéo d'ambiance : son actif par défaut (si le navigateur l'accepte), bouton 🔇/🔊 ---------- */
 (function(){
   const box=$("ambiance"), v=$("ambianceVideo"), btn=$("ambianceSound"); if(!box||!v||!btn)return;
-  const setBtn=()=>{btn.textContent=v.muted?"🔇":"🔊";btn.setAttribute("aria-label",v.muted?"Activer le son":"Couper le son");btn.setAttribute("aria-pressed",String(!v.muted));};
-  v.muted=true; v.defaultMuted=true; v.playsInline=true; setBtn();
-  let onScreen=true, blocked=false;
-  // Autoplay refusé (économie d'énergie, navigateur intégré d'une app) : on relance au premier toucher n'importe où.
-  const unlock=()=>{ if(!blocked)return; blocked=false; if(onScreen)tryPlay(); };
-  const tryPlay=()=>{ const p=v.play(); if(p&&p.catch)p.catch(()=>{ blocked=true;
-    ["pointerdown","touchstart","click","keydown"].forEach(ev=>document.addEventListener(ev,unlock,{once:true,passive:true,capture:true})); }); };
-  btn.addEventListener("click",()=>{ v.muted=!v.muted; tryPlay(); setBtn(); });
-  if(!("IntersectionObserver" in window)){ tryPlay(); return; }
+  const KEY="ambiance-son-coupe", VOL=0.6, GESTES=["pointerdown","touchstart","click","keydown"]; // le défilement seul ne compte pas (Safari)
+  let wantSound=true; try{ wantSound=localStorage.getItem(KEY)!=="1"; }catch(e){}
+  let onScreen=false, listening=false, fadeId=0, soundBlocked=false, expectedPauses=0; // soundBlocked : son refusé, on attend un vrai geste
+  const pauseSelf=()=>{ if(!v.paused){ expectedPauses++; v.pause(); } }; // l'événement « pause » arrive plus tard : on le compte
+  // Chrome peut accepter play() avec son puis mettre lui-même la vidéo en pause faute de geste : même traitement qu'un refus.
+  v.addEventListener("pause",()=>{ if(expectedPauses>0){ expectedPauses--; return; } if(!onScreen||v.muted||v.ended)return; soundBlocked=true; playMuted(); listen(); });
+  const soundOn=()=>!v.muted&&!v.paused;
+  const setBtn=()=>{const on=soundOn();btn.textContent=on?"🔊":"🔇";btn.setAttribute("aria-label",on?"Couper le son":"Activer le son");btn.setAttribute("aria-pressed",String(on));};
+  ["play","pause","volumechange"].forEach(ev=>v.addEventListener(ev,setBtn));
+  const fadeIn=()=>{ // fondu d'entrée d'environ 1 s jusqu'à 0,6 (sans effet sur iPhone, où le volume est fixé par l'appareil)
+    const id=++fadeId, t0=performance.now();
+    try{ v.volume=0; }catch(e){}
+    const step=(t)=>{ if(id!==fadeId)return; const k=Math.min(1,(t-t0)/1000); try{ v.volume=VOL*k; }catch(e){} if(k<1)requestAnimationFrame(step); };
+    requestAnimationFrame(step);
+  };
+  const playMuted=()=>{ v.muted=true; const p=v.play(); if(p&&p.catch)p.catch(()=>listen()); }; // lecture muette refusée (économie d'énergie) : au premier geste
+  const playWithSound=()=>{
+    if(soundBlocked){ if(v.paused||!v.muted)playMuted(); listen(); return; } // ne pas réessayer sans geste (Chrome mettrait la vidéo en pause)
+    // Vraie nouvelle demande de lecture avec son : si la vidéo tourne déjà en muet (attribut autoplay), Chrome la
+    // mettrait en pause sans erreur au moment du démutage ; en partant d'une pause, play() est accepté ou refusé clairement.
+    pauseSelf();
+    v.muted=false; fadeIn();
+    const p=v.play();
+    if(p&&p.catch)p.catch(()=>{ soundBlocked=true; playMuted(); listen(); }); // son refusé : la vidéo bouge en muet, le son vient au premier geste
+  };
+  const start=()=>{ if(!onScreen)return; if(wantSound)playWithSound(); else playMuted(); };
+  function onGesture(e){
+    if(e.target&&e.target.closest&&e.target.closest("#ambianceSound"))return; // le bouton gère lui-même son toucher
+    GESTES.forEach(ev=>document.removeEventListener(ev,onGesture,true)); listening=false; soundBlocked=false;
+    if(onScreen)start();
+  }
+  function listen(){ if(listening)return; listening=true; GESTES.forEach(ev=>document.addEventListener(ev,onGesture,{capture:true,passive:true})); }
+  btn.addEventListener("click",()=>{
+    if(soundOn()){ wantSound=false; v.muted=true; try{localStorage.setItem(KEY,"1");}catch(e){} }
+    else { wantSound=true; soundBlocked=false; try{localStorage.removeItem(KEY);}catch(e){} playWithSound(); }
+    setBtn();
+  });
+  setBtn();
+  if(!("IntersectionObserver" in window)){ onScreen=true; start(); return; }
   if(!reduced){ // apparition au défilement, sauf « réduire les animations »
     box.classList.add("pre");
     const reveal=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){box.classList.add("in");box.classList.remove("pre");reveal.disconnect();}}),{rootMargin:"0px 0px -10% 0px"});
     reveal.observe(box);
   }
-  const watch=new IntersectionObserver(es=>es.forEach(e=>{
+  new IntersectionObserver(es=>es.forEach(e=>{
     onScreen=e.isIntersecting;
-    if(onScreen) tryPlay();
-    else { v.pause(); if(!v.muted){v.muted=true;setBtn();} } // hors écran : pause et son coupé
-  }),{threshold:0.15});
-  watch.observe(box);
+    if(onScreen) start();             // le son revient, sauf si l'utilisateur l'a coupé
+    else { pauseSelf(); v.muted=true; } // hors écran : pause et son coupé
+  }),{threshold:0.15}).observe(box);
 })();
 
 /* ---------- Barres de goût ---------- */
