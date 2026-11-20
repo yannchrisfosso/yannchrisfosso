@@ -1,0 +1,345 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where([data-mode="dark"], [data-mode="dark"] *));
+
+/*
+ * Design tokens Horisphère (PRD §7.2).
+ * Les valeurs ci-dessous sont celles du thème « Éclat d'ambre » sombre ; le moteur de thèmes
+ * (src/lib/theme/tokens.ts) les remplace sur <html> selon le thème, le mode et les choix de l'utilisateur.
+ * Aucun composant n'utilise de couleur en dur : tout passe par ces variables.
+ */
+@theme static {
+  --color-bg: #341b2c;
+  --color-surface: #fff4e5;
+  --color-surface-raised: #3e2536;
+  --color-surface-sunken: #2a1523;
+  --color-primary: #ff7a52;
+  --color-on-primary: #341b2c;
+  --color-secondary: #e7bc4b;
+  --color-on-secondary: #341b2c;
+  --color-button: #ff7a52;
+  --color-on-button: #341b2c;
+  --color-text: #fff4e5;
+  --color-text-muted: #d2bfbb;
+  --color-on-surface: #341b2c;
+  --color-on-surface-muted: #6e5764;
+  --color-border: #5c4152;
+  --color-border-surface: #e8d8cb;
+  --color-focus: #e7bc4b;
+  --color-primary-ink: #ff7a52;
+  --color-secondary-ink: #e7bc4b;
+  --color-primary-ink-surface: #b8461f;
+  --color-secondary-ink-surface: #7f5d00;
+  --color-glow-1: rgba(255, 122, 82, 0.26);
+  --color-glow-2: rgba(231, 188, 75, 0.2);
+
+  --radius-card: 22px;
+  --radius-control: 12px;
+  --shadow-card: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 18px 40px -22px rgba(0, 0, 0, 0.65);
+
+  --font-display: "Fraunces Variable", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --font-ui: "Manrope Variable", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-sans: var(--font-ui);
+  --font-serif: var(--font-display);
+
+  --motion-duration: 240ms;
+  --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --breakpoint-xs: 390px;
+}
+
+:root {
+  --gradient-strength: 0.55;
+  --header-h: 64px;
+  --bottom-nav-h: 0px;
+  color-scheme: dark;
+}
+
+[data-motion="reduced"] {
+  --motion-duration: 0ms;
+}
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-motion="full"]) {
+    --motion-duration: 0ms;
+  }
+}
+
+html {
+  background-color: var(--color-bg);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: calc(var(--header-h) + 12px);
+}
+
+body {
+  min-height: 100dvh;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-ui);
+  font-feature-settings: "ss01";
+  overflow-x: clip;
+  transition:
+    background-color var(--motion-duration) var(--motion-ease),
+    color var(--motion-duration) var(--motion-ease);
+}
+
+/* Fond d'atmosphère : deux halos discrets, intensité réglée par --gradient-strength */
+.hs-atmosphere {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(60rem 30rem at 12% -8%, var(--color-glow-1), transparent 70%),
+    radial-gradient(50rem 28rem at 105% 10%, var(--color-glow-2), transparent 70%);
+  opacity: var(--gradient-strength);
+  transition: opacity var(--motion-duration) var(--motion-ease);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+::selection {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.font-display {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  letter-spacing: -0.015em;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+
+/* Transitions de couleur douces sur les surfaces thémées */
+.hs-themed {
+  transition:
+    background-color var(--motion-duration) var(--motion-ease),
+    color var(--motion-duration) var(--motion-ease),
+    border-color var(--motion-duration) var(--motion-ease),
+    box-shadow var(--motion-duration) var(--motion-ease);
+}
+
+/* Apparition progressive légère */
+@keyframes hs-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.hs-rise {
+  animation: hs-rise calc(var(--motion-duration) * 1.6) var(--motion-ease) both;
+}
+.hs-rise-2 {
+  animation-delay: 60ms;
+}
+.hs-rise-3 {
+  animation-delay: 120ms;
+}
+.hs-rise-4 {
+  animation-delay: 180ms;
+}
+
+/* Transitions de page (View Transitions API, via React ViewTransition) */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--motion-duration);
+  animation-timing-function: var(--motion-ease);
+}
+::view-transition-old(hs-page) {
+  animation: hs-fade-out calc(var(--motion-duration) * 0.7) var(--motion-ease) both;
+}
+::view-transition-new(hs-page) {
+  animation: hs-rise calc(var(--motion-duration) * 1.4) var(--motion-ease) both;
+}
+@keyframes hs-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-motion="full"]) ::view-transition-group(*),
+  :root:not([data-motion="full"]) ::view-transition-old(*),
+  :root:not([data-motion="full"]) ::view-transition-new(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}
+[data-motion="reduced"] ::view-transition-group(*),
+[data-motion="reduced"] ::view-transition-old(*),
+[data-motion="reduced"] ::view-transition-new(*) {
+  animation-duration: 0s !important;
+  animation-delay: 0s !important;
+}
+
+/* Battement discret des marqueurs de la carte (une seule fois à l'apparition) */
+@keyframes hs-ping {
+  from {
+    transform: scale(0.6);
+    opacity: 0.8;
+  }
+  to {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+/* Motif de cartes « topographique » (lignes de latitude) */
+.hs-card-motif {
+  background-image: repeating-radial-gradient(
+    circle at 110% -10%,
+    transparent 0 14px,
+    color-mix(in srgb, var(--hs-accent, var(--color-primary)) 16%, transparent) 14px 15px
+  );
+}
+
+/* Défilement horizontal du carrousel mobile */
+.hs-snap {
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+.hs-snap::-webkit-scrollbar {
+  display: none;
+}
+.hs-snap > * {
+  scroll-snap-align: start;
+}
+
+/* Carte MapLibre : contrôles et attribution aux couleurs du thème */
+.maplibregl-map {
+  font-family: var(--font-ui);
+}
+.maplibregl-ctrl-attrib {
+  background: color-mix(in srgb, var(--color-bg) 82%, transparent) !important;
+  color: var(--color-text-muted) !important;
+  font-size: 11px;
+}
+.maplibregl-ctrl-attrib a {
+  color: var(--color-text) !important;
+}
+.maplibregl-ctrl-attrib-button {
+  filter: var(--hs-attrib-filter, none);
+}
+.maplibregl-ctrl-group {
+  background: var(--color-surface-raised) !important;
+  border: 1px solid var(--color-border);
+  box-shadow: none !important;
+}
+.maplibregl-ctrl-group button + button {
+  border-top-color: var(--color-border) !important;
+}
+.maplibregl-ctrl-group button .maplibregl-ctrl-icon {
+  filter: var(--hs-ctrl-filter, none);
+}
+[data-mode="dark"] {
+  --hs-ctrl-filter: invert(1) brightness(1.4);
+}
+
+/* Écrans : pas de débordement horizontal */
+img,
+svg,
+canvas {
+  max-width: 100%;
+}
+
+@media (max-width: 767px) {
+  :root {
+    --header-h: 56px;
+    --bottom-nav-h: calc(64px + env(safe-area-inset-bottom));
+  }
+}
+
+/* Marqueurs de villes sur la carte */
+.hs-marker {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  color: var(--color-text);
+}
+.hs-marker-dot {
+  position: relative;
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: var(--color-primary);
+  box-shadow: 0 0 0 2.5px color-mix(in srgb, var(--color-bg) 75%, transparent);
+  transition: transform var(--motion-duration) var(--motion-ease);
+}
+.hs-marker[data-fav="1"] .hs-marker-dot {
+  width: 12px;
+  height: 12px;
+  background: var(--color-secondary);
+}
+.hs-marker[data-selected="1"] .hs-marker-dot::after,
+.hs-marker[data-fav="1"] .hs-marker-dot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: inherit;
+  animation: hs-ping calc(var(--motion-duration) * 6) var(--motion-ease) 2;
+}
+.hs-marker:hover .hs-marker-dot,
+.hs-marker:focus-visible .hs-marker-dot,
+.hs-marker[data-selected="1"] .hs-marker-dot {
+  transform: scale(1.35);
+}
+.hs-marker-label {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% - 2px);
+  transform: translate(-50%, 4px);
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  white-space: nowrap;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-on-surface);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.3;
+  box-shadow: var(--shadow-card);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity var(--motion-duration) var(--motion-ease),
+    transform var(--motion-duration) var(--motion-ease);
+}
+.hs-marker-time {
+  font-weight: 600;
+  color: var(--color-on-surface-muted);
+}
+.hs-marker:hover .hs-marker-label,
+.hs-marker:focus-visible .hs-marker-label,
+.hs-marker[data-fav="1"] .hs-marker-label,
+.hs-marker[data-selected="1"] .hs-marker-label,
+.hs-marker[data-labels="1"][data-pop="3"] .hs-marker-label {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+.hs-marker:hover,
+.hs-marker:focus-visible,
+.hs-marker[data-selected="1"] {
+  z-index: 3;
+}
