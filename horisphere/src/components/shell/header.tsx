@@ -158,7 +158,7 @@ export function Header() {
       >
         Aller au contenu
       </a>
-      <header className="hs-themed sticky top-0 z-40 h-(--header-h) border-b border-border bg-[color-mix(in_srgb,var(--color-bg)_88%,transparent)] backdrop-blur-md">
+      <header className="hs-themed sticky top-0 z-40 h-(--header-h) border-b border-[color-mix(in_srgb,var(--color-border-glow)_45%,transparent)] bg-[color-mix(in_srgb,var(--color-bg)_86%,transparent)] backdrop-blur-md">
         <div className="mx-auto flex h-full max-w-[1440px] items-center gap-3 px-4 md:px-6 lg:px-8">
           <Link href="/" aria-label="Horisphère — accueil" className="mr-2 rounded-control">
             <Logo />
@@ -172,9 +172,8 @@ export function Header() {
                     href={href}
                     aria-current={isActive(pathname, href) ? "page" : undefined}
                     className={cx(
-                      "relative inline-flex h-10 items-center rounded-control px-3 text-[0.94rem] font-semibold whitespace-nowrap text-text-muted transition-colors hover:text-text",
-                      "aria-[current=page]:text-text",
-                      "after:absolute after:inset-x-3 after:bottom-1 after:h-0.5 after:origin-left after:scale-x-0 after:rounded-full after:bg-primary after:transition-transform after:duration-(--motion-duration) aria-[current=page]:after:scale-x-100",
+                      "inline-flex h-10 items-center rounded-full px-4 font-display text-[1rem] font-medium whitespace-nowrap text-text-muted transition-colors duration-(--motion-duration) hover:text-text",
+                      "aria-[current=page]:bg-[linear-gradient(90deg,var(--color-cta-from),var(--color-cta-to))] aria-[current=page]:font-semibold aria-[current=page]:text-(--color-on-cta)",
                     )}
                   >
                     {label}
@@ -232,9 +231,9 @@ export function BottomNav() {
   return (
     <nav
       aria-label="Navigation principale"
-      className="hs-themed fixed inset-x-0 bottom-0 z-40 border-t border-border bg-[color-mix(in_srgb,var(--color-bg)_94%,transparent)] pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden"
+      className="hs-themed fixed inset-x-0 bottom-0 z-40 rounded-t-[22px] border-t border-[color-mix(in_srgb,var(--color-border-glow)_60%,transparent)] bg-[color-mix(in_srgb,var(--color-surface-raised)_94%,transparent)] pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden"
     >
-      <ul className="mx-auto grid h-16 max-w-md grid-cols-4">
+      <ul className="mx-auto grid h-16 max-w-md grid-cols-4 gap-1 px-2">
         {PRIMARY_NAV.map(({ href, label, icon: Icon }) => {
           const active = isActive(pathname, href);
           return (
@@ -243,18 +242,11 @@ export function BottomNav() {
                 href={href}
                 aria-current={active ? "page" : undefined}
                 className={cx(
-                  "flex h-full flex-col items-center justify-center gap-1 text-[0.72rem] font-bold transition-colors",
-                  active ? "text-primary-ink" : "text-text-muted",
+                  "my-1.5 flex h-[calc(100%-12px)] flex-col items-center justify-center gap-0.5 rounded-full text-[0.72rem] font-bold whitespace-nowrap transition-colors duration-(--motion-duration)",
+                  active ? "bg-button text-on-button shadow-[0_8px_20px_-10px_var(--color-halo)]" : "text-secondary-ink",
                 )}
               >
-                <span
-                  className={cx(
-                    "inline-flex h-7 w-12 items-center justify-center rounded-full transition-colors duration-(--motion-duration)",
-                    active && "bg-[color-mix(in_srgb,var(--color-primary)_18%,transparent)]",
-                  )}
-                >
-                  <Icon className={cx("size-5", active && "fill-[color-mix(in_srgb,var(--color-primary)_30%,transparent)]")} aria-hidden />
-                </span>
+                <Icon className="size-5" aria-hidden />
                 {label}
               </Link>
             </li>

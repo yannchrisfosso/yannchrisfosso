@@ -33,10 +33,8 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#341B2C" },
-    { media: "(prefers-color-scheme: light)", color: "#FFF4E5" },
-  ],
+  // Couleur de barre du navigateur : fond du thème par défaut (mis à jour ensuite par le thème actif)
+  themeColor: resolveTheme(DEFAULT_THEME, true).vars["--color-bg"],
 };
 
 /** Variables par défaut des deux modes (thème signature), avant toute préférence enregistrée. */

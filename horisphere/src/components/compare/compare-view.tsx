@@ -20,6 +20,9 @@ import { capitalize, formatLongDate, formatShortDate, formatTime, relativeDayLab
 import { dayPeriod, solarAltitude } from "@/lib/time/solar";
 import { useDeviceZone, useNow } from "@/lib/time/ticker";
 import { useSettings } from "@/lib/state/settings";
+import { useResolvedTheme } from "@/lib/state/theme";
+import { cardColors } from "@/lib/theme/tokens";
+import { cardBackground, cardVars } from "@/components/clock/clock-card";
 import { copyText, shareOrCopy } from "@/lib/share";
 import { SearchBox } from "@/components/search/search-box";
 import { DayPeriodBadge, TimeDisplay } from "@/components/clock/parts";
@@ -43,20 +46,26 @@ function CityPicker({
   const settings = useSettings();
   const p = now ? getZonedParts(now, loc.tz) : null;
   const period = now ? dayPeriod(solarAltitude(now, loc.lat, loc.lon)) : null;
+  const theme = useResolvedTheme();
+  const accent = theme.cardAccents[side === "A" ? 0 : 1];
+  const colors = cardColors(accent, theme);
   return (
-    <div className="hs-themed min-w-0 rounded-card border border-border-surface bg-surface p-4 text-on-surface shadow-card sm:p-5">
+    <div
+      style={{ ...cardVars(colors, accent), ...cardBackground("degrade"), color: "var(--hs-card-ink)" }}
+      className="hs-themed min-w-0 rounded-card border border-[color-mix(in_srgb,var(--color-border-glow)_75%,transparent)] p-4 shadow-[0_20px_45px_-25px_var(--color-halo)] sm:p-5"
+    >
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <p className="text-[0.7rem] font-bold tracking-[0.14em] text-on-surface-muted uppercase">Ville {side}</p>
+          <p className="text-[0.7rem] font-bold tracking-[0.14em] uppercase">Ville {side}</p>
           <p className="mt-0.5 flex items-center gap-2 font-display text-2xl leading-tight font-semibold">
-            <Flag cc={loc.cc} />
+            <Flag cc={loc.cc} round className="text-base" />
             <span className="truncate">{loc.city}</span>
           </p>
-          <p className="truncate text-sm text-on-surface-muted">
+          <p className="truncate text-sm text-(--hs-card-ink-muted)">
             {countryName(loc.cc)} · {loc.tz}
           </p>
         </div>
-        <IconButton tone="surface" label={`Changer la ville ${side}`} onClick={() => setEditing((e) => !e)} aria-expanded={editing}>
+        <IconButton tone="card" label={`Changer la ville ${side}`} onClick={() => setEditing((e) => !e)} aria-expanded={editing}>
           <Pencil className="size-4" aria-hidden />
         </IconButton>
       </div>
@@ -76,13 +85,17 @@ function CityPicker({
         </div>
       )}
       <div className="mt-3 flex items-end justify-between gap-2">
-        <TimeDisplay parts={p} cycle={settings.hourCycle} seconds={settings.showSeconds} className="text-4xl leading-none font-semibold" secondsClassName="text-[0.55em]" />
-        <div className="text-right text-sm text-on-surface-muted">
+        <TimeDisplay parts={p} cycle={settings.hourCycle} seconds={settings.showSeconds} className="font-display text-4xl leading-none font-semibold" secondsClassName="text-[0.55em]" />
+        <div className="text-right text-sm font-semibold text-(--hs-card-ink-muted)">
           <p>{p ? capitalize(formatShortDate(p)) : ""}</p>
           <p>{p ? formatUtcOffset(p.offsetMinutes) : ""}</p>
         </div>
       </div>
-      {period && p && <DayPeriodBadge period={period} hour={p.hour} className="mt-2 text-sm" />}
+      {period && p && (
+        <span className="mt-2 inline-flex rounded-full bg-(--hs-card-chip) px-2.5 py-1 text-sm">
+          <DayPeriodBadge period={period} hour={p.hour} />
+        </span>
+      )}
     </div>
   );
 }

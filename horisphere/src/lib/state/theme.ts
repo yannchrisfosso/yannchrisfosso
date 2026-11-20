@@ -4,7 +4,7 @@
  * - Il n'est écrit dans le stockage qu'au clic sur « Enregistrer ».
  * - Chaque modification du brouillon est empilée pour pouvoir être annulée une à une.
  */
-import { useSyncExternalStore } from "react";
+import { useMemo, useSyncExternalStore } from "react";
 import { DEFAULT_THEME, resolveTheme, sanitizeTheme, type ThemePreference } from "@/lib/theme/tokens";
 import { createMemoryStore, createPersistedStore, usePersisted, useMemoryStore } from "./persisted";
 
@@ -98,5 +98,5 @@ export function useSystemDark(): boolean {
 export function useResolvedTheme() {
   const theme = useActiveTheme();
   const systemDark = useSystemDark();
-  return resolveTheme(theme, systemDark);
+  return useMemo(() => resolveTheme(theme, systemDark), [theme, systemDark]);
 }

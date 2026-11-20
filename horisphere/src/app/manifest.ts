@@ -1,4 +1,7 @@
 import type { MetadataRoute } from "next";
+import { DEFAULT_THEME, resolveTheme } from "@/lib/theme/tokens";
+
+const BG = resolveTheme(DEFAULT_THEME, true).vars["--color-bg"];
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
@@ -13,8 +16,8 @@ export default function manifest(): MetadataRoute.Manifest {
     display: "standalone",
     display_override: ["standalone", "minimal-ui"],
     orientation: "any",
-    background_color: "#341B2C",
-    theme_color: "#341B2C",
+    background_color: BG,
+    theme_color: BG,
     categories: ["utilities", "travel", "productivity"],
     icons: [
       { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },

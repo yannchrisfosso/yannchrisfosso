@@ -3,8 +3,11 @@
 > « Le temps du monde, à votre manière. » — nom de travail provisoire, à valider juridiquement (marques, domaines).
 
 Application web (PWA) d'horloge mondiale : heure et date exactes de 548 lieux (247 pays et territoires),
-carte du monde interactive avec l'ombre de la nuit en direct, comparateur de fuseaux, favoris sans compte,
-module compact « Deux mondes » et personnalisation complète des couleurs (« Mon univers »).
+carte du monde interactive avec l'ombre de la nuit en direct, comparateur de fuseaux, favoris sans compte rangés
+en ensembles, module compact « Deux mondes » et personnalisation complète des couleurs (« Mon univers »).
+
+Direction artistique : maquettes `docs/maquettes/` (thème signature « Éclat d'ambre », sombre et chaleureux, et
+thème « Atlas nuit »). Captures du rendu et comparaisons côte à côte : `docs/captures/`.
 
 Référence : PRD Horisphère v1.0 (20 novembre 2026).
 
@@ -24,10 +27,13 @@ npm run dev          # http://localhost:3000 (copie d'abord drapeaux, carte et w
 | `npm run typecheck` | Types de routes Next.js + TypeScript strict |
 | `npm run lint` | ESLint (règles Next.js, React Hooks, TypeScript) |
 | `npm test` | Tests unitaires et de composants (Vitest + Testing Library) |
-| `npm run test:e2e` | Parcours Playwright sur le build de production (lance `next start` sur le port 3200) |
+| `npm run test:e2e` | Parcours Playwright sur le build de production, dans Chromium, Firefox et WebKit (lance `next start` sur le port 3200) ; `E2E_BROWSERS=chromium npm run test:e2e` pour un seul moteur |
 | `npm run check` | Typage, lint, tests et build en une commande |
 | `npm run catalog` | Régénère `src/data/locations.json` depuis `data/` |
 | `npm run icons` | Régénère les icônes PNG de la PWA depuis `public/icons/icon.svg` |
+
+Navigateurs de test : Chromium, plus Firefox et WebKit installés une fois avec
+`npx playwright install firefox webkit` (et `npx playwright install-deps firefox webkit` sous Linux).
 
 Aucune variable d'environnement n'est nécessaire. `NEXT_PUBLIC_SITE_URL` (facultative) fixe l'URL absolue des
 métadonnées Open Graph.
@@ -36,11 +42,11 @@ métadonnées Open Graph.
 
 | Route | Contenu |
 |---|---|
-| `/` | Explorer : titre, recherche, carte (globe ou plan), favoris, horloges, Deux mondes |
+| `/` | Explorer : titre, recherche en pilule, carte colorée (plan par défaut, globe en option), horloges colorées illustrées, favoris, Deux mondes, accès rapides |
 | `/ville/[slug]` | Détail : drapeau, heure à la seconde, date, IANA, UTC, écart avec vous, lever/coucher, prochain changement d'heure, autres villes du pays |
 | `/comparer` | Deux villes, écart actuel, conversion d'une date/heure, heures ambiguës ou sautées, frise 24 h, copie et lien partageable |
-| `/favoris` | Ajout, recherche, réorganisation (glisser ou flèches), suppression, affectation à Deux mondes |
-| `/mon-univers` | 5 thèmes, mode clair/sombre/auto, 6 couleurs, contrastes WCAG, arrondis, dégradés, cartes individuelles, export/import JSON, annuler/enregistrer/réinitialiser |
+| `/favoris` | Ajout, recherche, réorganisation (glisser ou flèches), suppression, ensembles (créer, renommer, supprimer, filtrer), affectation à Deux mondes |
+| `/mon-univers` | 6 thèmes (dont Atlas nuit), mode sombre/clair/auto, 6 couleurs, contrastes WCAG, arrondis, dégradés, cartes individuelles, export/import JSON, annuler/enregistrer/réinitialiser |
 | `/deux-mondes` et `/deux-mondes/vue` | Configuration du module (Mini/Confort, couleurs, date, décalage) et vue compacte à épingler |
 | `/installer` | Installation selon le navigateur, raccourcis directs, limites des widgets |
 | `/aide` | Réglages (12/24 h, secondes, animations, carte), vérification d'horloge, données locales, confidentialité, licences |
@@ -81,6 +87,15 @@ horisphere/
   pas de clé, pas de service tiers, fonctionne hors ligne. Globe ou plan, ombre de la nuit et du crépuscule
   recalculée chaque minute, marqueurs aux coordonnées réelles (popularité par niveau de zoom, favoris toujours
   visibles et focalisables), chargement différé à l'approche de l'écran, réduction sur mobile.
+- **Cartes colorées lisibles** : chaque carte d'horloge et chaque moitié de « Deux mondes » reçoit un dégradé
+  dérivé d'une couleur d'accent (`cardColors`, `lib/theme/tokens.ts`) ; l'encre du texte est choisie et, au besoin,
+  le dégradé éclairci pour garantir un contraste ≥ 4,5:1 sur tout le dégradé (vérifié par les tests pour tous les
+  thèmes et tous les accents proposés).
+- **Carte colorée** : continents teintés par région (dégradés de l'ambiance du thème), lumières des villes pour
+  « Atlas nuit », marqueurs lumineux et étiquettes en pastille ; correction des polygones qui traversent
+  l'antiméridien.
+- **Illustrations de villes** : image `public/villes/<id>.webp` si fournie, sinon illustration SVG générée
+  (voir `docs/DONNEES.md`, section « Images de villes »).
 - **Design tokens CSS** (`--color-bg`, `--color-surface`, `--color-primary`, …, `--radius-card`, `--motion-duration`,
   `--font-display`, `--font-ui`) générés par `lib/theme/tokens.ts` ; aucun composant n'a de couleur en dur
   (hors drapeaux et nuanciers de couleurs). Un script en ligne applique le thème enregistré avant le premier

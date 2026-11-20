@@ -11,6 +11,8 @@ import { dayPeriod, solarAltitude } from "@/lib/time/solar";
 import { favorites, useFavorites } from "@/lib/state/favorites";
 import { updateSettings, useSettings } from "@/lib/state/settings";
 import { useResolvedTheme } from "@/lib/state/theme";
+import { useDuo } from "@/lib/state/duo";
+import { EXAMPLE_IDS } from "@/components/favorites/favorites-panel";
 import { useNow } from "@/lib/time/ticker";
 import { DayPeriodBadge, TimeDisplay } from "@/components/clock/parts";
 import { ButtonLink, cx, Flag, IconButton, Segmented } from "@/components/ui/primitives";
@@ -127,6 +129,7 @@ export function MapPanel({ selectedId, onSelect }: { selectedId: string | null; 
   const settings = useSettings();
   const theme = useResolvedTheme();
   const favs = useFavorites();
+  const duo = useDuo();
   const now = useNow();
   const reduced = useReducedMotion();
   const [ref, near] = useNearViewport<HTMLDivElement>();
@@ -135,13 +138,16 @@ export function MapPanel({ selectedId, onSelect }: { selectedId: string | null; 
   const selected = getLocation(selectedId);
 
   return (
-    <section aria-labelledby="carte-titre" className="hs-themed overflow-hidden rounded-card border border-border bg-surface-sunken">
-      <div className="flex flex-wrap items-center justify-between gap-2 px-4 pt-3 pb-2 sm:px-5">
+    <section
+      aria-labelledby="carte-titre"
+      className="hs-themed relative overflow-hidden rounded-card border border-[color-mix(in_srgb,var(--color-border-glow)_45%,transparent)] bg-[radial-gradient(120%_90%_at_50%_40%,color-mix(in_srgb,var(--color-surface-raised)_70%,transparent),transparent_75%)]"
+    >
+      <div className="flex flex-wrap items-center justify-end gap-2 px-3 pt-2 pb-1 sm:justify-between sm:px-5 sm:pt-3 sm:pb-2">
         <div className="min-w-0">
-          <h2 id="carte-titre" className="font-display text-lg font-semibold">
+          <h2 id="carte-titre" className="sr-only font-display text-lg font-semibold sm:not-sr-only">
             Le monde, en ce moment
           </h2>
-          <p className="text-xs text-text-muted">Ombre de la nuit et du crépuscule calculée en direct.</p>
+          <p className="hidden text-xs text-text-muted sm:block">Ombre de la nuit et du crépuscule calculée en direct.</p>
         </div>
         <div className="flex items-center gap-1">
           <div className={cx(collapsed && "hidden md:block")}>
@@ -170,13 +176,14 @@ export function MapPanel({ selectedId, onSelect }: { selectedId: string | null; 
       <div
         id="carte-zone"
         ref={ref}
-        className={cx("relative h-[280px] sm:h-[380px] lg:h-[460px]", collapsed && "max-md:hidden")}
+        className={cx("relative h-[240px] sm:h-[340px] lg:h-[380px]", collapsed && "max-md:hidden")}
       >
         {near && !(collapsed && typeof window !== "undefined" && window.innerWidth < 768) && (
           <WorldMap
             className="size-full"
             theme={theme}
             favoriteIds={favs.map((f) => f.locationId)}
+            featuredIds={[...(favs.length ? favs.map((f) => f.locationId) : EXAMPLE_IDS), duo.locationIdA, duo.locationIdB]}
             focusId={selectedId}
             selectedId={selectedId}
             onSelect={(l) => onSelect(l.id)}

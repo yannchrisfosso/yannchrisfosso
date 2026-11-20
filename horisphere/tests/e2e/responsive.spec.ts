@@ -37,5 +37,8 @@ test("desktop : barre supérieure et panneau de favoris", async ({ page }) => {
   const nav = page.getByRole("navigation", { name: "Navigation principale" }).first();
   for (const label of ["Explorer", "Comparer", "Favoris", "Mon univers"]) await expect(nav.getByRole("link", { name: label })).toBeVisible();
   await expect(page.getByRole("heading", { name: /Mes favoris/ }).first()).toBeVisible();
-  await expect(page.getByRole("region", { name: /Carte du monde interactive/ })).toBeVisible();
+  // Carte WebGL, ou message de repli explicite si le navigateur n'a pas WebGL (Firefox sans GPU, par exemple)
+  await expect(
+    page.getByRole("region", { name: /Carte du monde interactive/ }).or(page.getByText("La carte interactive n'a pas pu démarrer")),
+  ).toBeVisible();
 });

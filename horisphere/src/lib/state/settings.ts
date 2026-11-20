@@ -24,7 +24,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   showSeconds: true,
   motion: "system",
   mapCollapsedOnMobile: false,
-  mapProjection: "globe",
+  mapProjection: "mercator",
   weekStart: 1,
 };
 
@@ -36,7 +36,7 @@ export function sanitizeSettings(raw: unknown): AppSettings {
     showSeconds: r.showSeconds !== false,
     motion: r.motion === "reduced" || r.motion === "full" ? r.motion : "system",
     mapCollapsedOnMobile: r.mapCollapsedOnMobile === true,
-    mapProjection: r.mapProjection === "mercator" ? "mercator" : "globe",
+    mapProjection: r.mapProjection === "globe" ? "globe" : "mercator",
     weekStart: r.weekStart === 0 ? 0 : 1,
   };
 }

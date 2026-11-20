@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { contrastRatio, ensureContrast, hexToRgb, mix } from "@/lib/theme/color";
-import { PRESETS } from "@/lib/theme/presets";
-import { DEFAULT_THEME, resolveTheme, sanitizeTheme, type ThemePreference } from "@/lib/theme/tokens";
+import { CLOCK_ACCENTS, PRESETS } from "@/lib/theme/presets";
+import { cardColors, DEFAULT_THEME, resolveTheme, sanitizeTheme, type ThemePreference } from "@/lib/theme/tokens";
 import { createPersistedStore } from "@/lib/state/persisted";
 import {
   addFavoriteTo,
@@ -9,6 +9,13 @@ import {
   removeFavoriteFrom,
   reorderFavorites,
   sanitizeFavorites,
+  sanitizeFavoritesData,
+  createSetIn,
+  renameSetIn,
+  deleteSetIn,
+  toggleInSetIn,
+  favoritesInSet,
+  defaultSets,
 } from "@/lib/state/favorites";
 import { assignDuo, DEFAULT_DUO, sanitizeDuo, swapDuo } from "@/lib/state/duo";
 import { draftStore, savedThemeStore, themeActions, THEME_KEY } from "@/lib/state/theme";
@@ -57,10 +64,34 @@ describe("thèmes", () => {
     expect(t.vars["--color-secondary"]).toBe("#E7BC4B");
     expect(t.vars["--color-surface"]).toBe("#FFF4E5");
   });
-  it("mode auto : suit le système", () => {
-    expect(resolveTheme(DEFAULT_THEME, true).mode).toBe("dark");
-    expect(resolveTheme(DEFAULT_THEME, false).mode).toBe("light");
+  it("mode sombre par défaut ; le mode auto suit le système", () => {
+    expect(DEFAULT_THEME.mode).toBe("dark");
+    expect(resolveTheme(DEFAULT_THEME, false).mode).toBe("dark");
+    expect(resolveTheme({ ...DEFAULT_THEME, mode: "auto" }, true).mode).toBe("dark");
+    expect(resolveTheme({ ...DEFAULT_THEME, mode: "auto" }, false).mode).toBe("light");
   });
+  it("six thèmes, dont Atlas nuit (carte aux lumières nocturnes)", () => {
+    expect(PRESETS.map((p) => p.id)).toContain("atlas-nuit");
+    expect(PRESETS).toHaveLength(6);
+    expect(resolveTheme({ ...DEFAULT_THEME, presetId: "atlas-nuit" }, true).map.style).toBe("nightlights");
+  });
+  it.each(PRESETS.flatMap((p) => (["dark", "light"] as const).map((m) => [p.id, m] as const)))(
+    "%s (%s) : texte des cartes d'horloge et de Deux mondes ≥ 4,5:1 sur tout le dégradé",
+    (presetId, mode) => {
+      const t = resolveTheme({ ...DEFAULT_THEME, presetId, mode }, false);
+      for (const accent of [...t.cardAccents, ...t.duo, ...CLOCK_ACCENTS]) {
+        const c = cardColors(accent, t);
+        for (const stop of [c.from, c.mid, c.to]) {
+          expect(contrastRatio(c.ink, stop), `${accent} ${stop}`).toBeGreaterThanOrEqual(4.5);
+          expect(contrastRatio(c.inkMuted, stop)).toBeGreaterThanOrEqual(4.5);
+        }
+      }
+      expect(contrastRatio(t.vars["--color-on-search"], t.vars["--color-search"])).toBeGreaterThanOrEqual(4.5);
+      expect(contrastRatio(t.vars["--color-on-search-muted"], t.vars["--color-search"])).toBeGreaterThanOrEqual(4.5);
+      for (const stop of [t.vars["--color-cta-from"], t.vars["--color-cta-to"]])
+        expect(contrastRatio(t.vars["--color-on-cta"], stop)).toBeGreaterThanOrEqual(4.5);
+    },
+  );
   it("couleurs illisibles : avertissement + correction automatique", () => {
     const pref: ThemePreference = { ...DEFAULT_THEME, mode: "dark", overrides: { dark: { text: "#3A2030" } } };
     const t = resolveTheme(pref, true);
@@ -79,7 +110,7 @@ describe("thèmes", () => {
   it("sanitizeTheme répare des données corrompues", () => {
     const t = sanitizeTheme({ presetId: "inconnu", mode: 42, radius: 999, overrides: { dark: { primary: "rouge" } }, clockOverrides: { "x": { accent: "#ff0000", style: "bizarre" } } });
     expect(t.presetId).toBe("eclat-ambre");
-    expect(t.mode).toBe("auto");
+    expect(t.mode).toBe("dark");
     expect(t.radius).toBe(32);
     expect(t.overrides).toEqual({});
     expect(t.clockOverrides).toEqual({ x: { accent: "#FF0000" } });
@@ -184,5 +215,48 @@ describe("Deux mondes (critère n° 9)", () => {
     expect(d.locationIdA).toBe("quebec-ca");
     expect(d.layoutMode).toBe("mini");
     expect(d.themeOverrides).toBeUndefined();
+  });
+});
+
+describe("ensembles de favoris (stockage v2)", () => {
+  it("migre les favoris v1 (tableau) vers v2 avec les ensembles Famille et Travail", () => {
+    const d = sanitizeFavoritesData([{ locationId: "douala-cm", position: 0, createdAt: "x" }, { locationId: "nope" }], 1);
+    expect(d.items.map((f) => f.locationId)).toEqual(["douala-cm"]);
+    expect(d.sets.map((s) => s.name)).toEqual(["Famille", "Travail"]);
+  });
+  it("le magasin relit une donnée v1 et la réécrit en v2", () => {
+    localStorage.setItem("horisphere.favorites", JSON.stringify({ v: 1, data: [{ locationId: "quebec-ca" }] }));
+    const store = createPersistedStore({ key: "horisphere.favorites", version: 2, initial: { items: [], sets: [] }, sanitize: sanitizeFavoritesData });
+    expect(store.get().items[0].locationId).toBe("quebec-ca");
+    store.set((d) => d);
+    expect(JSON.parse(localStorage.getItem("horisphere.favorites")!).v).toBe(2);
+  });
+  it("créer, renommer, affecter, filtrer, supprimer", () => {
+    let d = { items: addFavoriteTo(addFavoriteTo([], "quebec-ca"), "douala-cm"), sets: defaultSets() };
+    const c = createSetIn(d, "  Vacances  ");
+    expect(c.id).toBe("vacances");
+    d = c.data;
+    expect(createSetIn(d, "vacances").id).toBeNull(); // doublon refusé
+    expect(createSetIn(d, "   ").id).toBeNull();
+    d = toggleInSetIn(d, "famille", "douala-cm");
+    d = toggleInSetIn(d, "vacances", "douala-cm");
+    expect(favoritesInSet(d.items, "famille").map((f) => f.locationId)).toEqual(["douala-cm"]);
+    expect(favoritesInSet(d.items, null)).toHaveLength(2);
+    d = renameSetIn(d, "famille", "Ma famille");
+    expect(d.sets.find((s) => s.id === "famille")!.name).toBe("Ma famille");
+    expect(renameSetIn(d, "famille", "Travail")).toBe(d); // nom déjà pris
+    d = deleteSetIn(d, "vacances");
+    expect(d.sets.map((s) => s.id)).toEqual(["famille", "travail"]);
+    expect(d.items.find((f) => f.locationId === "douala-cm")!.setIds).toEqual(["famille"]);
+    d = toggleInSetIn(d, "famille", "douala-cm");
+    expect(favoritesInSet(d.items, "famille")).toHaveLength(0);
+  });
+  it("répare des ensembles corrompus et retire les références orphelines", () => {
+    const d = sanitizeFavoritesData(
+      { items: [{ locationId: "tokyo-jp", setIds: ["travail", "fantome", 3] }], sets: [{ id: "travail", name: "Travail" }, { id: "travail", name: "x" }, { id: "", name: "y" }] },
+      2,
+    );
+    expect(d.sets).toHaveLength(1);
+    expect(d.items[0].setIds).toEqual(["travail"]);
   });
 });

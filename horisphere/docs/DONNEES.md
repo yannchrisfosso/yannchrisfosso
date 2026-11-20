@@ -49,3 +49,30 @@ mis à jour (signalé dans `/aide`).
 
 Aucune photographie de ville n'est utilisée (licences non vérifiables dans ce cadre) ; les cartes d'horloge
 proposent des fonds uni, dégradé ou motif.
+
+## Images de villes
+
+Les cartes d'horloge et la fiche ville affichent une zone d'illustration. Sans image, Horisphère dessine une
+illustration SVG stylisée (silhouette urbaine propre à chaque ville, relief, eau, végétation selon la latitude,
+soleil ou lune selon l'état jour/nuit réel). Pour remplacer ce dessin par vos propres illustrations :
+
+| Exigence | Valeur |
+|---|---|
+| Emplacement | `public/villes/` |
+| Nom du fichier | identifiant du lieu + `.webp`, exactement comme dans l'adresse de la fiche : `/ville/douala-cm` → `douala-cm.webp`, `quebec-ca.webp`, `tokyo-jp.webp`, `paris-fr.webp` |
+| Format | WebP (qualité 75 à 82 recommandée) |
+| Dimensions | **1200 × 600 px** (ratio 2:1) ; le bas de l'image est toujours visible, le haut peut être rogné |
+| Poids | **≤ 120 Ko** par image (cible 60–90 Ko) |
+| Composition | Sujet (monument, skyline, paysage) dans la moitié basse ; laisser le haut calme : l'image est posée sous l'heure et la date |
+| Couleurs | Tons cohérents avec le dégradé de la carte ; pas de texte incrusté |
+| Licence | Images créées pour le projet ou sous licence permettant la réutilisation commerciale ; noter la source dans ce fichier |
+
+Après l'ajout d'images, relancer `npm run dev` ou `npm run build` : le script `prepare-assets` recense les
+fichiers présents (`src/data/city-images.json`) ; seules les villes listées chargent une image, sans requête
+inutile. Un nom de fichier qui ne correspond à aucun lieu du catalogue est ignoré.
+
+## Ensembles de favoris (stockage)
+
+Clé `horisphere.favorites`, schéma **v2** : `{ items: [{ locationId, position, createdAt, setIds? }], sets: [{ id, name, createdAt }] }`.
+Les données v1 (simple tableau de favoris) sont migrées automatiquement à la première lecture, avec les ensembles
+« Famille » et « Travail » créés vides.

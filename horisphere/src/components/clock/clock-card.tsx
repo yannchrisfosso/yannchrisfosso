@@ -7,21 +7,34 @@ import { countryName, type Location } from "@/lib/catalog";
 import { formatDelta, formatUtcOffset } from "@/lib/time/engine";
 import { capitalize, formatShortDate, relativeDayLabel } from "@/lib/time/format";
 import type { AppSettings } from "@/lib/state/settings";
-import type { CardStyle, ClockOverride, ClockStyle } from "@/lib/theme/tokens";
+import { useResolvedTheme } from "@/lib/state/theme";
+import { cardColors, type CardColors, type CardStyle, type ClockOverride, type ClockStyle } from "@/lib/theme/tokens";
 import { cx, Flag } from "@/components/ui/primitives";
+import { CityIllustration } from "./city-illustration";
 import { AnalogDial, DayPeriodBadge, TimeDisplay } from "./parts";
 import type { LocationTime } from "./use-location-time";
 
-/** Accent par défaut d'une carte : alterne les couleurs du thème (jamais une couleur en dur). */
+/** Accent par défaut d'un favori dans les listes : alterne les couleurs du thème. */
 export const DEFAULT_ACCENTS = ["var(--color-primary)", "var(--color-secondary)"];
 
-export function cardBackground(style: CardStyle): CSSProperties {
-  if (style === "uni") return {};
-  if (style === "motif") return {};
+/** Variables CSS d'une carte colorée (dégradé + encre garantie lisible). */
+export function cardVars(c: CardColors, accent: string): CSSProperties {
   return {
-    backgroundImage:
-      "radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--hs-accent) calc(var(--gradient-strength) * 34%), transparent), transparent 62%)",
-  };
+    "--hs-accent": accent,
+    "--hs-card-from": c.from,
+    "--hs-card-mid": c.mid,
+    "--hs-card-to": c.to,
+    "--hs-card-ink": c.ink,
+    "--hs-card-ink-muted": c.inkMuted,
+    "--hs-card-chip": c.chip,
+    "--hs-card-dial": c.dial,
+    "--hs-card-dial-ink": c.dialInk,
+  } as CSSProperties;
+}
+
+export function cardBackground(style: CardStyle): CSSProperties {
+  if (style === "uni") return { background: "var(--hs-card-mid)" };
+  return { background: "linear-gradient(165deg, var(--hs-card-from) 0%, var(--hs-card-mid) 52%, var(--hs-card-to) 100%)" };
 }
 
 export function ClockCard({
@@ -52,41 +65,89 @@ export function ClockCard({
   footer?: ReactNode;
   className?: string;
 }) {
-  const accent = override?.accent ?? DEFAULT_ACCENTS[accentIndex % DEFAULT_ACCENTS.length];
+  const theme = useResolvedTheme();
+  const accent = override?.accent ?? theme.cardAccents[accentIndex % theme.cardAccents.length];
+  const colors = cardColors(accent, theme);
   const style = override?.style ?? cardStyle;
   const p = info?.parts ?? null;
   const country = countryName(location.cc);
   const titleId = `clock-${location.id}`;
+  const night = info ? info.period === "night" || info.period === "twilight" : false;
 
   return (
     <article
       aria-labelledby={titleId}
-      style={{ "--hs-accent": accent, ...cardBackground(style) } as CSSProperties}
+      style={{ ...cardVars(colors, accent), ...cardBackground(style), color: "var(--hs-card-ink)" }}
       className={cx(
-        "hs-themed group relative isolate flex min-w-0 flex-col overflow-hidden rounded-card border border-border-surface bg-surface p-5 text-on-surface shadow-card",
+        "hs-themed group relative isolate flex min-w-0 flex-col overflow-hidden rounded-card",
+        "border border-[color-mix(in_srgb,var(--color-border-glow)_75%,transparent)] shadow-[0_20px_45px_-25px_var(--color-halo)]",
         "transition-transform duration-(--motion-duration) hover:-translate-y-0.5 focus-within:-translate-y-0.5",
         style === "motif" && "hs-card-motif",
         className,
       )}
     >
-      <span aria-hidden className="absolute inset-y-5 left-0 w-1 rounded-r-full bg-(--hs-accent)" />
-      <div className="flex items-start justify-between gap-2">
-        <div className="min-w-0">
-          {label && <p className="mb-1 text-[0.7rem] font-bold tracking-[0.14em] text-on-surface-muted uppercase">{label}</p>}
-          <h3 id={titleId} className="flex items-center gap-2 font-display text-[1.35rem] leading-tight font-semibold">
-            <Flag cc={location.cc} />
-            <Link
-              href={`/ville/${location.id}`}
-              className="truncate after:absolute after:inset-0 after:z-0 after:content-[''] focus-visible:outline-none focus-visible:after:rounded-card focus-visible:after:outline-3 focus-visible:after:outline-focus"
-            >
-              {location.city}
-            </Link>
-          </h3>
-          <p className="mt-0.5 truncate text-sm text-on-surface-muted">
-            {country}
-            {location.region ? ` · ${location.region}` : ""}
-          </p>
+      <div className="relative z-[1] flex flex-col gap-3 p-4 pb-2 sm:p-5 sm:pb-2">
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex min-w-0 items-center gap-2.5">
+            <Flag cc={location.cc} round className="text-[1.15rem]" />
+            <div className="min-w-0">
+              {label && <p className="text-[0.65rem] font-bold tracking-[0.14em] uppercase opacity-90">{label}</p>}
+              <h3 id={titleId} className="font-display text-[1.3rem] leading-tight font-semibold">
+                <Link
+                  href={`/ville/${location.id}`}
+                  className="block truncate after:absolute after:inset-0 after:z-0 after:content-[''] focus-visible:outline-none focus-visible:after:rounded-card focus-visible:after:outline-3 focus-visible:after:outline-focus"
+                >
+                  {location.city}
+                </Link>
+              </h3>
+              <p className="truncate text-[0.8rem] font-medium text-(--hs-card-ink-muted)">
+                {country}
+              </p>
+            </div>
+          </div>
+          {info && (
+            <span className="relative z-[1] shrink-0 rounded-full bg-(--hs-card-chip) px-2.5 py-1 text-xs">
+              <DayPeriodBadge period={info.period} hour={info.parts.hour} />
+            </span>
+          )}
         </div>
+
+        <div className="flex items-center justify-between gap-2">
+          <div className="min-w-0">
+            <TimeDisplay
+              parts={p}
+              cycle={settings.hourCycle}
+              seconds={false}
+              className="block font-display text-[2.35rem] leading-none font-semibold tracking-tight sm:text-[2.55rem]"
+            />
+            <p className="mt-1.5 text-[0.8rem] font-semibold whitespace-nowrap" suppressHydrationWarning>
+              {p ? capitalize(formatShortDate(p)) + " " + p.year : " "}
+            </p>
+            <p className="text-[0.75rem] font-medium text-(--hs-card-ink-muted)">
+              {p ? formatUtcOffset(p.offsetMinutes) : " "}
+              {info && info.deltaToDevice !== null && (
+                <>
+                  {" · "}
+                  {info.deltaToDevice === 0 ? "votre heure" : `${formatDelta(info.deltaToDevice)} / vous`}
+                  {info.dayDiffToDevice ? ` · ${relativeDayLabel(info.dayDiffToDevice)}` : ""}
+                </>
+              )}
+            </p>
+          </div>
+          {clockStyle === "cadran" && (
+            <AnalogDial
+              parts={p}
+              seconds={settings.showSeconds}
+              size={62}
+              dark
+              className="shrink-0 drop-shadow-[0_6px_10px_var(--color-halo)]"
+            />
+          )}
+        </div>
+      </div>
+
+      <div className="relative mt-auto h-24 pt-2 sm:h-28">
+        <CityIllustration location={location} night={night} className="absolute inset-0" />
         {onToggleFavorite && (
           <button
             type="button"
@@ -94,47 +155,13 @@ export function ClockCard({
             aria-pressed={!!isFavorite}
             aria-label={isFavorite ? `Retirer ${location.city} des favoris` : `Ajouter ${location.city} aux favoris`}
             title={isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
-            className="relative z-10 -mt-1 -mr-2 inline-flex size-10 shrink-0 items-center justify-center rounded-control text-on-surface-muted transition-colors hover:text-on-surface"
+            className="absolute right-3 bottom-3 z-10 inline-flex size-10 items-center justify-center rounded-full bg-(--hs-card-chip) backdrop-blur-sm transition-transform hover:scale-105"
           >
-            <Star className={cx("size-5", isFavorite && "fill-current text-primary-ink-surface")} aria-hidden />
+            <Star className={cx("size-5", isFavorite && "fill-current")} aria-hidden />
           </button>
         )}
       </div>
-
-      <div className="mt-4 flex items-end justify-between gap-3">
-        <div className="min-w-0">
-          <TimeDisplay
-            parts={p}
-            cycle={settings.hourCycle}
-            seconds={settings.showSeconds}
-            className="block text-[2.6rem] leading-none font-semibold tracking-tight sm:text-[2.85rem]"
-            secondsClassName="text-[0.55em] font-medium"
-          />
-          <p className="mt-2 text-sm font-medium text-on-surface-muted" suppressHydrationWarning>
-            {p ? (
-              <>
-                {capitalize(formatShortDate(p))}
-                <span aria-hidden> · </span>
-                {formatUtcOffset(p.offsetMinutes)}
-              </>
-            ) : (
-              " "
-            )}
-          </p>
-        </div>
-        {clockStyle === "cadran" && <AnalogDial parts={p} seconds={settings.showSeconds} size={72} className="text-on-surface" />}
-      </div>
-
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t border-border-surface pt-3 text-sm">
-        {info ? <DayPeriodBadge period={info.period} hour={info.parts.hour} /> : <span>&nbsp;</span>}
-        {info && info.deltaToDevice !== null && (
-          <span className="font-semibold text-on-surface-muted">
-            {info.deltaToDevice === 0 ? "votre heure" : `${formatDelta(info.deltaToDevice)} / vous`}
-            {info.dayDiffToDevice ? ` · ${relativeDayLabel(info.dayDiffToDevice)}` : ""}
-          </span>
-        )}
-      </div>
-      {footer && <div className="relative z-10 mt-3">{footer}</div>}
+      {footer && <div className="relative z-10 p-4">{footer}</div>}
     </article>
   );
 }

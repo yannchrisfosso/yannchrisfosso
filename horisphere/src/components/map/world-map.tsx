@@ -92,9 +92,84 @@ function fitZoom(el: HTMLElement, projection: "globe" | "mercator"): number {
   return Math.max(0, Math.log2(w / 512));
 }
 
+/** Monde entier en projection plane (sans l'Antarctique). */
+const WORLD_BOUNDS: [[number, number], [number, number]] = [
+  [-168, -50],
+  [188, 74],
+];
+
+type Ring = [number, number][];
+
+function polygonsOf(f: GeoJSON.Feature): Ring[][] {
+  const g = f.geometry as GeoJSON.Polygon | GeoJSON.MultiPolygon | null;
+  if (!g) return [];
+  return (g.type === "Polygon" ? [g.coordinates] : g.coordinates) as Ring[][];
+}
+
+/**
+ * Anneaux qui franchissent l'antiméridien (îles Aléoutiennes, Tchoukotka, Fidji…) : on les rend continus
+ * (longitudes au-delà de 180°) pour éviter les longues lignes horizontales parasites en projection plane.
+ */
+function fixAntimeridian(f: GeoJSON.Feature) {
+  for (const poly of polygonsOf(f)) {
+    for (const ring of poly) {
+      let jump = false;
+      for (let i = 1; i < ring.length; i++) if (Math.abs(ring[i][0] - ring[i - 1][0]) > 180) jump = true;
+      if (jump) for (const pt of ring) if (pt[0] < 0) pt[0] += 360;
+    }
+  }
+}
+
+function ringArea(r: Ring): number {
+  let a = 0;
+  for (let i = 0, j = r.length - 1; i < r.length; j = i++) a += (r[j][0] + r[i][0]) * (r[j][1] - r[i][1]);
+  return Math.abs(a / 2);
+}
+
+/** Région d'un pays (d'après son plus grand polygone) pour colorer les continents. */
+function regionIndex(f: GeoJSON.Feature): number {
+  const outer = polygonsOf(f)
+    .map((p) => p[0])
+    .filter(Boolean)
+    .sort((x, y) => ringArea(y) - ringArea(x))[0];
+  if (!outer) return 3;
+  let minX = 999,
+    maxX = -999,
+    minY = 90,
+    maxY = -90;
+  for (const [x, y] of outer) {
+    if (x < minX) minX = x;
+    if (x > maxX) maxX = x;
+    if (y < minY) minY = y;
+    if (y > maxY) maxY = y;
+  }
+  let lon = (minX + maxX) / 2;
+  if (lon > 180) lon -= 360;
+  const lat = (minY + maxY) / 2;
+  if (lat < -60) return 6; // Antarctique
+  if (lon < -30) return lat > 12 ? 0 : 1; // Amérique du Nord / du Sud
+  if (lon < 55 && lat >= 36) return 2; // Europe
+  if (lon < 52 && lat < 36) return 4; // Afrique
+  if (lon > 110 && lat < -8) return 5; // Océanie
+  return 3; // Asie et Moyen-Orient
+}
+
+function landColorExpression(stops: string[], fallback: string): maplibregl.ExpressionSpecification {
+  return ["match", ["get", "r"], 0, stops[0], 1, stops[1], 2, stops[2], 3, stops[3], 4, stops[4], 5, stops[5] ?? stops[3], fallback];
+}
+
+function citiesGeoJSON(): GeoJSON.FeatureCollection<GeoJSON.Point> {
+  return {
+    type: "FeatureCollection",
+    features: allLocations().map((l) => ({ type: "Feature", properties: { pop: l.pop }, geometry: { type: "Point", coordinates: [l.lon, l.lat] } })),
+  };
+}
+
 export interface WorldMapProps {
   theme: ResolvedTheme;
   favoriteIds: string[];
+  /** Villes dont l'étiquette reste visible (favoris, exemples, Deux mondes) */
+  featuredIds?: string[];
   focusId?: string | null;
   selectedId?: string | null;
   onSelect?: (l: Location) => void;
@@ -110,10 +185,11 @@ interface MarkerEntry {
   el: HTMLButtonElement;
   loc: Location;
   favorite: boolean;
+  featured: boolean;
 }
 
 export default function WorldMap(props: WorldMapProps) {
-  const { theme, favoriteIds, focusId, selectedId, onSelect, projection, reducedMotion, hourCycle, now, className } = props;
+  const { theme, favoriteIds, featuredIds = [], focusId, selectedId, onSelect, projection, reducedMotion, hourCycle, now, className } = props;
   const container = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MlMap | null>(null);
   const markersRef = useRef<Map<string, MarkerEntry>>(new Map());
@@ -144,7 +220,7 @@ export default function WorldMap(props: WorldMapProps) {
         },
         center: [10, 22],
         zoom: fitZoom(container.current, projection),
-        minZoom: 0,
+        minZoom: -2,
         maxZoom: 7,
         attributionControl: false,
         dragRotate: false,
@@ -173,16 +249,45 @@ export default function WorldMap(props: WorldMapProps) {
         const topo = await loadTopology();
         const obj = topo.objects.countries as GeometryCollection;
         const land = feature(topo, obj) as unknown as GeoJSON.FeatureCollection;
+        for (const f of land.features) {
+          f.properties = { ...(f.properties ?? {}), r: regionIndex(f) };
+          fixAntimeridian(f);
+        }
         const borders = mesh(topo, obj, (a, b) => a !== b) as unknown as GeoJSON.MultiLineString;
+        // Frontières : on coupe les segments qui sautent d'un bord à l'autre de la carte
+        borders.coordinates = borders.coordinates.flatMap((line) => {
+          const parts: GeoJSON.Position[][] = [[]];
+          line.forEach((pt, i) => {
+            if (i > 0 && Math.abs(pt[0] - line[i - 1][0]) > 180) parts.push([]);
+            parts[parts.length - 1].push(pt);
+          });
+          return parts.filter((p) => p.length > 1);
+        });
         const t = themeRef.current.map;
         map.addSource("land", { type: "geojson", data: land });
         map.addSource("borders", { type: "geojson", data: { type: "Feature", properties: {}, geometry: borders } });
         map.addSource("graticule", { type: "geojson", data: graticule() });
-        map.addLayer({ id: "graticule", type: "line", source: "graticule", paint: { "line-color": t.graticule, "line-width": 0.8 } });
-        map.addLayer({ id: "land", type: "fill", source: "land", paint: { "fill-color": t.land, "fill-antialias": true } });
-        map.addLayer({ id: "borders", type: "line", source: "borders", paint: { "line-color": t.border, "line-width": 0.6 } });
+        map.addLayer({ id: "graticule", type: "line", source: "graticule", paint: { "line-color": t.graticule, "line-width": 0.6, "line-opacity": 0.35 } });
+        map.addLayer({ id: "land-glow", type: "line", source: "land", paint: { "line-color": t.landStops[2], "line-width": 6, "line-blur": 6, "line-opacity": 0.25 } });
+        map.addLayer({ id: "land", type: "fill", source: "land", paint: { "fill-color": landColorExpression(t.landStops, t.graticule), "fill-antialias": true } });
+        map.addLayer({ id: "borders", type: "line", source: "borders", paint: { "line-color": t.border, "line-width": 0.6, "line-opacity": 0.7 } });
+        // Lumières des villes (thème « Atlas nuit »)
+        map.addSource("cities", { type: "geojson", data: citiesGeoJSON() });
+        map.addLayer({
+          id: "city-lights",
+          type: "circle",
+          source: "cities",
+          layout: { visibility: t.style === "nightlights" ? "visible" : "none" },
+          paint: {
+            "circle-color": t.lights,
+            "circle-radius": ["interpolate", ["linear"], ["zoom"], 0, ["+", 1.2, ["*", 0.8, ["get", "pop"]]], 5, ["+", 3, ["*", 2, ["get", "pop"]]]],
+            "circle-blur": 0.9,
+            "circle-opacity": 0.75,
+          },
+        });
         map.addSource("night", { type: "image", coordinates: WORLD_CORNERS } as unknown as maplibregl.ImageSourceSpecification);
         map.addLayer({ id: "night", type: "raster", source: "night", paint: { "raster-opacity": 1, "raster-fade-duration": 0 } });
+        if (projection !== "globe") map.fitBounds(WORLD_BOUNDS, { padding: 8, duration: 0 });
         setReady(true);
       } catch {
         setError("Le fond de carte n'a pas pu être chargé. La recherche et les favoris restent disponibles.");
@@ -207,7 +312,8 @@ export default function WorldMap(props: WorldMapProps) {
     const map = mapRef.current;
     if (!map || !ready) return;
     map.setProjection({ type: projection === "globe" ? "globe" : "mercator" });
-    map.easeTo({ zoom: fitZoom(map.getContainer(), projection), duration: reducedMotion ? 0 : 500 });
+    if (projection === "globe") map.easeTo({ zoom: fitZoom(map.getContainer(), projection), duration: reducedMotion ? 0 : 500 });
+    else map.fitBounds(WORLD_BOUNDS, { padding: 8, duration: reducedMotion ? 0 : 500 });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projection, ready]);
 
@@ -217,9 +323,12 @@ export default function WorldMap(props: WorldMapProps) {
     if (!map || !ready) return;
     const t = theme.map;
     map.setPaintProperty("ocean", "background-color", t.ocean);
-    map.setPaintProperty("land", "fill-color", t.land);
+    map.setPaintProperty("land", "fill-color", landColorExpression(t.landStops, t.graticule));
+    map.setPaintProperty("land-glow", "line-color", t.landStops[2]);
     map.setPaintProperty("borders", "line-color", t.border);
     map.setPaintProperty("graticule", "line-color", t.graticule);
+    map.setPaintProperty("city-lights", "circle-color", t.lights);
+    map.setLayoutProperty("city-lights", "visibility", t.style === "nightlights" ? "visible" : "none");
   }, [theme, ready]);
 
   // Ombre de la nuit : recalculée chaque minute
@@ -228,7 +337,7 @@ export default function WorldMap(props: WorldMapProps) {
     const map = mapRef.current;
     if (!map || !ready || !minute) return;
     let cancelled = false;
-    nightImage(minute, theme.map.night, theme.mode === "dark" ? 0.5 : 0.32).then((bitmap) => {
+    nightImage(minute, theme.map.night, theme.map.nightAlpha).then((bitmap) => {
       if (cancelled || !bitmap || !mapRef.current) return;
       const src = map.getSource("night") as maplibregl.ImageSource | undefined;
       src?.updateImage({ image: bitmap } as unknown as Parameters<maplibregl.ImageSource["updateImage"]>[0]);
@@ -236,34 +345,36 @@ export default function WorldMap(props: WorldMapProps) {
     return () => {
       cancelled = true;
     };
-  }, [minute, ready, theme.map.night, theme.mode]);
+  }, [minute, ready, theme.map.night, theme.map.nightAlpha]);
 
   // Marqueurs : villes populaires + favoris
-  const favKey = favoriteIds.join(",");
+  const favKey = favoriteIds.join(",") + "|" + featuredIds.join(",");
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !ready) return;
-    const wanted = new Map<string, { loc: Location; favorite: boolean }>();
-    for (const l of allLocations()) if (l.pop >= 2) wanted.set(l.id, { loc: l, favorite: false });
-    for (const id of favoriteIds) {
+    const wanted = new Map<string, { loc: Location; favorite: boolean; featured: boolean }>();
+    for (const l of allLocations()) if (l.pop >= 2) wanted.set(l.id, { loc: l, favorite: false, featured: false });
+    for (const id of [...featuredIds, ...favoriteIds]) {
       const l = getLocation(id);
-      if (l) wanted.set(id, { loc: l, favorite: true });
+      if (l) wanted.set(id, { loc: l, favorite: favoriteIds.includes(id), featured: true });
     }
     const existing = markersRef.current;
     for (const [id, m] of existing) {
-      if (!wanted.has(id) || wanted.get(id)!.favorite !== m.favorite) {
+      const w = wanted.get(id);
+      if (!w || w.favorite !== m.favorite || w.featured !== m.featured) {
         m.marker.remove();
         existing.delete(id);
       }
     }
-    for (const [id, { loc, favorite }] of wanted) {
+    for (const [id, { loc, favorite, featured }] of wanted) {
       if (existing.has(id)) continue;
       const el = document.createElement("button");
       el.type = "button";
       el.className = "hs-marker";
       el.dataset.fav = favorite ? "1" : "0";
+      el.dataset.featured = featured ? "1" : "0";
       el.dataset.pop = String(loc.pop);
-      el.tabIndex = favorite ? 0 : -1;
+      el.tabIndex = favorite || featured ? 0 : -1;
       el.innerHTML = `<span class="hs-marker-dot" aria-hidden="true"></span><span class="hs-marker-label"><span class="hs-marker-city"></span><span class="hs-marker-time tabular"></span></span>`;
       (el.querySelector(".hs-marker-city") as HTMLElement).textContent = loc.city;
       el.addEventListener("click", (e) => {
@@ -273,12 +384,12 @@ export default function WorldMap(props: WorldMapProps) {
       const marker = new maplibregl.Marker({ element: el, anchor: "center", opacityWhenCovered: "0", subpixelPositioning: true })
         .setLngLat([loc.lon, loc.lat])
         .addTo(map);
-      existing.set(id, { marker, el, loc, favorite });
+      existing.set(id, { marker, el, loc, favorite, featured });
     }
     const updateTiers = () => {
       const z = map.getZoom();
       for (const m of existing.values()) {
-        const visible = m.favorite || m.loc.pop >= 3 || (m.loc.pop >= 2 && z >= 2.4);
+        const visible = m.favorite || m.featured || m.loc.pop >= 3 || (m.loc.pop >= 2 && z >= 2.4);
         m.el.style.display = visible ? "" : "none";
         m.el.dataset.labels = z >= 3 ? "1" : "0";
       }

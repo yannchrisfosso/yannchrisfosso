@@ -7,12 +7,15 @@ export function cx(...c: (string | false | null | undefined)[]) {
   return c.filter(Boolean).join(" ");
 }
 
-type Variant = "primary" | "secondary" | "ghost" | "surface";
+type Variant = "primary" | "secondary" | "ghost" | "surface" | "cta" | "chip";
 type Size = "sm" | "md" | "lg";
 
 const variants: Record<Variant, string> = {
   primary: "bg-button text-on-button hover:brightness-110 active:brightness-95",
-  secondary: "bg-surface-raised text-text border border-border hover:border-primary-ink",
+  cta: "hs-cta rounded-full hover:brightness-105 active:brightness-95",
+  /** Sur une carte colorée : pastille translucide et encre de la carte */
+  chip: "rounded-full bg-(--hs-card-chip) text-(--hs-card-ink) hover:brightness-105",
+  secondary: "bg-surface-raised text-text border border-border-glow/60 hover:border-primary-ink",
   ghost: "text-text hover:bg-surface-raised",
   surface: "bg-surface text-on-surface border border-border-surface hover:brightness-[0.98]",
 };
@@ -56,7 +59,7 @@ export function IconButton({
   tone = "bg",
   pressed,
   ...rest
-}: Omit<ComponentProps<"button">, "aria-label"> & { label: string; tone?: "bg" | "surface"; pressed?: boolean }) {
+}: Omit<ComponentProps<"button">, "aria-label"> & { label: string; tone?: "bg" | "surface" | "card"; pressed?: boolean }) {
   return (
     <button
       type="button"
@@ -67,7 +70,9 @@ export function IconButton({
         "hs-themed inline-flex size-10 shrink-0 items-center justify-center rounded-control transition-colors duration-(--motion-duration)",
         tone === "bg"
           ? "text-text hover:bg-surface-raised"
-          : "text-on-surface hover:bg-[color-mix(in_srgb,var(--color-on-surface)_8%,transparent)]",
+          : tone === "card"
+            ? "text-(--hs-card-ink) hover:bg-(--hs-card-chip)"
+            : "text-on-surface hover:bg-[color-mix(in_srgb,var(--color-on-surface)_8%,transparent)]",
         "disabled:opacity-40 disabled:pointer-events-none",
         className,
       )}
@@ -79,7 +84,22 @@ export function IconButton({
 }
 
 /** Drapeau SVG (flag-icons, MIT). Décoratif par défaut : le nom du pays est toujours écrit à côté. */
-export function Flag({ cc, className, title }: { cc: string; className?: string; title?: string }) {
+export function Flag({ cc, className, title, round }: { cc: string; className?: string; title?: string; round?: boolean }) {
+  if (round) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={`/flags/1x1/${cc.toLowerCase()}.svg`}
+        alt={title ?? ""}
+        aria-hidden={title ? undefined : true}
+        loading="lazy"
+        decoding="async"
+        width={28}
+        height={28}
+        className={cx("inline-block size-[1.6em] shrink-0 rounded-full object-cover shadow-[0_0_0_2px_color-mix(in_srgb,var(--color-surface)_80%,transparent)]", className)}
+      />
+    );
+  }
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
@@ -90,7 +110,7 @@ export function Flag({ cc, className, title }: { cc: string; className?: string;
       decoding="async"
       width={24}
       height={18}
-      className={cx("inline-block h-[0.9em] w-auto shrink-0 rounded-[3px] object-cover shadow-[0_0_0_1px_rgba(0,0,0,0.12)]", className)}
+      className={cx("inline-block h-[0.9em] w-auto shrink-0 rounded-[3px] object-cover shadow-[0_0_0_1px_color-mix(in_srgb,var(--color-text)_15%,transparent)]", className)}
     />
   );
 }
@@ -214,7 +234,7 @@ export function SectionTitle({ eyebrow, title, children, id }: { eyebrow?: strin
 export function Card({ className, children, ...rest }: ComponentProps<"div">) {
   return (
     <div
-      className={cx("hs-themed rounded-card border border-border bg-surface-raised p-5 sm:p-6", className)}
+      className={cx("hs-themed hs-panel rounded-card p-5 sm:p-6", className)}
       {...rest}
     >
       {children}

@@ -12,18 +12,21 @@ export function DayPeriodBadge({
   hour,
   className,
   compact,
+  iconOnly,
 }: {
   period: DayPeriod;
   hour: number;
   className?: string;
   compact?: boolean;
+  /** Icône seule (le mot reste lu par les lecteurs d'écran) */
+  iconOnly?: boolean;
 }) {
   const Icon = period === "day" ? Sun : period === "night" ? Moon : hour < 12 ? Sunrise : Sunset;
   const label = period === "golden" ? (hour < 12 ? "Lever du soleil" : "Coucher du soleil") : DAY_PERIOD_LABEL[period];
   return (
     <span className={cx("inline-flex items-center gap-1.5 font-semibold", className)}>
       <Icon className={compact ? "size-3.5" : "size-4"} aria-hidden />
-      <span className={compact ? "sr-only sm:not-sr-only" : undefined}>{label}</span>
+      <span className={iconOnly ? "sr-only" : compact ? "sr-only sm:not-sr-only" : undefined}>{label}</span>
     </span>
   );
 }
@@ -65,12 +68,16 @@ export function AnalogDial({
   seconds,
   className,
   size = 76,
+  dark,
 }: {
   parts: Pick<WallTime, "hour" | "minute" | "second"> | null;
   seconds: boolean;
   className?: string;
   size?: number;
+  /** Cadran sombre à aiguilles dorées (cartes colorées) */
+  dark?: boolean;
 }) {
+  if (dark) return <DarkDial parts={parts} seconds={seconds} className={className} size={size} />;
   const h = parts ? ((parts.hour % 12) + parts.minute / 60) * 30 : 0;
   const m = parts ? (parts.minute + parts.second / 60) * 6 : 0;
   const s = parts ? parts.second * 6 : 0;
@@ -108,6 +115,53 @@ export function AnalogDial({
             />
           )}
           <circle cx="50" cy="50" r="3.6" fill="var(--hs-accent, var(--color-primary))" />
+        </>
+      )}
+    </svg>
+  );
+}
+
+function DarkDial({
+  parts,
+  seconds,
+  className,
+  size,
+}: {
+  parts: Pick<WallTime, "hour" | "minute" | "second"> | null;
+  seconds: boolean;
+  className?: string;
+  size: number;
+}) {
+  const h = parts ? ((parts.hour % 12) + parts.minute / 60) * 30 : 0;
+  const m = parts ? (parts.minute + parts.second / 60) * 6 : 0;
+  const s = parts ? parts.second * 6 : 0;
+  const gold = "var(--hs-card-dial-ink)";
+  return (
+    <svg viewBox="0 0 100 100" width={size} height={size} className={cx("shrink-0", className)} aria-hidden>
+      <circle cx="50" cy="50" r="48" fill="var(--hs-card-dial)" stroke={gold} strokeWidth="2.5" />
+      <circle cx="50" cy="50" r="42" fill="none" stroke={gold} strokeOpacity="0.3" strokeWidth="1" />
+      {Array.from({ length: 12 }, (_, i) => (
+        <line
+          key={i}
+          x1="50"
+          y1={i % 3 === 0 ? 10 : 12}
+          x2="50"
+          y2="16"
+          stroke={gold}
+          strokeOpacity={i % 3 === 0 ? 1 : 0.55}
+          strokeWidth={i % 3 === 0 ? 3 : 1.6}
+          strokeLinecap="round"
+          transform={`rotate(${i * 30} 50 50)`}
+        />
+      ))}
+      {parts && (
+        <>
+          <line x1="50" y1="55" x2="50" y2="30" stroke={gold} strokeWidth="5" strokeLinecap="round" transform={`rotate(${h} 50 50)`} />
+          <line x1="50" y1="57" x2="50" y2="18" stroke={gold} strokeWidth="3.2" strokeLinecap="round" transform={`rotate(${m} 50 50)`} />
+          {seconds && (
+            <line x1="50" y1="60" x2="50" y2="16" stroke="var(--hs-card-from)" strokeWidth="1.4" strokeLinecap="round" transform={`rotate(${s} 50 50)`} />
+          )}
+          <circle cx="50" cy="50" r="3.8" fill={gold} />
         </>
       )}
     </svg>

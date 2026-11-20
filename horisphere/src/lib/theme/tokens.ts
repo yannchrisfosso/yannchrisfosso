@@ -3,7 +3,7 @@
  * Toutes les couleurs des composants passent par ces variables (aucune couleur en dur dans les composants).
  */
 import { bestContrast, contrastRatio, ensureContrast, isDark, isHex, mix, normalizeHex, withAlpha } from "./color";
-import { DEFAULT_PRESET, getPreset, type Palette, type PresetId, type ResolvedMode } from "./presets";
+import { DEFAULT_PRESET, getPreset, type Ambiance, type Palette, type PresetId, type ResolvedMode } from "./presets";
 
 export type ThemeMode = "dark" | "light" | "auto";
 export type CardStyle = "uni" | "degrade" | "motif";
@@ -35,12 +35,13 @@ export interface ThemePreference {
 export const DEFAULT_THEME: ThemePreference = {
   schemaVersion: 1,
   presetId: DEFAULT_PRESET,
-  mode: "auto",
+  // Le thème signature est sombre par défaut (maquettes) ; « automatique » reste disponible.
+  mode: "dark",
   overrides: {},
   autoContrast: true,
   radius: 22,
   gradient: 55,
-  clockStyle: "editorial",
+  clockStyle: "cadran",
   cardStyle: "degrade",
   clockOverrides: {},
 };
@@ -65,7 +66,95 @@ export interface ResolvedTheme {
   vars: Record<string, string>;
   issues: ContrastIssue[];
   /** Couleurs utiles à la carte (MapLibre ne lit pas les variables CSS) */
-  map: { ocean: string; land: string; border: string; graticule: string; night: string; marker: string; markerFav: string };
+  map: {
+    ocean: string;
+    land: string;
+    /** Dégradé des terres d'ouest en est (continents colorés) */
+    landStops: string[];
+    style: Ambiance["mapStyle"];
+    border: string;
+    graticule: string;
+    night: string;
+    nightAlpha: number;
+    marker: string;
+    markerFav: string;
+    lights: string;
+  };
+  /** Couleurs de départ des cartes d'horloge (attribuées tour à tour) */
+  cardAccents: string[];
+  /** Moitiés par défaut du module « Deux mondes » */
+  duo: [string, string];
+}
+
+export interface CardColors {
+  from: string;
+  mid: string;
+  to: string;
+  /** Texte posé sur le dégradé : contraste ≥ 4,5:1 sur chacun des arrêts */
+  ink: string;
+  inkMuted: string;
+  /** Pastilles (badge jour/nuit, cadran) */
+  chip: string;
+  chipInk: string;
+  dial: string;
+  dialInk: string;
+}
+
+/**
+ * Dégradé d'une carte (horloge, moitié de « Deux mondes ») et encre lisible garantie (WCAG AA)
+ * sur toute la hauteur du dégradé.
+ */
+export function cardColors(accent: string, theme: Pick<ResolvedTheme, "palette">): CardColors {
+  const bg = theme.palette.background;
+  const a = normalizeHex(accent);
+  const from = mix(a, "#FFFFFF", 0.18);
+  const mid = a;
+  const to = mix(a, bg, 0.18);
+  const stops = [from, mid, to];
+  const minContrast = (c: string) => Math.min(...stops.map((s) => contrastRatio(c, s)));
+  // Encre sombre (teinte du fond, assombrie si besoin) ou encre claire : on garde la plus lisible
+  let dark = darken(bg, stops);
+  const light = "#FFFFFF";
+  const ink = minContrast(dark) >= minContrast(light) ? dark : light;
+  if (minContrast(ink) < 4.5) {
+    // Couleur intermédiaire : on éclaircit les arrêts jusqu'à rendre l'encre sombre lisible
+    let f = 0.1;
+    let st = stops;
+    while (f <= 0.9) {
+      st = [mix(from, "#FFFFFF", f), mix(mid, "#FFFFFF", f), mix(to, "#FFFFFF", f)];
+      dark = darken(bg, st);
+      if (Math.min(...st.map((s) => contrastRatio(dark, s))) >= 4.5) break;
+      f += 0.1;
+    }
+    return finishCard(st[0], st[1], st[2], dark);
+  }
+  return finishCard(from, mid, to, ink);
+}
+
+function darken(bg: string, stops: string[]): string {
+  let c = isDark(bg) ? bg : "#1A1416";
+  for (let i = 0; i < 12 && Math.min(...stops.map((s) => contrastRatio(c, s))) < 4.5; i++) c = mix(c, "#000000", 0.25);
+  return c;
+}
+
+function finishCard(from: string, mid: string, to: string, ink: string): CardColors {
+  const stops = [from, mid, to];
+  let inkMuted = mix(ink, mid, 0.25);
+  if (Math.min(...stops.map((s) => contrastRatio(inkMuted, s))) < 4.5) inkMuted = ink;
+  const inkIsDark = isDark(ink);
+  const dial = inkIsDark ? mix(ink, "#000000", 0.2) : mix(mid, "#000000", 0.55);
+  return {
+    from,
+    mid,
+    to,
+    ink,
+    inkMuted,
+    // Pastille : éclaircit sous une encre sombre, assombrit sous une encre claire (le contraste ne baisse jamais)
+    chip: inkIsDark ? withAlpha("#FFFFFF", 0.4) : withAlpha("#000000", 0.28),
+    chipInk: ink,
+    dial,
+    dialInk: "#F2C46B",
+  };
 }
 
 export function resolveMode(mode: ThemeMode, systemDark: boolean): ResolvedMode {
@@ -137,9 +226,35 @@ export function resolveTheme(pref: ThemePreference, systemDark: boolean): Resolv
   const onSecondary = bestContrast(secondary, [bg, text, "#FFFFFF", "#141012"]);
   const onButton = bestContrast(button, [bg, text, p.surface, "#FFFFFF", "#141012"]);
 
-  const surfaceRaised = mix(bg, text, darkBg ? 0.07 : 0.035);
+  const amb = getPreset(pref.presetId).ambiance[mode];
+  const surfaceRaised = mix(mix(bg, text, darkBg ? 0.05 : 0.035), primary, darkBg ? 0.05 : 0.02);
   const surfaceSunken = mix(bg, darkBg ? "#000000" : text, darkBg ? 0.22 : 0.05);
   const border = mix(bg, text, darkBg ? 0.2 : 0.16);
+  // Liseré doré des panneaux et lueur des halos (maquettes)
+  const borderGlow = darkBg ? mix(secondary, bg, 0.45) : mix(secondary, bg, 0.35);
+  // Bouton principal en pilule dégradée or → corail ; repli sur des paires lisibles si besoin (AA)
+  const ctaPairs: [string, string][] = [
+    [secondary, primary],
+    [mix(primary, "#FFFFFF", 0.2), primary],
+    [button, mix(button, primary, 0.25)],
+    [button, button],
+  ];
+  let ctaFrom = button;
+  let ctaTo = button;
+  let onCta = onButton;
+  for (const [f, t] of ctaPairs) {
+    const inks = [ensureDarkInk(bg, [f, t]), "#FFFFFF"];
+    const ink = inks.reduce((best, c) =>
+      Math.min(contrastRatio(c, f), contrastRatio(c, t)) > Math.min(contrastRatio(best, f), contrastRatio(best, t)) ? c : best,
+    );
+    if (Math.min(contrastRatio(ink, f), contrastRatio(ink, t)) >= 4.5) {
+      ctaFrom = f;
+      ctaTo = t;
+      onCta = ink;
+      break;
+    }
+  }
+  const searchBg = darkBg ? p.surface : mix(p.surface, bg, 0.2);
   const borderSurface = mix(p.surface, onSurface, 0.14);
   const focus = bestContrast(bg, [secondary, primary, text]);
   // Couleurs d'accent lisibles comme texte (≥ 4,5:1) sur le fond et sur les cartes
@@ -173,8 +288,17 @@ export function resolveTheme(pref: ThemePreference, systemDark: boolean): Resolv
     "--color-secondary-ink": secondaryInk,
     "--color-primary-ink-surface": primaryInkSurface,
     "--color-secondary-ink-surface": secondaryInkSurface,
+    "--color-border-glow": borderGlow,
+    "--color-halo": withAlpha(primary, darkBg ? 0.22 : 0.14),
+    "--color-cta-from": ctaFrom,
+    "--color-cta-to": ctaTo,
+    "--color-on-cta": onCta,
+    "--color-search": searchBg,
+    "--color-on-search": bestContrast(searchBg, [bg, text, "#1A1416"]),
+    "--color-on-search-muted": ensureContrast(mix(bestContrast(searchBg, [bg, text, "#1A1416"]), searchBg, 0.35), searchBg, 4.5),
     "--color-glow-1": withAlpha(primary, 0.1 + 0.3 * g),
     "--color-glow-2": withAlpha(secondary, 0.08 + 0.25 * g),
+    "--color-glow-3": withAlpha(amb.glow, 0.12 + 0.35 * g),
     "--gradient-strength": g.toFixed(2),
     "--radius-card": `${radius}px`,
     "--radius-control": `${Math.max(4, Math.round(radius * 0.55))}px`,
@@ -184,24 +308,32 @@ export function resolveTheme(pref: ThemePreference, systemDark: boolean): Resolv
     "color-scheme": darkBg ? "dark" : "light",
   };
 
-  const map = {
-    ocean: darkBg ? mix(bg, "#000000", 0.35) : mix(p.surface, secondary, 0.1),
-    land: darkBg ? mix(bg, p.surface, 0.26) : mix(bg, text, 0.26),
-    border: darkBg ? mix(bg, p.surface, 0.42) : mix(bg, text, 0.3),
-    graticule: darkBg ? mix(bg, p.surface, 0.1) : mix(bg, text, 0.1),
-    night: darkBg ? "#05030A" : mix(text, primary, 0.15),
+  const map: ResolvedTheme["map"] = {
+    ocean: amb.mapOcean,
+    land: amb.mapLand[2],
+    landStops: amb.mapLand,
+    style: amb.mapStyle,
+    border: darkBg ? mix(amb.mapOcean, "#000000", 0.35) : mix(amb.mapOcean, "#FFFFFF", 0.6),
+    graticule: darkBg ? mix(amb.mapOcean, secondary, 0.18) : mix(amb.mapOcean, text, 0.12),
+    night: darkBg ? mix(bg, "#000000", 0.55) : mix(text, primary, 0.15),
+    nightAlpha: amb.mapStyle === "nightlights" ? 0.35 : darkBg ? 0.5 : 0.3,
     marker: primary,
     markerFav: secondary,
+    lights: mix(secondary, "#FFFFFF", 0.35),
   };
 
-  return { mode, palette: p, vars, issues, map };
+  return { mode, palette: p, vars, issues, map, cardAccents: amb.cardAccents, duo: amb.duo };
+}
+
+function ensureDarkInk(bg: string, stops: string[]): string {
+  return darken(bg, stops);
 }
 
 /** Vérifie et complète une préférence lue depuis le stockage (données potentiellement corrompues). */
 export function sanitizeTheme(raw: unknown): ThemePreference {
   const r = (raw && typeof raw === "object" ? raw : {}) as Partial<ThemePreference>;
   const presetId = getPreset(String(r.presetId ?? DEFAULT_PRESET)).id;
-  const mode: ThemeMode = r.mode === "dark" || r.mode === "light" ? r.mode : "auto";
+  const mode: ThemeMode = r.mode === "auto" || r.mode === "light" ? r.mode : "dark";
   const cleanPalette = (o: unknown): Partial<Palette> => {
     const out: Partial<Palette> = {};
     if (o && typeof o === "object") {
@@ -239,7 +371,7 @@ export function sanitizeTheme(raw: unknown): ThemePreference {
     autoContrast: r.autoContrast !== false,
     radius: num(r.radius, DEFAULT_THEME.radius, 0, 32),
     gradient: num(r.gradient, DEFAULT_THEME.gradient, 0, 100),
-    clockStyle: r.clockStyle === "cadran" ? "cadran" : "editorial",
+    clockStyle: r.clockStyle === "editorial" ? "editorial" : "cadran",
     cardStyle: r.cardStyle === "uni" || r.cardStyle === "motif" ? r.cardStyle : "degrade",
     clockOverrides,
   };

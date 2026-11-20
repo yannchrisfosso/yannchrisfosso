@@ -21,7 +21,7 @@ function SlotPicker({ slot, draft, onPick }: { slot: "a" | "b"; draft: DuoPrefer
     <div className="min-w-0">
       <p className="mb-1 text-sm font-semibold text-text-muted">{slot === "a" ? "Ville de gauche" : "Ville de droite"}</p>
       <p className="mb-2 flex items-center gap-2 font-display text-2xl font-semibold">
-        <Flag cc={loc.cc} />
+        <Flag cc={loc.cc} round className="text-base" />
         <span className="truncate">{loc.city}</span>
       </p>
       <SearchBox

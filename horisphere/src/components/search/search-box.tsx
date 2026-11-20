@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Search, X } from "lucide-react";
+import { ArrowRight, Search, X } from "lucide-react";
 import { useDeferredValue, useEffect, useId, useMemo, useRef, useState } from "react";
 import { countryOffsetCount, type Location } from "@/lib/catalog";
 import { groupByCountry, search } from "@/lib/search";
@@ -21,6 +21,7 @@ export function SearchBox({
   excludeIds,
   clearOnSelect = true,
   inputId,
+  variant = "field",
 }: {
   onSelect?: (l: Location) => void;
   placeholder?: string;
@@ -31,6 +32,8 @@ export function SearchBox({
   excludeIds?: string[];
   clearOnSelect?: boolean;
   inputId?: string;
+  /** « pill » : pilule claire avec bouton flèche (accueil, maquettes) */
+  variant?: "field" | "pill";
 }) {
   const router = useRouter();
   const [query, setQuery] = useState("");
@@ -52,6 +55,15 @@ export function SearchBox({
   const groups = useMemo(() => groupByCountry(hits), [hits]);
   const flat = useMemo(() => groups.flatMap((g) => g.hits.map((h) => h.location)), [groups]);
 
+  // Texte saisi avant l'hydratation (page lente, frappe rapide) : on le récupère au lieu de l'ignorer
+  useEffect(() => {
+    const el = inputRef.current;
+    if (el && el.value) {
+      setQuery(el.value);
+      setOpen(document.activeElement === el);
+    }
+  }, []);
+
   useEffect(() => {
     const onDoc = (e: PointerEvent) => {
       if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
@@ -68,6 +80,16 @@ export function SearchBox({
     else router.push(`/ville/${l.id}`);
   };
 
+  // Si la frappe est plus rapide que le rendu différé, on recalcule les résultats tout de suite
+  const currentTarget = (): Location | undefined => {
+    if (!query.trim()) return undefined;
+    const current =
+      query === deferred
+        ? flat
+        : groupByCountry(search(query, 40).filter((x) => !excludeIds?.includes(x.location.id))).flatMap((g) => g.hits.map((h) => h.location));
+    return current[Math.min(Math.max(0, active), current.length - 1)];
+  };
+
   const onKey = (e: React.KeyboardEvent) => {
     if (e.key === "ArrowDown") {
       e.preventDefault();
@@ -77,13 +99,8 @@ export function SearchBox({
       e.preventDefault();
       setActive((a) => Math.max(0, a - 1));
     } else if (e.key === "Enter") {
-      // Si la frappe est plus rapide que le rendu différé, on recalcule les résultats tout de suite
-      const current =
-        query === deferred
-          ? flat
-          : groupByCountry(search(query, 40).filter((x) => !excludeIds?.includes(x.location.id))).flatMap((g) => g.hits.map((h) => h.location));
-      const target = current[Math.min(Math.max(0, active), current.length - 1)];
-      if (query.trim() && target) {
+      const target = currentTarget();
+      if (target) {
         e.preventDefault();
         choose(target);
       }
@@ -105,6 +122,7 @@ export function SearchBox({
   }, [active, open, listId]);
 
   const showList = open && query.trim().length > 0;
+  const pill = variant === "pill";
   let idx = -1;
 
   return (
@@ -114,12 +132,16 @@ export function SearchBox({
       </label>
       <div
         className={cx(
-          "hs-themed flex items-center gap-2 rounded-control border border-border bg-surface-sunken text-text",
-          "focus-within:border-focus focus-within:shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-focus)_35%,transparent)]",
-          size === "lg" ? "h-14 px-4 text-[1.02rem]" : "h-11 px-3 text-[0.95rem]",
+          "hs-themed flex items-center gap-2",
+          "focus-within:shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-focus)_45%,transparent)]",
+          pill
+            ? "rounded-full border border-[color-mix(in_srgb,var(--color-border-glow)_70%,transparent)] bg-(--color-search) pr-1.5 text-(--color-on-search) shadow-[0_10px_30px_-14px_var(--color-halo)]"
+            : "rounded-control border border-border bg-surface-sunken text-text focus-within:border-focus",
+          size === "lg" ? "h-14 pl-5 text-[1.02rem]" : "h-11 px-3 text-[0.95rem]",
+          !pill && size === "lg" && "pr-4",
         )}
       >
-        <Search className={cx("shrink-0 text-text-muted", size === "lg" ? "size-5" : "size-4")} aria-hidden />
+        <Search className={cx("shrink-0", pill ? "text-(--color-on-search-muted)" : "text-text-muted", size === "lg" ? "size-5" : "size-4")} aria-hidden />
         <input
           ref={inputRef}
           id={id}
@@ -143,7 +165,10 @@ export function SearchBox({
           }}
           onFocus={() => setOpen(true)}
           onKeyDown={onKey}
-          className="h-full min-w-0 flex-1 bg-transparent font-medium outline-none placeholder:text-text-muted [&::-webkit-search-cancel-button]:hidden"
+          className={cx(
+            "h-full min-w-0 flex-1 bg-transparent font-medium outline-none [&::-webkit-search-cancel-button]:hidden",
+            pill ? "placeholder:text-(--color-on-search-muted)" : "placeholder:text-text-muted",
+          )}
         />
         {query && (
           <button
@@ -153,9 +178,23 @@ export function SearchBox({
               inputRef.current?.focus();
             }}
             aria-label="Effacer la recherche"
-            className="inline-flex size-8 items-center justify-center rounded-full text-text-muted hover:text-text"
+            className={cx("inline-flex size-8 items-center justify-center rounded-full", pill ? "text-(--color-on-search-muted)" : "text-text-muted hover:text-text")}
           >
             <X className="size-4" aria-hidden />
+          </button>
+        )}
+        {pill && (
+          <button
+            type="button"
+            aria-label="Ouvrir le premier résultat"
+            onClick={() => {
+              const target = currentTarget();
+              if (target) choose(target);
+              else inputRef.current?.focus();
+            }}
+            className="inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-button text-on-button shadow-[0_6px_16px_-6px_var(--color-halo)] transition-transform hover:scale-105"
+          >
+            <ArrowRight className="size-5" aria-hidden />
           </button>
         )}
       </div>

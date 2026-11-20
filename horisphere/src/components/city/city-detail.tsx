@@ -18,7 +18,10 @@ import { useDeviceZone, useNow, useNowMinute } from "@/lib/time/ticker";
 import { favorites, useFavorites } from "@/lib/state/favorites";
 import { assignDuo, duoStore, useDuo } from "@/lib/state/duo";
 import { useSettings } from "@/lib/state/settings";
-import { useActiveTheme } from "@/lib/state/theme";
+import { useActiveTheme, useResolvedTheme } from "@/lib/state/theme";
+import { cardColors } from "@/lib/theme/tokens";
+import { cardBackground, cardVars } from "@/components/clock/clock-card";
+import { CityIllustration } from "@/components/clock/city-illustration";
 import { computeLocationTime } from "@/components/clock/use-location-time";
 import { AnalogDial, DayPeriodBadge, TimeDisplay } from "@/components/clock/parts";
 import { Button, ButtonLink, Card, cx, Flag } from "@/components/ui/primitives";
@@ -101,7 +104,9 @@ export function CityDetail({ id }: { id: string }) {
   const multi = minute ? countryOffsetCount(loc.cc, minute) > 1 : false;
   const compareWith = local && local.id !== loc.id ? local.id : loc.id === "quebec-ca" ? "douala-cm" : "quebec-ca";
   const inDuo = duo.locationIdA === loc.id ? "a" : duo.locationIdB === loc.id ? "b" : null;
-  const accent = theme.clockOverrides[loc.id]?.accent ?? "var(--color-primary)";
+  const resolved = useResolvedTheme();
+  const accentHex = theme.clockOverrides[loc.id]?.accent ?? resolved.cardAccents[0];
+  const colors = cardColors(accentHex, resolved);
 
   const setDuo = (slot: "a" | "b") => {
     duoStore.set((d) => assignDuo(d, slot, loc.id));
@@ -117,7 +122,7 @@ export function CityDetail({ id }: { id: string }) {
 
       <header className="hs-rise">
         <p className="flex flex-wrap items-center gap-2 text-sm font-semibold text-text-muted">
-          <Flag cc={loc.cc} className="text-xl" title={`Drapeau : ${country}`} />
+          <Flag cc={loc.cc} round className="text-base" title={`Drapeau : ${country}`} />
           <span>{country}</span>
           {loc.region && <span aria-hidden>·</span>}
           {loc.region && <span>{loc.region}</span>}
@@ -133,32 +138,31 @@ export function CityDetail({ id }: { id: string }) {
       <div className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
         <section
           aria-label={`Heure locale à ${loc.city}`}
-          style={{ "--hs-accent": accent } as React.CSSProperties}
-          className="hs-themed hs-rise hs-rise-2 relative flex flex-col justify-between overflow-hidden rounded-card border border-border-surface bg-surface p-6 text-on-surface shadow-card sm:p-8"
+          style={{ ...cardVars(colors, accentHex), ...cardBackground("degrade"), color: "var(--hs-card-ink)" }}
+          className="hs-themed hs-rise hs-rise-2 relative flex flex-col overflow-hidden rounded-card border border-[color-mix(in_srgb,var(--color-border-glow)_75%,transparent)] shadow-[0_24px_60px_-30px_var(--color-halo)]"
         >
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -top-24 -right-24 size-72 rounded-full opacity-[calc(var(--gradient-strength)*0.6)] blur-2xl"
-            style={{ background: "var(--hs-accent)" }}
-          />
-          <div className="relative flex items-start justify-between gap-4">
+          <div className="relative z-[1] flex items-start justify-between gap-4 p-6 pb-2 sm:p-8 sm:pb-2">
             <div className="min-w-0">
-              <p className="text-xs font-bold tracking-[0.16em] text-on-surface-muted uppercase">Heure locale</p>
+              <p className="text-xs font-bold tracking-[0.16em] uppercase">Heure locale</p>
               <TimeDisplay
                 parts={p}
                 cycle={settings.hourCycle}
                 seconds
-                className="mt-2 block text-[3.6rem] leading-none font-semibold tracking-tight sm:text-[5rem]"
+                className="mt-2 block font-display text-[3.6rem] leading-none font-semibold tracking-tight sm:text-[5rem]"
                 secondsClassName="text-[0.5em] font-medium"
               />
-              <p className="mt-3 text-lg font-semibold">{p ? capitalize(formatLongDate(p)) : " "}</p>
-              {info && <DayPeriodBadge period={info.period} hour={info.parts.hour} className="mt-2 text-base" />}
+              <p className="mt-3 text-lg font-semibold">{p ? capitalize(formatLongDate(p)) : "\u00A0"}</p>
+              {info && (
+                <span className="mt-2 inline-flex rounded-full bg-(--hs-card-chip) px-3 py-1 text-base">
+                  <DayPeriodBadge period={info.period} hour={info.parts.hour} />
+                </span>
+              )}
             </div>
-            <AnalogDial parts={p} seconds size={110} className="hidden text-on-surface sm:block" />
+            <AnalogDial parts={p} seconds size={112} dark className="hidden sm:block" />
           </div>
-          <div className="relative mt-6 flex flex-wrap gap-2">
+          <div className="relative z-[1] flex flex-wrap gap-2 px-6 pt-3 sm:px-8">
             <Button
-              variant="primary"
+              variant="cta"
               aria-pressed={isFav}
               onClick={() => {
                 favorites.toggle(loc.id);
@@ -168,11 +172,11 @@ export function CityDetail({ id }: { id: string }) {
               <Star className={cx("size-4", isFav && "fill-current")} aria-hidden />
               {isFav ? "Dans vos favoris" : "Ajouter aux favoris"}
             </Button>
-            <ButtonLink href={`/comparer?a=${compareWith}&b=${loc.id}`} variant="surface">
+            <ButtonLink href={`/comparer?a=${compareWith}&b=${loc.id}`} variant="chip">
               <ArrowLeftRight className="size-4" aria-hidden /> Comparer
             </ButtonLink>
             <Button
-              variant="surface"
+              variant="chip"
               onClick={async () => {
                 const r = await shareOrCopy({
                   title: `Heure à ${loc.city}`,
@@ -184,6 +188,9 @@ export function CityDetail({ id }: { id: string }) {
             >
               <Share2 className="size-4" aria-hidden /> Partager
             </Button>
+          </div>
+          <div className="relative mt-auto h-32 pt-2">
+            <CityIllustration location={loc} night={info ? info.period === "night" || info.period === "twilight" : false} className="absolute inset-0" />
           </div>
         </section>
 

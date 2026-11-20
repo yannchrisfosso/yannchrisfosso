@@ -119,7 +119,7 @@ export function InstallGuide() {
             <p className="font-semibold">Votre navigateur permet d&apos;installer Horisphère en un geste.</p>
             <div>
               <Button
-                variant="primary"
+                variant="cta"
                 size="lg"
                 onClick={async () => {
                   const r = await promptInstall();
@@ -172,9 +172,9 @@ export function InstallGuide() {
         ))}
       </section>
 
-      <Card className="flex flex-col gap-2">
+      <Card id="raccourcis" className="flex scroll-mt-24 flex-col gap-2">
         <h2 className="flex items-center gap-2 font-display text-2xl font-semibold">
-          <Link2 className="size-5" aria-hidden /> Raccourcis directs
+          <Link2 className="size-5" aria-hidden /> Créer un raccourci
         </h2>
         <p className="text-sm text-text-muted">
           Chaque page a sa propre adresse : ouvrez-la puis ajoutez-la à l&apos;écran d&apos;accueil (ou en marque-page) pour arriver
